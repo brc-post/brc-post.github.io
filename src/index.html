@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- No network access at all: this page cannot load or send anything. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src '__SCRIPT_HASH__'; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="x-dns-prefetch-control" content="off">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f5f6f8">
+<title>BRC Seal</title>
+<link rel="icon" href="/*__FAVICON__*/">
+<style>
+/*__FONTS__*/
+:root {
+  --canvas: #f5f6f8;
+  --surface: #ffffff;
+  --sunken: #f0f2f5;
+  --ink: #101318;
+  --ink-2: #3a414c;
+  --muted: #69717d;
+  --hairline: #e3e6eb;
+  --hairline-strong: #d3d8df;
+  --brand: #5956fd;
+  --brand-deep: #4340e0;
+  --brand-tint: #eeeeff;
+  --good: #0d7a5f;
+  --good-bright: #15a37f;
+  --good-tint: #e6f4ef;
+  --danger: #b8321c;
+  --danger-tint: #fbece8;
+  --caution: #8c5800;
+  --caution-tint: #fbf3e2;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-card: 0 1px 2px rgba(16, 19, 24, 0.04), 0 8px 24px -6px rgba(16, 19, 24, 0.08), 0 32px 64px -24px rgba(16, 19, 24, 0.12);
+  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 400 16px/1.55 var(--sans); font-feature-settings: "ss01"; }
+button, input, textarea { font: inherit; color: inherit; }
+::selection { background: var(--brand-tint); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(100% - 2rem, 46rem); margin-inline: auto; }
+
+/* ---------- Top bar (shared look with BRC Vault and BRC Pulse) ---------- */
+.topbar { position: sticky; top: 0; z-index: 5; background: rgba(245, 246, 248, 0.82); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; }
+.topbar.is-scrolled { border-bottom-color: var(--hairline); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.75rem; gap: 0.75rem; }
+.wordmark { font-size: 1.22rem; line-height: 1; letter-spacing: -0.066em; text-transform: uppercase; white-space: nowrap; }
+.wordmark .wm-light { font-weight: 408; }
+.wordmark .wm-bold { font-weight: 662; }
+.family { display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 11px; background: var(--sunken); border: 1px solid var(--hairline); }
+.family a, .family .cur { display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.family svg { width: 17px; height: 17px; display: block; flex: none; color: #353535; }
+.family .wordmark { font-size: 0.82rem; }
+.family .cur { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16, 19, 24, 0.08), 0 2px 8px rgba(16, 19, 24, 0.05); }
+.family a:hover { color: var(--ink); }
+@media (max-width: 36rem) { .family a .wordmark { display: none; } .family a, .family .cur { padding: 0 8px; } }
+.status-pill { display: inline-flex; align-items: center; gap: 0.45rem; height: 2rem; padding: 0 0.8rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font-size: 0.82rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+.status-pill .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--good-bright); box-shadow: 0 0 0 3px var(--good-tint); }
+@media (max-width: 30rem) { .status-pill .pill-word { display: none; } .status-pill { padding: 0 0.6rem; } }
+
+.test-banner { margin: 1rem 0 0; padding: 0.7rem 0.95rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.88rem; }
+.test-banner strong { font-weight: 600; }
+
+/* ---------- Hero ---------- */
+.hero { padding: 3.25rem 0 2rem; }
+.hero h1 { margin: 0; font-weight: 600; font-size: clamp(2.3rem, 7vw, 3.6rem); line-height: 1.03; letter-spacing: -0.045em; max-width: 15ch; }
+.hero p { margin: 1.1rem 0 0; font-size: 1.12rem; line-height: 1.55; color: var(--muted); max-width: 36rem; }
+.hero p strong { color: var(--ink); font-weight: 500; }
+
+/* ---------- Cards ---------- */
+.card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 1px solid rgba(16, 19, 24, 0.05); }
+.card + .card { margin-top: 1.25rem; }
+
+/* Wallet strip: which wallet this page is acting as */
+.wallet { padding: 1.1rem 1.5rem; }
+.wallet-row { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+.wallet-icon { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 10px; background: var(--sunken); border: 1px solid var(--hairline); display: grid; place-items: center; color: var(--ink-2); }
+.wallet-icon svg { width: 1.15rem; height: 1.15rem; }
+.wallet[data-state="loaded"] .wallet-icon { background: var(--good-tint); border-color: #c9e6db; color: var(--good); }
+.wallet-text { flex: 1 1 14rem; min-width: 0; }
+.wallet-text strong { display: block; font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; }
+.wallet-text span { display: block; color: var(--muted); font-size: 0.88rem; }
+.wallet-text .mono { color: var(--ink-2); }
+.wallet-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.loader { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--hairline); }
+.who { display: inline-grid; grid-auto-flow: column; padding: 3px; gap: 2px; background: var(--sunken); border-radius: 10px; margin-top: 0.9rem; }
+.who button { appearance: none; border: 0; background: transparent; height: 2.1rem; padding: 0 0.9rem; border-radius: 8px; font-size: 0.88rem; font-weight: 500; color: var(--muted); cursor: pointer; }
+.who button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
+
+/* Tabs */
+.tabs-head { padding: 1.25rem 1.5rem 0; }
+.segmented { display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
+.segmented button { appearance: none; border: 0; background: transparent; height: 2.6rem; border-radius: 9px; font-weight: 500; font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease), background 0.2s var(--ease); }
+.segmented button[aria-selected="true"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
+.segmented button:hover:not([aria-selected="true"]) { color: var(--ink-2); }
+.panel { padding: 0.25rem 1.5rem 1.6rem; }
+.panel-lede { margin: 1.1rem 0 0; color: var(--muted); font-size: 0.95rem; }
+.panel-lede strong { color: var(--ink); font-weight: 500; }
+
+/* Inputs */
+.field { display: block; margin-top: 1rem; }
+.field > span { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.86rem; font-weight: 500; color: var(--ink-2); margin-bottom: 0.4rem; }
+.field > span .count { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+.field > span .count[data-over] { color: var(--danger); font-weight: 500; }
+.field input, .field textarea { display: block; width: 100%; border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm); background: var(--surface); transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+.field input { height: 2.9rem; padding: 0 0.95rem; font-size: 1rem; }
+.field input.mono-input { font: 0.85rem var(--mono); }
+.field textarea { min-height: 7rem; resize: vertical; padding: 0.75rem 0.85rem; font-size: 0.97rem; line-height: 1.5; }
+.field textarea.mono-input { font: 0.8rem/1.55 var(--mono); min-height: 9rem; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint); }
+.field-help { margin: 0.4rem 0 0; font-size: 0.83rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+.chip { appearance: none; border: 1px solid var(--hairline-strong); background: var(--surface); border-radius: 999px; height: 1.9rem; padding: 0 0.75rem; font-size: 0.82rem; color: var(--ink-2); cursor: pointer; }
+.chip:hover { border-color: #b9c0ca; background: var(--canvas); }
+.check { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1rem; padding: 0.8rem 0.95rem; background: var(--sunken); border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--ink-2); cursor: pointer; }
+.check input { flex: none; margin: 0.18rem 0 0; width: 1.05rem; height: 1.05rem; accent-color: var(--ink); }
+.check[aria-disabled="true"] { opacity: 0.6; cursor: not-allowed; }
+.drop { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1rem; border: 1px dashed var(--hairline-strong); border-radius: var(--radius-md); background: var(--canvas); cursor: pointer; position: relative; transition: border-color 0.2s var(--ease), background 0.2s var(--ease); }
+.drop:hover { border-color: #b9c0ca; background: #f1f3f6; }
+.drop.is-over { border-color: var(--brand); background: var(--brand-tint); }
+.drop:focus-within { outline: 2px solid var(--brand); outline-offset: 3px; }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.drop-text { font-size: 0.9rem; color: var(--muted); line-height: 1.4; }
+.drop-text strong { display: block; color: var(--ink); font-weight: 500; }
+
+/* Buttons */
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.1rem; }
+.btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.75rem; padding: 0 1.15rem; border-radius: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: background 0.2s var(--ease), transform 0.12s var(--ease), opacity 0.2s; white-space: nowrap; }
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn-primary { background: var(--ink); color: #fff; box-shadow: 0 1px 2px rgba(16,19,24,.2), inset 0 1px 0 rgba(255,255,255,.08); }
+.btn-primary:hover:not(:disabled) { background: #262b33; }
+.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--hairline-strong); }
+.btn-secondary:hover:not(:disabled) { background: var(--canvas); }
+.btn-small { height: 2.25rem; padding: 0 0.85rem; font-size: 0.88rem; }
+.btn:disabled { opacity: 0.32; cursor: not-allowed; }
+
+/* Results */
+.out { margin-top: 1.25rem; }
+.out-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem; }
+.out-head strong { font-size: 0.9rem; font-weight: 600; }
+.block { margin: 0; padding: 0.9rem 1rem; background: var(--sunken); border: 1px solid var(--hairline); border-radius: var(--radius-md); font: 0.76rem/1.6 var(--mono); white-space: pre-wrap; word-break: break-all; max-height: 22rem; overflow: auto; user-select: all; -webkit-user-select: all; }
+.verdict { margin-top: 1.25rem; border-radius: var(--radius-md); padding: 1rem 1.1rem; border: 1px solid; }
+.verdict[data-tone="good"] { background: var(--good-tint); border-color: #c9e6db; }
+.verdict[data-tone="bad"] { background: var(--danger-tint); border-color: #f0cdc5; }
+.verdict[data-tone="warn"] { background: var(--caution-tint); border-color: #eedcb5; }
+.verdict-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; letter-spacing: -0.01em; }
+.verdict[data-tone="good"] .verdict-title { color: var(--good); }
+.verdict[data-tone="bad"] .verdict-title { color: var(--danger); }
+.verdict[data-tone="warn"] .verdict-title { color: var(--caution); }
+.verdict-title svg { width: 1.1rem; height: 1.1rem; flex: none; }
+.verdict p { margin: 0.35rem 0 0; font-size: 0.9rem; color: var(--ink-2); }
+.kv { margin: 0.8rem 0 0; display: grid; gap: 0.55rem; }
+.kv > div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.75rem; font-size: 0.88rem; align-items: baseline; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+.message-box { white-space: pre-wrap; word-break: break-word; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 0.7rem 0.85rem; font-size: 0.95rem; }
+.ok-text { color: var(--good); font-weight: 500; }
+.mono { font-family: var(--mono); font-size: 0.77rem; letter-spacing: -0.01em; word-break: break-all; line-height: 1.55; }
+.msg { margin: 0.7rem 0 0; font-size: 0.88rem; }
+.msg[data-tone="good"] { color: var(--good); }
+.msg[data-tone="bad"] { color: var(--danger); font-weight: 500; }
+.msg[data-tone="warn"] { color: var(--caution); }
+.msg[data-tone="info"] { color: var(--muted); }
+.notice { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--sunken); font-size: 0.86rem; color: var(--ink-2); }
+.notice strong { font-weight: 600; }
+
+/* "How this works" explainers */
+.how { margin-top: 1.4rem; border-top: 1px solid var(--hairline); padding-top: 1rem; }
+.how summary { cursor: pointer; list-style: none; color: var(--brand-deep); font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem; }
+.how summary::-webkit-details-marker { display: none; }
+.how summary::before { content: ""; width: 0.4rem; height: 0.4rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform 0.2s var(--ease); margin-right: 0.15rem; }
+.how[open] summary::before { transform: rotate(45deg); }
+.how-body { font-size: 0.92rem; color: var(--ink-2); }
+.how-body p { margin: 0.8rem 0 0; }
+.how-body ol, .how-body ul { margin: 0.6rem 0 0; padding-left: 1.2rem; }
+.how-body li + li { margin-top: 0.35rem; }
+.how-body code { font-family: var(--mono); font-size: 0.85em; background: var(--sunken); padding: 0.05rem 0.3rem; border-radius: 4px; overflow-wrap: anywhere; }
+
+footer { padding: 2.5rem 0 3rem; color: var(--muted); font-size: 0.83rem; text-align: center; }
+footer p { margin: 0.25rem 0; }
+@media (max-width: 30rem) {
+  .wallet, .tabs-head { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .panel { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .segmented button { font-size: 0.88rem; }
+  .kv > div { grid-template-columns: 1fr; gap: 0.1rem; }
+}
+</style>
+</head>
+<body>
+  <header class="topbar" id="topbar">
+    <div class="wrap">
+      <nav class="family" aria-label="BRC tools">
+        <span class="cur" aria-current="page"><svg viewBox="/*__MARK_VIEW__*/" aria-hidden="true">/*__MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span></span>
+        <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true">/*__VAULT_MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
+        <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
+      </nav>
+      <span class="status-pill" role="status" title="This page has no network access. Nothing you type leaves your device."><span class="dot" aria-hidden="true"></span><span>Offline<span class="pill-word"> only</span></span></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
+
+    <section class="hero">
+      <h1>Prove it's you. Send what only they can open.</h1>
+      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, and seal notes that only one address can read. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
+    </section>
+
+    <!-- Which wallet this page is acting as -->
+    <section class="card wallet" id="wallet" data-state="empty" aria-labelledby="wallet-title">
+      <div class="wallet-row">
+        <div class="wallet-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M16 12.5h2M3 9.5h18M7 6V4.8A1.8 1.8 0 0 1 9.2 3l8.3 1.6"/></svg></div>
+        <div class="wallet-text">
+          <strong id="wallet-title">No wallet loaded</strong>
+          <span id="wallet-sub">You can check signatures and seal notes without one. Signing and opening need a wallet.</span>
+        </div>
+        <div class="wallet-actions" id="wallet-actions">
+          <button class="btn btn-secondary btn-small" id="btn-test" type="button">Use test wallets</button>
+          <button class="btn btn-secondary btn-small" id="btn-load" type="button">Load my wallet</button>
+          <button class="btn btn-secondary btn-small" id="btn-forget" type="button" hidden>Forget wallet</button>
+        </div>
+      </div>
+      <div class="who" id="who" role="group" aria-label="Act as test wallet" hidden>
+        <button type="button" data-who="alice" aria-pressed="true">Alice</button>
+        <button type="button" data-who="bob" aria-pressed="false">Bob</button>
+      </div>
+      <div class="loader" id="loader" hidden>
+        <label class="drop" id="drop">
+          <input type="file" id="wallet-file" accept=".json,.txt,application/json,text/plain">
+          <span class="drop-text"><strong>Choose your wallet file</strong>From browsercoin.org/app → Settings → Export key…, or a BRC Vault backup</span>
+        </label>
+        <label class="field"><span>Or paste a wallet file, private key, key code or 24 recovery words</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
+        <div id="confirm-field" hidden>
+          <p class="notice" id="confirm-ambiguous" hidden><strong>Is this a private key or an address?</strong> They look alike. If you pasted your address by mistake, press Cancel: an address can't sign or open anything.</p>
+          <label class="check"><input type="checkbox" id="confirm-mine"><span>This is my wallet's address: <span class="mono" id="confirm-address"></span></span></label>
+        </div>
+        <label class="field" id="password-field" hidden><span>This backup is password-protected. Enter its password</span><input id="wallet-password" type="password" autocomplete="off"></label>
+        <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Load wallet</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
+        <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
+        <p class="notice">Your key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page.</p>
+      </div>
+    </section>
+
+    <!-- The four actions -->
+    <section class="card">
+      <div class="tabs-head">
+        <div class="segmented" role="tablist" aria-label="What do you want to do?">
+          <button role="tab" id="tab-sign" aria-controls="p-sign" aria-selected="true">Sign</button>
+          <button role="tab" id="tab-verify" aria-controls="p-verify" aria-selected="false" tabindex="-1">Verify</button>
+          <button role="tab" id="tab-seal" aria-controls="p-seal" aria-selected="false" tabindex="-1">Seal</button>
+          <button role="tab" id="tab-open" aria-controls="p-open" aria-selected="false" tabindex="-1">Open</button>
+        </div>
+      </div>
+
+      <!-- SIGN -->
+      <div class="panel" role="tabpanel" id="p-sign" aria-labelledby="tab-sign">
+        <p class="panel-lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
+        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
+        <div class="chips" aria-label="Examples">
+          <button type="button" class="chip" data-fill="raffle">Block 100,000 raffle entry</button>
+          <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
+          <button type="button" class="chip" data-fill="pool">Prove a pool payout address</button>
+        </div>
+        <div class="actions"><button class="btn btn-primary" id="btn-sign" type="button">Sign with my wallet</button></div>
+        <p class="msg" id="sign-msg" role="status" aria-live="polite"></p>
+        <div class="out" id="sign-out" hidden>
+          <div class="out-head"><strong>Signed. Share this whole block.</strong><button class="btn btn-secondary btn-small" type="button" data-copy="sign-block">Copy</button></div>
+          <pre class="block" id="sign-block"></pre>
+        </div>
+        <details class="how">
+          <summary>How signing works</summary>
+          <div class="how-body">
+            <p>Your BrowserCoin address is a public key. Your wallet's private key can make a <strong>signature</strong>: a 128-character code that only that key can produce, and that fits only this exact message.</p>
+            <ol>
+              <li>The page signs your message together with your address and a fixed label, <code>BrowserCoin Signed Message v1</code>.</li>
+              <li>Anyone who pastes the block into Verify can check the signature against the address. No wallet needed.</li>
+              <li>Change one letter of the message and the check fails.</li>
+            </ol>
+            <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
+            <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 raffle, proving a pool payout address is yours, settling "that's my address" arguments.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- VERIFY -->
+      <div class="panel" role="tabpanel" id="p-verify" aria-labelledby="tab-verify" hidden>
+        <p class="panel-lede"><strong>Check a signed message.</strong> Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No wallet needed.</p>
+        <label class="field"><span>Signed message</span><textarea id="verify-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+        <div class="actions"><button class="btn btn-primary" id="btn-verify" type="button">Check signature</button></div>
+        <p class="msg" id="verify-msg" role="status" aria-live="polite"></p>
+        <div id="verify-out"></div>
+        <details class="how">
+          <summary>What a valid signature does and doesn't prove</summary>
+          <div class="how-body">
+            <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
+            <ul>
+              <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
+              <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
+              <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <!-- SEAL -->
+      <div class="panel" role="tabpanel" id="p-seal" aria-labelledby="tab-seal" hidden>
+        <p class="panel-lede"><strong>Send a note only one address can read.</strong> You can post the sealed note anywhere, even a public channel. Only the wallet you seal it to can open it.</p>
+        <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+        <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
+        <label class="field"><span>Note <span class="count" id="seal-count"></span></span><textarea id="seal-text" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
+        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. <span class="muted-note">Load a wallet to use this.</span></span></label>
+        <div class="actions"><button class="btn btn-primary" id="btn-seal" type="button">Seal note</button></div>
+        <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
+        <div class="out" id="seal-out" hidden>
+          <div class="out-head"><strong id="seal-out-title">Sealed.</strong><button class="btn btn-secondary btn-small" type="button" data-copy="seal-block">Copy</button></div>
+          <pre class="block" id="seal-block"></pre>
+          <p class="msg" id="seal-len" data-tone="info"></p>
+        </div>
+        <details class="how">
+          <summary>How sealing works, and its one limit</summary>
+          <div class="how-body">
+            <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a note with it. Only the matching wallet can unlock it.</p>
+            <ol>
+              <li>The page makes a one-time key just for this note and combines it with the recipient's address (X25519).</li>
+              <li>The note is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.</li>
+              <li>If you tick "sign it", your signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the note is anonymous.</li>
+              <li>Signed and anonymous notes are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.</li>
+            </ol>
+            <p><strong>The limit:</strong> there are no rotating keys. If the recipient's wallet key is ever stolen, every note ever sealed to that address can be read. That's fine for one-off notes, not for an ongoing private conversation. That's what BRC Post would add.</p>
+            <p><strong>Visible to everyone:</strong> who the note is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- OPEN -->
+      <div class="panel" role="tabpanel" id="p-open" aria-labelledby="tab-open" hidden>
+        <p class="panel-lede"><strong>Open a note sealed to you.</strong> Paste the whole block. Opening needs the wallet it was sealed to.</p>
+        <label class="field"><span>Sealed note</span><textarea id="open-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+        <div class="actions"><button class="btn btn-primary" id="btn-open" type="button">Open note</button></div>
+        <p class="msg" id="open-msg" role="status" aria-live="polite"></p>
+        <div id="open-out"></div>
+        <details class="how">
+          <summary>Staying safe with notes</summary>
+          <div class="how-body">
+            <ul>
+              <li>An anonymous note could be from anyone. Treat its claims the way you'd treat an unsigned letter.</li>
+              <li>A signed note shows the sender's address, checked. It still only proves the address, not the person.</li>
+              <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a note asks. Nobody legitimate needs them.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      <p>BRC Seal 0.1, test build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>Part of the BRC family with BRC Vault and BRC Pulse. Not affiliated with BrowserCoin.</p>
+    </footer>
+  </main>
+<script>/*__APP__*/</script>
+</body>
+</html>
