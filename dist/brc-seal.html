@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-AAwWUcKIzZO7S2fYxwY/qtTSrS/pXJy/Lv41z8edf7I='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-LWHdw540yvixfQaEuBNDEB+cFdIZg+a/0eAlG6eWA6k='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -208,6 +208,16 @@ a { color: var(--brand-deep); }
 .btn[data-copied] { color: var(--good); border-color: #c9e6db; background: var(--good-tint); }
 .btn[data-copied] .lbl { animation: pop var(--t-med) var(--spring); }
 
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 14px; background: var(--sunken); }
+.seg button { appearance: none; border: 0; background: transparent; border-radius: 10px; padding: 0.55rem 0.7rem; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 1px; color: var(--muted); transition: background var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+.seg button strong { font-size: 0.95rem; font-weight: 600; }
+.seg button small { font-size: 0.78rem; line-height: 1.3; }
+.seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
+.seg button[aria-checked="true"] small { color: var(--muted); }
+.privacy { margin: 0.75rem 0 0; padding: 0.7rem 0.85rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.86rem; line-height: 1.45; }
+.privacy[data-mode="private"] { background: var(--brand-tint); color: #2c2a8f; }
+.privacy strong { font-weight: 600; }
+
 /* Results */
 .out { margin-top: 1.2rem; }
 .out-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.55rem; }
@@ -230,6 +240,7 @@ a { color: var(--brand-deep); }
 .kv dd { margin: 0; min-width: 0; }
 .message-box { white-space: pre-wrap; word-break: break-word; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 0.7rem 0.85rem; font-size: 0.95rem; }
 .ok-text { color: var(--good); font-weight: 500; }
+.bad-text { color: var(--danger); font-weight: 500; }
 .mono { font-family: var(--mono); font-size: 0.77rem; letter-spacing: -0.01em; word-break: break-all; line-height: 1.55; }
 .msg { margin: 0.7rem 0 0; font-size: 0.88rem; }
 .msg:empty { display: none; }
@@ -501,6 +512,17 @@ footer p { margin: 0.25rem 0; }
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span><h2 tabindex="-1">Add my signature</h2></div>
       <p class="lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
       <div class="card">
+        <div class="field" style="margin-top:0"><span>Who will see it?</span>
+          <div class="seg" role="radiogroup" aria-label="Who will see it?" id="sign-mode">
+            <button type="button" role="radio" aria-checked="true" data-mode="public"><strong>Anyone</strong><small>Post it publicly</small></button>
+            <button type="button" role="radio" aria-checked="false" data-mode="private"><strong>One person</strong><small>Sealed so only they can check it</small></button>
+          </div>
+        </div>
+        <p class="privacy" id="sign-privacy"></p>
+        <div id="sign-private" hidden>
+          <label class="field"><span>Their address</span><input id="sign-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address of the person checking it"></label>
+          <div class="chips" id="sign-quick" hidden><button type="button" class="chip" data-sign-to="alice">Alice's address</button><button type="button" class="chip" data-sign-to="bob">Bob's address</button></div>
+        </div>
         <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
         <div class="chips" aria-label="Examples">
           <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
@@ -512,10 +534,10 @@ footer p { margin: 0.25rem 0; }
         <div class="out" id="sign-out" hidden>
           <div class="done-head">
             <span class="done-art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="sig-line" pathLength="1" d="M3 16c3-1 4-9 7-9s1 7 4 7 3-3 7-3"/><path d="M3 20.5h18" opacity=".35"/></svg></span>
-            <div><h3>Signed</h3><p>Share this whole block. Anyone can check it.</p></div>
+            <div><h3 id="sign-out-title">Signed</h3><p id="sign-out-sub">Share this whole block. Anyone can check it.</p></div>
           </div>
           <pre class="block" id="sign-block"></pre>
-          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block"><span class="lbl">Copy the signed message</span></button></div>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button></div>
         </div>
       </div>
       <details class="how">
@@ -528,6 +550,7 @@ footer p { margin: 0.25rem 0; }
             <li>Change one letter of the message and the check fails.</li>
           </ol>
           <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
+          <p><strong>Your privacy:</strong> BrowserCoin's chain is public. Anyone can see every address's balance, payments and mining rewards. A public signature ties your address to whatever the message says, for good, and can't be taken back. Use an address that holds little for public signing, and keep your coins in another wallet. Or choose <strong>One person</strong>: your signed message is sealed so only that address can open and check it. They could still show it to others, so choose someone you trust.</p>
           <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 giveaway, proving a pool payout address is yours, settling "that's my address" arguments.</p>
         </div>
       </details>
@@ -745,7 +768,7 @@ footer p { margin: 0.25rem 0; }
     </section>
 
     <footer>
-      <p>BRC Seal 0.4, test build <span class="mono">000c1651</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.4, test build <span class="mono">2d61ddc3</span>. Works offline. Nothing you type leaves this page.</p>
       <p>Part of the BRC Vault family, with BRC Pulse. An independent community project, not affiliated with BrowserCoin.</p>
     </footer>
   </main>
@@ -10514,6 +10537,7 @@ ${message}`);
     $("#who").hidden = !testWallets;
     $("#seal-quick").hidden = !testWallets;
     $("#st-test-lock").hidden = !testWallets;
+    $("#sign-quick").hidden = !testWallets;
     const testName = testWallets ? wallet === testWallets.alice ? "Alice" : "Bob" : "";
     if (!wallet) {
       title.textContent = "No wallet loaded";
@@ -10890,6 +10914,36 @@ ${message}`);
     else delete c.dataset.over;
   }
   $("#sign-text").addEventListener("input", updateSignCount);
+  var signMode = "public";
+  var PRIVACY = {
+    public: ["Public and permanent. ", "Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person."],
+    private: ["Only they can check it. ", "Your signed message is sealed to their address, so nobody else sees it or your address. They could still show it to others, so choose someone you trust."]
+  };
+  function renderSignMode() {
+    for (const b of $$("#sign-mode button")) b.setAttribute("aria-checked", String(b.dataset.mode === signMode));
+    const note = $("#sign-privacy");
+    note.dataset.mode = signMode;
+    note.replaceChildren(el("strong", { text: PRIVACY[signMode][0] }), PRIVACY[signMode][1]);
+    $("#sign-private").hidden = signMode !== "private";
+    $("#btn-sign").textContent = signMode === "private" ? "Sign and seal for them" : "Sign with my wallet";
+    $("#sign-out").hidden = true;
+    say("#sign-msg", "");
+  }
+  for (const b of $$("#sign-mode button")) b.addEventListener("click", () => {
+    signMode = b.dataset.mode;
+    renderSignMode();
+  });
+  $("#sign-mode").addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    e.preventDefault();
+    signMode = signMode === "public" ? "private" : "public";
+    renderSignMode();
+    $(`#sign-mode [data-mode="${signMode}"]`).focus();
+  });
+  for (const chip of $$("[data-sign-to]")) chip.addEventListener("click", () => {
+    if (testWallets) $("#sign-to").value = testWallets[chip.dataset.signTo].address;
+  });
+  renderSignMode();
   $("#btn-sign").addEventListener("click", () => {
     $("#sign-out").hidden = true;
     if (!wallet) {
@@ -10899,7 +10953,22 @@ ${message}`);
     }
     try {
       const s = signMessage(wallet, $("#sign-text").value);
-      $("#sign-block").textContent = s.armored;
+      if (signMode === "private") {
+        if (!$("#sign-to").value.trim()) throw new Error("Paste the address of the person who will check it.");
+        const n = sealNote($("#sign-to").value, s.armored, null);
+        if (n.to === wallet.address) throw new Error("That's your own address. Paste the address of the person who will check it.");
+        $("#sign-to").value = n.to;
+        const who = nameFor(n.to);
+        $("#sign-block").textContent = n.armored;
+        $("#sign-out-title").textContent = `Signed and sealed for ${who ? who.replace("test wallet ", "") : `${n.to.slice(0, 6)}\u2026${n.to.slice(-4)}`}`;
+        $("#sign-out-sub").textContent = "Send this whole block. Only they can open it and check your signature.";
+        $("#btn-sign-copy").querySelector(".lbl").textContent = $("#btn-sign-copy").dataset.label = "Copy the sealed letter";
+      } else {
+        $("#sign-block").textContent = s.armored;
+        $("#sign-out-title").textContent = "Signed";
+        $("#sign-out-sub").textContent = "Share this whole block. Anyone can check it.";
+        $("#btn-sign-copy").querySelector(".lbl").textContent = $("#btn-sign-copy").dataset.label = "Copy the signed message";
+      }
       $("#sign-out").hidden = false;
       play($("#sign-out"));
       say("#sign-msg", "");
@@ -11033,12 +11102,18 @@ ${message}`);
       tone = "warn";
       lede = "Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.";
     }
-    out.append(verdict(
-      tone,
-      title,
-      el("p", { text: lede }),
-      kv([["From", fromRow], ["Letter", el("div", { class: "message-box", text: o.message })]])
-    ));
+    const rows = [["From", fromRow], ["Letter", el("div", { class: "message-box", text: o.message })]];
+    if (/BEGIN BRC SIGNED MESSAGE/.test(o.message)) {
+      let inner;
+      try {
+        inner = verifySigned(o.message);
+      } catch (e) {
+        inner = { valid: false, reason: e.message };
+      }
+      rows.splice(1, 0, ["Signature inside", inner.valid ? el("span", {}, el("span", { class: "ok-text", text: "Valid. " }), el("span", { text: "Signed by " }), addressNode(inner.address), inner.hidden ? el("span", { text: ". The message has hidden characters, so read it carefully." }) : null) : el("span", { class: "bad-text", text: `Not valid. ${inner.reason}` })]);
+      if (!inner.valid && tone === "good") tone = "warn";
+    }
+    out.append(verdict(tone, title, el("p", { text: lede }), kv(rows)));
   });
   for (const b of $$("[data-copy]")) {
     b.addEventListener("click", async () => {

@@ -135,6 +135,7 @@ function renderWallet() {
   $('#who').hidden = !testWallets;
   $('#seal-quick').hidden = !testWallets;
   $('#st-test-lock').hidden = !testWallets;
+  $('#sign-quick').hidden = !testWallets;
   const testName = testWallets ? (wallet === testWallets.alice ? 'Alice' : 'Bob') : '';
   if (!wallet) {
     title.textContent = 'No wallet loaded';
@@ -506,12 +507,55 @@ function updateSignCount() {
 }
 $('#sign-text').addEventListener('input', updateSignCount);
 
+// Who will see the signature: anyone (posted publicly), or one person (sealed to their address).
+let signMode = 'public';
+const PRIVACY = {
+  public: ['Public and permanent. ', "Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person."],
+  private: ['Only they can check it. ', 'Your signed message is sealed to their address, so nobody else sees it or your address. They could still show it to others, so choose someone you trust.'],
+};
+function renderSignMode() {
+  for (const b of $$('#sign-mode button')) b.setAttribute('aria-checked', String(b.dataset.mode === signMode));
+  const note = $('#sign-privacy');
+  note.dataset.mode = signMode;
+  note.replaceChildren(el('strong', { text: PRIVACY[signMode][0] }), PRIVACY[signMode][1]);
+  $('#sign-private').hidden = signMode !== 'private';
+  $('#btn-sign').textContent = signMode === 'private' ? 'Sign and seal for them' : 'Sign with my wallet';
+  $('#sign-out').hidden = true;
+  say('#sign-msg', '');
+}
+for (const b of $$('#sign-mode button')) b.addEventListener('click', () => { signMode = b.dataset.mode; renderSignMode(); });
+$('#sign-mode').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  e.preventDefault();
+  signMode = signMode === 'public' ? 'private' : 'public';
+  renderSignMode();
+  $(`#sign-mode [data-mode="${signMode}"]`).focus();
+});
+for (const chip of $$('[data-sign-to]')) chip.addEventListener('click', () => { if (testWallets) $('#sign-to').value = testWallets[chip.dataset.signTo].address; });
+renderSignMode();
+
 $('#btn-sign').addEventListener('click', () => {
   $('#sign-out').hidden = true;
   if (!wallet) { say('#sign-msg', 'Load a wallet or use the test wallets first. Signing needs a private key.', 'bad'); openSheet(); return; }
   try {
     const s = seal.signMessage(wallet, $('#sign-text').value);
-    $('#sign-block').textContent = s.armored;
+    if (signMode === 'private') {
+      if (!$('#sign-to').value.trim()) throw new Error('Paste the address of the person who will check it.');
+      // The signed block goes inside an anonymous sealed letter: only that address can open and check it.
+      const n = seal.sealNote($('#sign-to').value, s.armored, null);
+      if (n.to === wallet.address) throw new Error("That's your own address. Paste the address of the person who will check it.");
+      $('#sign-to').value = n.to;
+      const who = nameFor(n.to);
+      $('#sign-block').textContent = n.armored;
+      $('#sign-out-title').textContent = `Signed and sealed for ${who ? who.replace('test wallet ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}`;
+      $('#sign-out-sub').textContent = 'Send this whole block. Only they can open it and check your signature.';
+      $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = 'Copy the sealed letter';
+    } else {
+      $('#sign-block').textContent = s.armored;
+      $('#sign-out-title').textContent = 'Signed';
+      $('#sign-out-sub').textContent = 'Share this whole block. Anyone can check it.';
+      $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = 'Copy the signed message';
+    }
     $('#sign-out').hidden = false;
     play($('#sign-out'));
     say('#sign-msg', '');
@@ -635,8 +679,17 @@ $('#btn-open').addEventListener('click', () => {
     tone = 'warn';
     lede = 'Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.';
   }
-  out.append(verdict(tone, title, el('p', { text: lede }),
-    kv([['From', fromRow], ['Letter', el('div', { class: 'message-box', text: o.message })]])));
+  const rows = [['From', fromRow], ['Letter', el('div', { class: 'message-box', text: o.message })]];
+  // A letter can carry a signed message ("Sign privately for one person"). Check it right here.
+  if (/BEGIN BRC SIGNED MESSAGE/.test(o.message)) {
+    let inner;
+    try { inner = seal.verifySigned(o.message); } catch (e) { inner = { valid: false, reason: e.message }; }
+    rows.splice(1, 0, ['Signature inside', inner.valid
+      ? el('span', {}, el('span', { class: 'ok-text', text: 'Valid. ' }), el('span', { text: 'Signed by ' }), addressNode(inner.address), inner.hidden ? el('span', { text: '. The message has hidden characters, so read it carefully.' }) : null)
+      : el('span', { class: 'bad-text', text: `Not valid. ${inner.reason}` })]);
+    if (!inner.valid && tone === 'good') tone = 'warn';
+  }
+  out.append(verdict(tone, title, el('p', { text: lede }), kv(rows)));
 });
 
 // ---------------------------------------------------------------------------
