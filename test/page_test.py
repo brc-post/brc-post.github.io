@@ -175,6 +175,54 @@ with sync_playwright() as pw:
     expect(page.locator('#verify-out')).to_contain_text('your loaded wallet')
     ok('signs and verifies with the loaded wallet')
 
+    # --- Stamp ---
+    import hashlib, re
+    doc = b'Farm lease, signed copy. Version 3.\n'
+    page.click('#btn-forget')
+    page.click('#btn-test')
+    page.click('#tab-stamp')
+    expect(page.locator('#st-owner')).to_have_value(page.locator('#wallet-sub .mono').inner_text())
+    page.click('#btn-st-make')
+    expect(page.locator('#st-make-msg')).to_contain_text('Choose a file first')
+    page.locator('#st-file').set_input_files({'name': 'lease-v3.txt', 'mimeType': 'text/plain', 'buffer': doc})
+    expect(page.locator('#st-file-sub')).to_contain_text('fingerprint ' + hashlib.sha256(doc).hexdigest()[:16])
+    page.click('.disclosure-after summary')
+    page.fill('#st-after-height', '92510')
+    page.click('#btn-st-make')
+    expect(page.locator('#st-make-msg')).to_contain_text('fill in both')
+    page.fill('#st-after-height', '92510 ' + 'ab' * 32)  # pasted from Pulse's "Copy both"
+    expect(page.locator('#st-after-height')).to_have_value('92510')
+    expect(page.locator('#st-after-hash')).to_have_value('ab' * 32)
+    page.click('#btn-st-make')
+    phrase = page.locator('#st-phrase').inner_text()
+    assert re.fullmatch(r'BRCSTAMP1_' + hashlib.sha256(doc).hexdigest() + r'_[0-9a-f]{32}_A92510_' + 'ab' * 32, phrase), phrase
+    owner = page.locator('#st-owner-copy').inner_text()
+    pre = hashlib.sha256(phrase.encode()).digest()
+    script = b'\xa8\x20' + hashlib.sha256(pre).digest() + b'\x88\x20' + bytes.fromhex(owner) + b'\xac'
+    expect(page.locator('#st-check')).to_have_text('PUSH(32) ' + script.hex()[4:24] + '\u2026')
+    ok('Stamp makes the exact phrase and script the official app will build')
+
+    page.fill('#st-lockid', '12345')
+    page.click('#btn-st-receipt')
+    expect(page.locator('#st-receipt-msg')).to_contain_text('Lock ID should be 64')
+    page.fill('#st-lockid', 'cd' * 32)
+    page.click('#btn-st-receipt')
+    receipt = page.locator('#st-receipt').inner_text()
+    assert 'File: lease-v3.txt (36 bytes)' in receipt and 'Lock ID: ' + 'cd' * 32 in receipt and 'After: 92510 ' + 'ab' * 32 in receipt, receipt
+    with page.expect_download() as dl:
+        page.click('#btn-st-save')
+    assert dl.value.suggested_filename == 'lease-v3-brc-stamp-receipt.txt', dl.value.suggested_filename
+    page.screenshot(path=str(out / '07-stamp.png'), full_page=True)
+    ok('makes a receipt and saves it as a file')
+
+    page.click('#st-compare-wrap summary')
+    page.fill('#st-cmp-receipt', receipt)
+    page.locator('#st-cmp-file').set_input_files({'name': 'lease-v3.txt', 'mimeType': 'text/plain', 'buffer': doc})
+    expect(page.locator('#st-cmp-msg')).to_contain_text('matches the receipt exactly')
+    page.locator('#st-cmp-file').set_input_files({'name': 'lease-v4.txt', 'mimeType': 'text/plain', 'buffer': doc.replace(b'3', b'4')})
+    expect(page.locator('#st-cmp-msg')).to_contain_text("doesn't match")
+    ok('checks a file against its receipt, offline')
+
     # --- Link from BRC Pulse ---
     page.goto(page_url + '#to=' + fx['address'])
     expect(page.locator('#p-seal')).to_be_visible()
@@ -186,6 +234,11 @@ with sync_playwright() as pw:
     p2 = phone.new_page()
     p2.goto(page_url)
     p2.click('#btn-test')
+    p2.click('#tab-stamp')
+    p2.locator('#st-file').set_input_files({'name': 'x.txt', 'mimeType': 'text/plain', 'buffer': b'x'})
+    p2.click('#btn-st-make')
+    assert p2.evaluate('document.documentElement.scrollWidth') <= 390, 'stamp tab scrolls sideways on a phone'
+    p2.screenshot(path=str(out / '08-phone-stamp.png'), full_page=True)
     p2.click('#tab-seal')
     p2.click('[data-to="bob"]')
     p2.fill('#seal-text', 'Phone check.')

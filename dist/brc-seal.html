@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-W3zZ7vop+RSQ1LzhWt8yUs8ODwDxDW+awQrYCvacKLk='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-roo77DonG/QxwvJVEHnl3OCocIg6/Rpfd+80o3huWSM='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -101,7 +101,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
 /* Tabs */
 .tabs-head { padding: 1.25rem 1.5rem 0; }
-.segmented { display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
+.segmented { display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
 .segmented button { appearance: none; border: 0; background: transparent; height: 2.6rem; border-radius: 9px; font-weight: 500; font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease), background 0.2s var(--ease); }
 .segmented button[aria-selected="true"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
 .segmented button:hover:not([aria-selected="true"]) { color: var(--ink-2); }
@@ -177,6 +177,21 @@ button, input, textarea { font: inherit; color: inherit; }
 .notice strong { font-weight: 600; }
 
 /* "How this works" explainers */
+.stamp-steps { list-style: none; margin: 1.2rem 0 0; padding: 0; counter-reset: st; }
+.stamp-steps > li { position: relative; padding: 0 0 1.4rem 2.6rem; counter-increment: st; }
+.stamp-steps > li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.82rem; font-weight: 600; background: var(--surface); border: 1px solid var(--hairline-strong); color: var(--ink-2); }
+.stamp-steps > li[data-done]::before { content: "✓"; background: var(--good); border-color: var(--good); color: #fff; }
+.stamp-steps h3 { margin: 0.15rem 0 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+.stamp-steps .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.stamp-steps .field:first-of-type { margin-top: 0.7rem; }
+.recipe { margin: 0.7rem 0 0; padding: 0.85rem 1rem; border-radius: var(--radius-md); background: var(--sunken); border: 1px solid var(--hairline); font-size: 0.9rem; }
+.recipe ol { margin: 0; padding-left: 1.2rem; }
+.recipe li + li { margin-top: 0.45rem; }
+.recipe .mono { font-size: 0.75rem; }
+.inline-copy { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.35rem; }
+.inline-copy .mono { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 6px; padding: 0.4rem 0.55rem; user-select: all; -webkit-user-select: all; }
+.disclosure-after summary { list-style: none; cursor: pointer; }
+.disclosure-after summary::-webkit-details-marker { display: none; }
 .how { margin-top: 1.4rem; border-top: 1px solid var(--hairline); padding-top: 1rem; }
 .how summary { cursor: pointer; list-style: none; color: var(--brand-deep); font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem; }
 .how summary::-webkit-details-marker { display: none; }
@@ -193,7 +208,7 @@ footer p { margin: 0.25rem 0; }
 @media (max-width: 30rem) {
   .wallet, .tabs-head { padding-left: 1.1rem; padding-right: 1.1rem; }
   .panel { padding-left: 1.1rem; padding-right: 1.1rem; }
-  .segmented button { font-size: 0.88rem; }
+  .segmented button { font-size: 0.82rem; padding: 0; }
   .kv > div { grid-template-columns: 1fr; gap: 0.1rem; }
 }
 </style>
@@ -215,7 +230,7 @@ footer p { margin: 0.25rem 0; }
 
     <section class="hero">
       <h1>Prove it's you. Send what only they can open.</h1>
-      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, and seal notes that only one address can read. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
+      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, seal notes that only one address can read, and stamp files with a date on the BrowserCoin chain. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
     </section>
 
     <!-- Which wallet this page is acting as -->
@@ -253,7 +268,7 @@ footer p { margin: 0.25rem 0; }
       </div>
     </section>
 
-    <!-- The four actions -->
+    <!-- The five actions -->
     <section class="card">
       <div class="tabs-head">
         <div class="segmented" role="tablist" aria-label="What do you want to do?">
@@ -261,6 +276,7 @@ footer p { margin: 0.25rem 0; }
           <button role="tab" id="tab-verify" aria-controls="p-verify" aria-selected="false" tabindex="-1">Verify</button>
           <button role="tab" id="tab-seal" aria-controls="p-seal" aria-selected="false" tabindex="-1">Seal</button>
           <button role="tab" id="tab-open" aria-controls="p-open" aria-selected="false" tabindex="-1">Open</button>
+          <button role="tab" id="tab-stamp" aria-controls="p-stamp" aria-selected="false" tabindex="-1">Stamp</button>
         </div>
       </div>
 
@@ -362,10 +378,84 @@ footer p { margin: 0.25rem 0; }
           </div>
         </details>
       </div>
+
+      <!-- STAMP -->
+      <div class="panel" role="tabpanel" id="p-stamp" aria-labelledby="tab-stamp" hidden>
+        <p class="panel-lede"><strong>Prove a file existed by a certain date.</strong> Your file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
+        <ol class="stamp-steps">
+          <li id="st-step1">
+            <h3>Choose the file</h3>
+            <label class="drop" id="st-drop" style="margin-top:0.7rem">
+              <input type="file" id="st-file">
+              <span class="drop-text"><strong id="st-file-title">Choose a file to stamp</strong><span id="st-file-sub">Any file: a contract, a photo, a design, a draft. It is read here and never uploaded.</span></span>
+            </label>
+          </li>
+          <li id="st-step2">
+            <h3>Make the stamp phrase</h3>
+            <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
+            <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+            <details class="disclosure-after">
+              <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove it was made after a recent block (optional)</summary>
+              <p class="field-help">Copy the latest block number and ID from BRC Pulse. The stamp will then prove it was made after that block, not just before its own.</p>
+              <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
+              <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
+            </details>
+            <div class="actions"><button class="btn btn-primary" id="btn-st-make" type="button">Make stamp phrase</button></div>
+            <p class="msg" id="st-make-msg" role="status" aria-live="polite"></p>
+            <div id="st-recipe" hidden>
+              <div class="recipe">
+                <ol>
+                  <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
+                  <li><strong>Amount:</strong> <span class="mono" id="st-amount"></span> BRC. You can take it back later.</li>
+                  <li><strong>Recipient address:</strong> your address
+                    <div class="inline-copy"><span class="mono" id="st-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-owner-copy">Copy</button></div></li>
+                  <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
+                    <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase">Copy</button></div></li>
+                  <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
+                </ol>
+                <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>. If it doesn't, the phrase or address was pasted wrong.</p>
+              </div>
+            </div>
+          </li>
+          <li id="st-step3">
+            <h3>Make your receipt</h3>
+            <p class="sub">Paste the Lock ID from the app. Keep the receipt with the file: you need both to prove the date.</p>
+            <label class="field"><span>Lock ID</span><input id="st-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters, shown after Lock coins"></label>
+            <div class="actions"><button class="btn btn-primary" id="btn-st-receipt" type="button">Make receipt</button></div>
+            <p class="msg" id="st-receipt-msg" role="status" aria-live="polite"></p>
+            <div class="out" id="st-receipt-out" hidden>
+              <div class="out-head"><strong>Your stamp receipt</strong><span><button class="btn btn-secondary btn-small" type="button" data-copy="st-receipt">Copy</button> <button class="btn btn-secondary btn-small" type="button" id="btn-st-save">Save as file</button></span></div>
+              <pre class="block" id="st-receipt"></pre>
+              <p class="notice">In a few minutes the lock will be in a block. Then check it on <strong>BRC Pulse → Check a stamp</strong>, which reads the chain and shows the date.</p>
+            </div>
+          </li>
+        </ol>
+
+        <details class="how" id="st-compare-wrap">
+          <summary>Check a file against a receipt</summary>
+          <div class="how-body">
+            <p>This checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on BRC Pulse, which reads the chain.</p>
+            <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+            <label class="drop" style="margin-top:0.8rem"><input type="file" id="st-cmp-file"><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span></label>
+            <p class="msg" id="st-cmp-msg" role="status" aria-live="polite"></p>
+          </div>
+        </details>
+        <details class="how">
+          <summary>What a stamp proves, what it costs, and getting your coins back</summary>
+          <div class="how-body">
+            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. Change one byte and it no longer matches. If you added a recent block, it also proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it.</p>
+            <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
+            <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
+            <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>
+            <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same stamp phrase. The stamp stays valid after you redeem, because the lock stays in the chain's history. Redeeming makes the phrase public, which is harmless.</p>
+            <p><strong>Keep the receipt.</strong> Without it, the stamp can't be found or proven. Keep it next to the file, or email it to yourself.</p>
+          </div>
+        </details>
+      </div>
     </section>
 
     <footer>
-      <p>BRC Seal 0.1, test build <span class="mono">5b7cd9ee</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.1, test build <span class="mono">ae8a3bec</span>. Works offline. Nothing you type leaves this page.</p>
       <p>Part of the BRC family with BRC Vault and BRC Pulse. Not affiliated with BrowserCoin.</p>
     </footer>
   </main>
@@ -7353,6 +7443,108 @@ ${message}`);
     return `I'm entering the BrowserCoin block ${raffleHeight(height).toLocaleString("en-US")} raffle.`;
   }
 
+  // src/stamp-core.js
+  var enc2 = new TextEncoder();
+  var STAMP_PREFIX = "BRCSTAMP1";
+  var SUGGESTED_AMOUNT = "0.001";
+  var OP_SHA256 = 168;
+  var OP_EQUALVERIFY = 136;
+  var OP_CHECKSIG = 172;
+  function concat2(...parts) {
+    const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+    let off = 0;
+    for (const p of parts) {
+      out.set(p, off);
+      off += p.length;
+    }
+    return out;
+  }
+  function cleanHex(text, what, len = 64) {
+    const h2 = String(text || "").replace(/[\s\u200B-\u200D\u2060\uFEFF]/g, "").toLowerCase().replace(/^0x/, "");
+    if (!new RegExp(`^[0-9a-f]{${len}}$`).test(h2)) throw new Error(`${what} should be ${len} characters, 0\u20139 and a\u2013f.`);
+    return h2;
+  }
+  function newStamp({ fingerprint: fp, owner, after = null, salt = null }) {
+    const f = cleanHex(fp, "The fingerprint");
+    const o = parseAddress(owner);
+    if (!isCleanAddress(o)) throw new Error("The owner address isn't one a real wallet could have. Check it for a typo.");
+    let a = null;
+    if (after) {
+      const height = Number(String(after.height).replace(/[,\s]/g, ""));
+      if (!Number.isSafeInteger(height) || height < 1) throw new Error('The "after" block number should be a whole number, like 92510.');
+      a = { height, hash: cleanHex(after.hash, 'The "after" block ID') };
+    }
+    let s = salt;
+    if (s == null) {
+      const b = new Uint8Array(16);
+      globalThis.crypto.getRandomValues(b);
+      s = bytesToHex3(b);
+    }
+    s = cleanHex(s, "The salt", 32);
+    return { fingerprint: f, salt: s, owner: o, after: a };
+  }
+  function stampPhrase(st) {
+    return `${STAMP_PREFIX}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ""}`;
+  }
+  function stampScript(st) {
+    const preimage = sha256(enc2.encode(stampPhrase(st)));
+    return concat2(new Uint8Array([OP_SHA256, 32]), sha256(preimage), new Uint8Array([OP_EQUALVERIFY, 32]), hexToBytes3(st.owner, 32), new Uint8Array([OP_CHECKSIG]));
+  }
+  function stampScriptHex(st) {
+    return bytesToHex3(stampScript(st));
+  }
+  var R_BEGIN = "-----BEGIN BRC STAMP RECEIPT-----";
+  var R_END = "-----END BRC STAMP RECEIPT-----";
+  function receiptText(st, { lockId, block = null, fileName = "", fileSize = null }) {
+    const lines = [R_BEGIN];
+    if (fileName) {
+      const safe = String(fileName).replace(/[\r\n\u2028\u2029]/g, " ").slice(0, 200);
+      lines.push(`File: ${safe}${fileSize != null ? ` (${Number(fileSize).toLocaleString("en-US")} bytes)` : ""}`);
+    }
+    lines.push(`Fingerprint: ${st.fingerprint}`);
+    lines.push(`Salt: ${st.salt}`);
+    if (st.after) lines.push(`After: ${st.after.height} ${st.after.hash}`);
+    lines.push(`Owner: ${st.owner}`);
+    lines.push(`Lock ID: ${cleanHex(lockId, "The Lock ID")}`);
+    if (block != null) lines.push(`Block: ${block}`);
+    lines.push(R_END);
+    return lines.join("\n");
+  }
+  function parseReceipt(text) {
+    const t = String(text || "").replace(/\r\n?/g, "\n");
+    const a = t.indexOf(R_BEGIN);
+    const b = t.indexOf(R_END);
+    if (a < 0) throw new Error("This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.");
+    if (b < a) throw new Error("The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.");
+    const body = t.slice(a + R_BEGIN.length, b);
+    const field2 = (name) => {
+      const m = body.match(new RegExp(`^\\s*>?\\s*${name}:\\s*(.+)$`, "mi"));
+      return m ? m[1].trim() : null;
+    };
+    const need = (name) => {
+      const v = field2(name);
+      if (!v) throw new Error(`The receipt's "${name}:" line is missing.`);
+      return v;
+    };
+    let after = null;
+    const afterLine = field2("After");
+    if (afterLine) {
+      const m = afterLine.match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
+      if (!m) throw new Error(`The receipt's "After:" line should be a block number and a block ID.`);
+      after = { height: m[1], hash: m[2] };
+    }
+    const st = newStamp({ fingerprint: need("Fingerprint"), owner: need("Owner"), salt: need("Salt"), after });
+    const lockId = cleanHex(need("Lock ID"), "The Lock ID");
+    const blockLine = field2("Block");
+    let block = null;
+    if (blockLine) {
+      block = Number(blockLine.replace(/[,\s]/g, ""));
+      if (!Number.isSafeInteger(block) || block < 1) throw new Error(`The receipt's "Block:" line should be a block number.`);
+    }
+    const fileLine = field2("File");
+    return { stamp: st, lockId, block, fileLabel: fileLine };
+  }
+
   // src/app.js
   var $ = (sel) => document.querySelector(sel);
   var $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -7439,6 +7631,12 @@ ${message}`);
       sub.replaceChildren(el("span", { class: "mono", text: wallet.address }));
     }
     for (const b of $$("#who button")) b.setAttribute("aria-pressed", String(!!testWallets && testWallets[b.dataset.who] === wallet));
+    const ownerBox = $("#st-owner");
+    if (!ownerBox.value || ownerBox.value === ownerBox.dataset.auto) {
+      ownerBox.value = wallet ? wallet.address : "";
+      ownerBox.dataset.auto = ownerBox.value;
+      resetStampFrom(2);
+    }
     const canSign = !!wallet;
     const wrap = $("#seal-sign-wrap");
     $("#seal-sign").disabled = !canSign;
@@ -7602,7 +7800,7 @@ ${message}`);
   $("#wallet-password").addEventListener("keydown", (e) => {
     if (e.key === "Enter") $("#btn-load-go").click();
   });
-  var TABS = ["sign", "verify", "seal", "open"];
+  var TABS = ["sign", "verify", "seal", "open", "stamp"];
   function showTab(name, focus = false) {
     for (const t of TABS) {
       const tab = $(`#tab-${t}`);
@@ -7831,6 +8029,137 @@ ${message}`);
   }
   var topbar = $("#topbar");
   addEventListener("scroll", () => topbar.classList.toggle("is-scrolled", scrollY > 4), { passive: true });
+  var stFile = null;
+  var stStamp = null;
+  async function hashFile(file, onProgress) {
+    const h2 = sha256.create();
+    const CHUNK = 4 * 1024 * 1024;
+    for (let off = 0; off < file.size; off += CHUNK) {
+      h2.update(new Uint8Array(await file.slice(off, off + CHUNK).arrayBuffer()));
+      if (onProgress) onProgress(Math.min(1, (off + CHUNK) / file.size));
+    }
+    return bytesToHex3(h2.digest());
+  }
+  var fmtBytes = (n) => n < 1024 ? `${n} bytes` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+  function resetStampFrom(step) {
+    if (step <= 2) {
+      stStamp = null;
+      $("#st-recipe").hidden = true;
+      delete $("#st-step2").dataset.done;
+      say("#st-make-msg", "");
+    }
+    if (step <= 3) {
+      $("#st-receipt-out").hidden = true;
+      delete $("#st-step3").dataset.done;
+      say("#st-receipt-msg", "");
+    }
+  }
+  $("#st-file").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    resetStampFrom(2);
+    stFile = null;
+    delete $("#st-step1").dataset.done;
+    if (!file) return;
+    $("#st-file-title").textContent = file.name;
+    $("#st-file-sub").textContent = "Reading\u2026";
+    try {
+      const fp = await hashFile(file, (f) => {
+        $("#st-file-sub").textContent = `Reading\u2026 ${Math.round(f * 100)}%`;
+      });
+      stFile = { name: file.name, size: file.size, fingerprint: fp };
+      $("#st-file-sub").textContent = `${fmtBytes(file.size)} \xB7 fingerprint ${fp.slice(0, 16)}\u2026`;
+      $("#st-step1").dataset.done = "";
+    } catch {
+      $("#st-file-sub").textContent = "This file could not be read. Try again.";
+    }
+  });
+  for (const id of ["#st-owner", "#st-after-height", "#st-after-hash"]) $(id).addEventListener("input", () => resetStampFrom(2));
+  $("#st-after-height").addEventListener("input", () => {
+    const m = $("#st-after-height").value.trim().match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
+    if (m) {
+      $("#st-after-height").value = m[1];
+      $("#st-after-hash").value = m[2].toLowerCase();
+    }
+  });
+  $("#st-lockid").addEventListener("input", () => resetStampFrom(3));
+  $("#btn-st-make").addEventListener("click", () => {
+    resetStampFrom(2);
+    if (!stFile) {
+      say("#st-make-msg", "Choose a file first.", "bad");
+      return;
+    }
+    try {
+      const h2 = $("#st-after-height").value.trim();
+      const x = $("#st-after-hash").value.trim();
+      if (!!h2 !== !!x) throw new Error('For "after a recent block", fill in both the block number and its ID, or leave both empty.');
+      stStamp = newStamp({ fingerprint: stFile.fingerprint, owner: $("#st-owner").value, after: h2 ? { height: h2, hash: x } : null });
+      $("#st-owner").value = stStamp.owner;
+      $("#st-amount").textContent = SUGGESTED_AMOUNT;
+      $("#st-owner-copy").textContent = stStamp.owner;
+      $("#st-phrase").textContent = stampPhrase(stStamp);
+      const scriptHex = stampScriptHex(stStamp);
+      $("#st-check").textContent = `PUSH(32) ${scriptHex.slice(4, 24)}\u2026`;
+      $("#st-recipe").hidden = false;
+      $("#st-step2").dataset.done = "";
+    } catch (e) {
+      say("#st-make-msg", e.message, "bad");
+    }
+  });
+  var stReceipt = "";
+  $("#btn-st-receipt").addEventListener("click", () => {
+    resetStampFrom(3);
+    if (!stStamp) {
+      say("#st-receipt-msg", "Make the stamp phrase first (step 2).", "bad");
+      return;
+    }
+    try {
+      stReceipt = receiptText(stStamp, { lockId: $("#st-lockid").value, fileName: stFile.name, fileSize: stFile.size });
+      $("#st-receipt").textContent = stReceipt;
+      $("#st-receipt-out").hidden = false;
+      $("#st-step3").dataset.done = "";
+    } catch (e) {
+      say("#st-receipt-msg", e.message, "bad");
+    }
+  });
+  $("#btn-st-save").addEventListener("click", () => {
+    if (!stReceipt) return;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([stReceipt + "\n"], { type: "text/plain" }));
+    const base = (stFile ? stFile.name : "file").replace(/\.[^.]{1,8}$/, "").replace(/[^\w.-]+/g, "_").slice(0, 60) || "file";
+    a.download = `${base}-brc-stamp-receipt.txt`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1e3);
+  });
+  var cmpFp = null;
+  async function runCompare() {
+    const text = $("#st-cmp-receipt").value;
+    if (!text.trim() || !cmpFp) {
+      say("#st-cmp-msg", "");
+      return;
+    }
+    try {
+      const r = parseReceipt(text);
+      if (r.stamp.fingerprint === cmpFp) say("#st-cmp-msg", "This file matches the receipt exactly. Check the receipt on BRC Pulse to see the date.", "good");
+      else say("#st-cmp-msg", "This file doesn't match the receipt. It is a different file, or it was changed after it was stamped.", "bad");
+    } catch (e) {
+      say("#st-cmp-msg", e.message, "bad");
+    }
+  }
+  $("#st-cmp-receipt").addEventListener("input", runCompare);
+  $("#st-cmp-file").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    cmpFp = null;
+    if (!file) {
+      runCompare();
+      return;
+    }
+    $("#st-cmp-file-title").textContent = `${file.name}: reading\u2026`;
+    cmpFp = await hashFile(file);
+    $("#st-cmp-file-title").textContent = file.name;
+    runCompare();
+  });
   renderWallet();
   readHash();
 })();

@@ -99,7 +99,7 @@ button, input, textarea { font: inherit; color: inherit; }
 
 /* Tabs */
 .tabs-head { padding: 1.25rem 1.5rem 0; }
-.segmented { display: grid; grid-template-columns: repeat(4, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
+.segmented { display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
 .segmented button { appearance: none; border: 0; background: transparent; height: 2.6rem; border-radius: 9px; font-weight: 500; font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease), background 0.2s var(--ease); }
 .segmented button[aria-selected="true"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
 .segmented button:hover:not([aria-selected="true"]) { color: var(--ink-2); }
@@ -175,6 +175,21 @@ button, input, textarea { font: inherit; color: inherit; }
 .notice strong { font-weight: 600; }
 
 /* "How this works" explainers */
+.stamp-steps { list-style: none; margin: 1.2rem 0 0; padding: 0; counter-reset: st; }
+.stamp-steps > li { position: relative; padding: 0 0 1.4rem 2.6rem; counter-increment: st; }
+.stamp-steps > li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.82rem; font-weight: 600; background: var(--surface); border: 1px solid var(--hairline-strong); color: var(--ink-2); }
+.stamp-steps > li[data-done]::before { content: "✓"; background: var(--good); border-color: var(--good); color: #fff; }
+.stamp-steps h3 { margin: 0.15rem 0 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+.stamp-steps .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.stamp-steps .field:first-of-type { margin-top: 0.7rem; }
+.recipe { margin: 0.7rem 0 0; padding: 0.85rem 1rem; border-radius: var(--radius-md); background: var(--sunken); border: 1px solid var(--hairline); font-size: 0.9rem; }
+.recipe ol { margin: 0; padding-left: 1.2rem; }
+.recipe li + li { margin-top: 0.45rem; }
+.recipe .mono { font-size: 0.75rem; }
+.inline-copy { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.35rem; }
+.inline-copy .mono { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 6px; padding: 0.4rem 0.55rem; user-select: all; -webkit-user-select: all; }
+.disclosure-after summary { list-style: none; cursor: pointer; }
+.disclosure-after summary::-webkit-details-marker { display: none; }
 .how { margin-top: 1.4rem; border-top: 1px solid var(--hairline); padding-top: 1rem; }
 .how summary { cursor: pointer; list-style: none; color: var(--brand-deep); font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem; }
 .how summary::-webkit-details-marker { display: none; }
@@ -191,7 +206,7 @@ footer p { margin: 0.25rem 0; }
 @media (max-width: 30rem) {
   .wallet, .tabs-head { padding-left: 1.1rem; padding-right: 1.1rem; }
   .panel { padding-left: 1.1rem; padding-right: 1.1rem; }
-  .segmented button { font-size: 0.88rem; }
+  .segmented button { font-size: 0.82rem; padding: 0; }
   .kv > div { grid-template-columns: 1fr; gap: 0.1rem; }
 }
 </style>
@@ -213,7 +228,7 @@ footer p { margin: 0.25rem 0; }
 
     <section class="hero">
       <h1>Prove it's you. Send what only they can open.</h1>
-      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, and seal notes that only one address can read. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
+      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, seal notes that only one address can read, and stamp files with a date on the BrowserCoin chain. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
     </section>
 
     <!-- Which wallet this page is acting as -->
@@ -251,7 +266,7 @@ footer p { margin: 0.25rem 0; }
       </div>
     </section>
 
-    <!-- The four actions -->
+    <!-- The five actions -->
     <section class="card">
       <div class="tabs-head">
         <div class="segmented" role="tablist" aria-label="What do you want to do?">
@@ -259,6 +274,7 @@ footer p { margin: 0.25rem 0; }
           <button role="tab" id="tab-verify" aria-controls="p-verify" aria-selected="false" tabindex="-1">Verify</button>
           <button role="tab" id="tab-seal" aria-controls="p-seal" aria-selected="false" tabindex="-1">Seal</button>
           <button role="tab" id="tab-open" aria-controls="p-open" aria-selected="false" tabindex="-1">Open</button>
+          <button role="tab" id="tab-stamp" aria-controls="p-stamp" aria-selected="false" tabindex="-1">Stamp</button>
         </div>
       </div>
 
@@ -357,6 +373,80 @@ footer p { margin: 0.25rem 0; }
               <li>A signed note shows the sender's address, checked. It still only proves the address, not the person.</li>
               <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a note asks. Nobody legitimate needs them.</li>
             </ul>
+          </div>
+        </details>
+      </div>
+
+      <!-- STAMP -->
+      <div class="panel" role="tabpanel" id="p-stamp" aria-labelledby="tab-stamp" hidden>
+        <p class="panel-lede"><strong>Prove a file existed by a certain date.</strong> Your file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
+        <ol class="stamp-steps">
+          <li id="st-step1">
+            <h3>Choose the file</h3>
+            <label class="drop" id="st-drop" style="margin-top:0.7rem">
+              <input type="file" id="st-file">
+              <span class="drop-text"><strong id="st-file-title">Choose a file to stamp</strong><span id="st-file-sub">Any file: a contract, a photo, a design, a draft. It is read here and never uploaded.</span></span>
+            </label>
+          </li>
+          <li id="st-step2">
+            <h3>Make the stamp phrase</h3>
+            <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
+            <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+            <details class="disclosure-after">
+              <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove it was made after a recent block (optional)</summary>
+              <p class="field-help">Copy the latest block number and ID from BRC Pulse. The stamp will then prove it was made after that block, not just before its own.</p>
+              <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
+              <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
+            </details>
+            <div class="actions"><button class="btn btn-primary" id="btn-st-make" type="button">Make stamp phrase</button></div>
+            <p class="msg" id="st-make-msg" role="status" aria-live="polite"></p>
+            <div id="st-recipe" hidden>
+              <div class="recipe">
+                <ol>
+                  <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
+                  <li><strong>Amount:</strong> <span class="mono" id="st-amount"></span> BRC. You can take it back later.</li>
+                  <li><strong>Recipient address:</strong> your address
+                    <div class="inline-copy"><span class="mono" id="st-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-owner-copy">Copy</button></div></li>
+                  <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
+                    <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase">Copy</button></div></li>
+                  <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
+                </ol>
+                <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>. If it doesn't, the phrase or address was pasted wrong.</p>
+              </div>
+            </div>
+          </li>
+          <li id="st-step3">
+            <h3>Make your receipt</h3>
+            <p class="sub">Paste the Lock ID from the app. Keep the receipt with the file: you need both to prove the date.</p>
+            <label class="field"><span>Lock ID</span><input id="st-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters, shown after Lock coins"></label>
+            <div class="actions"><button class="btn btn-primary" id="btn-st-receipt" type="button">Make receipt</button></div>
+            <p class="msg" id="st-receipt-msg" role="status" aria-live="polite"></p>
+            <div class="out" id="st-receipt-out" hidden>
+              <div class="out-head"><strong>Your stamp receipt</strong><span><button class="btn btn-secondary btn-small" type="button" data-copy="st-receipt">Copy</button> <button class="btn btn-secondary btn-small" type="button" id="btn-st-save">Save as file</button></span></div>
+              <pre class="block" id="st-receipt"></pre>
+              <p class="notice">In a few minutes the lock will be in a block. Then check it on <strong>BRC Pulse → Check a stamp</strong>, which reads the chain and shows the date.</p>
+            </div>
+          </li>
+        </ol>
+
+        <details class="how" id="st-compare-wrap">
+          <summary>Check a file against a receipt</summary>
+          <div class="how-body">
+            <p>This checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on BRC Pulse, which reads the chain.</p>
+            <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+            <label class="drop" style="margin-top:0.8rem"><input type="file" id="st-cmp-file"><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span></label>
+            <p class="msg" id="st-cmp-msg" role="status" aria-live="polite"></p>
+          </div>
+        </details>
+        <details class="how">
+          <summary>What a stamp proves, what it costs, and getting your coins back</summary>
+          <div class="how-body">
+            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. Change one byte and it no longer matches. If you added a recent block, it also proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it.</p>
+            <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
+            <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
+            <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>
+            <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same stamp phrase. The stamp stays valid after you redeem, because the lock stays in the chain's history. Redeeming makes the phrase public, which is harmless.</p>
+            <p><strong>Keep the receipt.</strong> Without it, the stamp can't be found or proven. Keep it next to the file, or email it to yourself.</p>
           </div>
         </details>
       </div>

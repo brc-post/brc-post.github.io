@@ -3,6 +3,8 @@
 
 import * as vault from './vault-core.js';
 import * as seal from './seal-core.js';
+import * as stamp from './stamp-core.js';
+import { sha256 } from '@noble/hashes/sha2';
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -105,6 +107,13 @@ function renderWallet() {
     sub.replaceChildren(el('span', { class: 'mono', text: wallet.address }));
   }
   for (const b of $$('#who button')) b.setAttribute('aria-pressed', String(!!testWallets && testWallets[b.dataset.who] === wallet));
+  // Stamp's "Your address" follows the loaded wallet, unless the person typed their own.
+  const ownerBox = $('#st-owner');
+  if (!ownerBox.value || ownerBox.value === ownerBox.dataset.auto) {
+    ownerBox.value = wallet ? wallet.address : '';
+    ownerBox.dataset.auto = ownerBox.value;
+    resetStampFrom(2);
+  }
   const canSign = !!wallet;
   const wrap = $('#seal-sign-wrap');
   $('#seal-sign').disabled = !canSign;
@@ -269,7 +278,7 @@ $('#wallet-password').addEventListener('keydown', (e) => { if (e.key === 'Enter'
 // Tabs
 // ---------------------------------------------------------------------------
 
-const TABS = ['sign', 'verify', 'seal', 'open'];
+const TABS = ['sign', 'verify', 'seal', 'open', 'stamp'];
 
 function showTab(name, focus = false) {
   for (const t of TABS) {
@@ -482,6 +491,131 @@ for (const b of $$('[data-copy]')) {
 
 const topbar = $('#topbar');
 addEventListener('scroll', () => topbar.classList.toggle('is-scrolled', scrollY > 4), { passive: true });
+
+// ---------------------------------------------------------------------------
+// Stamp
+// ---------------------------------------------------------------------------
+
+let stFile = null;      // { name, size, fingerprint }
+let stStamp = null;     // the stamp made from it
+
+/** SHA-256 of a file, read in 4 MB pieces so large files don't need to fit in memory at once. */
+async function hashFile(file, onProgress) {
+  const h = sha256.create();
+  const CHUNK = 4 * 1024 * 1024;
+  for (let off = 0; off < file.size; off += CHUNK) {
+    h.update(new Uint8Array(await file.slice(off, off + CHUNK).arrayBuffer()));
+    if (onProgress) onProgress(Math.min(1, (off + CHUNK) / file.size));
+  }
+  return vault.bytesToHex(h.digest());
+}
+
+const fmtBytes = (n) => n < 1024 ? `${n} bytes` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+
+function resetStampFrom(step) {
+  if (step <= 2) { stStamp = null; $('#st-recipe').hidden = true; delete $('#st-step2').dataset.done; say('#st-make-msg', ''); }
+  if (step <= 3) { $('#st-receipt-out').hidden = true; delete $('#st-step3').dataset.done; say('#st-receipt-msg', ''); }
+}
+
+$('#st-file').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  resetStampFrom(2);
+  stFile = null;
+  delete $('#st-step1').dataset.done;
+  if (!file) return;
+  $('#st-file-title').textContent = file.name;
+  $('#st-file-sub').textContent = 'Reading…';
+  try {
+    const fp = await hashFile(file, (f) => { $('#st-file-sub').textContent = `Reading… ${Math.round(f * 100)}%`; });
+    stFile = { name: file.name, size: file.size, fingerprint: fp };
+    $('#st-file-sub').textContent = `${fmtBytes(file.size)} · fingerprint ${fp.slice(0, 16)}…`;
+    $('#st-step1').dataset.done = '';
+  } catch {
+    $('#st-file-sub').textContent = 'This file could not be read. Try again.';
+  }
+});
+
+for (const id of ['#st-owner', '#st-after-height', '#st-after-hash']) $(id).addEventListener('input', () => resetStampFrom(2));
+// BRC Pulse's "Copy both" gives "92510 <block id>": split it into the two boxes.
+$('#st-after-height').addEventListener('input', () => {
+  const m = $('#st-after-height').value.trim().match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
+  if (m) { $('#st-after-height').value = m[1]; $('#st-after-hash').value = m[2].toLowerCase(); }
+});
+$('#st-lockid').addEventListener('input', () => resetStampFrom(3));
+
+$('#btn-st-make').addEventListener('click', () => {
+  resetStampFrom(2);
+  if (!stFile) { say('#st-make-msg', 'Choose a file first.', 'bad'); return; }
+  try {
+    const h = $('#st-after-height').value.trim();
+    const x = $('#st-after-hash').value.trim();
+    if (!!h !== !!x) throw new Error('For "after a recent block", fill in both the block number and its ID, or leave both empty.');
+    stStamp = stamp.newStamp({ fingerprint: stFile.fingerprint, owner: $('#st-owner').value, after: h ? { height: h, hash: x } : null });
+    $('#st-owner').value = stStamp.owner;
+    $('#st-amount').textContent = stamp.SUGGESTED_AMOUNT;
+    $('#st-owner-copy').textContent = stStamp.owner;
+    $('#st-phrase').textContent = stamp.stampPhrase(stStamp);
+    const scriptHex = stamp.stampScriptHex(stStamp);
+    // The app's preview prints the hash line as "PUSH(32) <first 20 hex>…" (src/chain/scriptDisasm.ts).
+    $('#st-check').textContent = `PUSH(32) ${scriptHex.slice(4, 24)}…`;
+    $('#st-recipe').hidden = false;
+    $('#st-step2').dataset.done = '';
+  } catch (e) {
+    say('#st-make-msg', e.message, 'bad');
+  }
+});
+
+let stReceipt = '';
+$('#btn-st-receipt').addEventListener('click', () => {
+  resetStampFrom(3);
+  if (!stStamp) { say('#st-receipt-msg', 'Make the stamp phrase first (step 2).', 'bad'); return; }
+  try {
+    stReceipt = stamp.receiptText(stStamp, { lockId: $('#st-lockid').value, fileName: stFile.name, fileSize: stFile.size });
+    $('#st-receipt').textContent = stReceipt;
+    $('#st-receipt-out').hidden = false;
+    $('#st-step3').dataset.done = '';
+  } catch (e) {
+    say('#st-receipt-msg', e.message, 'bad');
+  }
+});
+
+$('#btn-st-save').addEventListener('click', () => {
+  if (!stReceipt) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([stReceipt + '\n'], { type: 'text/plain' }));
+  // Named after the file, so the receipt sorts next to it: contract.pdf -> contract-brc-stamp-receipt.txt
+  const base = (stFile ? stFile.name : 'file').replace(/\.[^.]{1,8}$/, '').replace(/[^\w.-]+/g, '_').slice(0, 60) || 'file';
+  a.download = `${base}-brc-stamp-receipt.txt`;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+// Offline comparison of a file with a receipt.
+let cmpFp = null;
+async function runCompare() {
+  const text = $('#st-cmp-receipt').value;
+  if (!text.trim() || !cmpFp) { say('#st-cmp-msg', ''); return; }
+  try {
+    const r = stamp.parseReceipt(text);
+    if (r.stamp.fingerprint === cmpFp) say('#st-cmp-msg', 'This file matches the receipt exactly. Check the receipt on BRC Pulse to see the date.', 'good');
+    else say('#st-cmp-msg', "This file doesn't match the receipt. It is a different file, or it was changed after it was stamped.", 'bad');
+  } catch (e) {
+    say('#st-cmp-msg', e.message, 'bad');
+  }
+}
+$('#st-cmp-receipt').addEventListener('input', runCompare);
+$('#st-cmp-file').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  cmpFp = null;
+  if (!file) { runCompare(); return; }
+  $('#st-cmp-file-title').textContent = `${file.name}: reading…`;
+  cmpFp = await hashFile(file);
+  $('#st-cmp-file-title').textContent = file.name;
+  runCompare();
+});
+
 
 renderWallet();
 readHash();

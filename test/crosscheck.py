@@ -89,3 +89,14 @@ print('ok - anonymous note opens with OpenSSL X25519 + hand-written XChaCha20-Po
 text, sender = open_note(fx['fromAlice'], fx['bob']['privateKeyHex'])
 assert text == 'Cross-check: signed note from Alice to Bob.' and sender == fx['alice']['address']
 print('ok - signed note opens and its sender signature verifies')
+
+# ---- Stamp: rebuild the official app's hash-locked payment script by hand ----
+import os
+if os.path.exists('build/stamp-fixture.json'):
+    st = json.load(open('build/stamp-fixture.json'))
+    assert hashlib.sha256(bytes.fromhex(st['fileHex'])).hexdigest() == st['fingerprint']
+    assert st['phrase'].startswith('BRCSTAMP1_' + st['fingerprint'] + '_')
+    preimage = hashlib.sha256(st['phrase'].encode()).digest()          # src/ui/scripts.ts preimageOf
+    script = b'\xa8\x20' + hashlib.sha256(preimage).digest() + b'\x88\x20' + bytes.fromhex(st['owner']) + b'\xac'  # hashlockSigScript
+    assert hashlib.sha256(script).hexdigest() == st['scriptHash']
+    print('ok - stamp script hash matches a hand-built hash-locked payment script')
