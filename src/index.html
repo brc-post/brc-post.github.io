@@ -394,7 +394,7 @@ footer p { margin: 0.25rem 0; }
             <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
             <details class="disclosure-after">
               <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove it was made after a recent block (optional)</summary>
-              <p class="field-help">Copy the latest block number and ID from BRC Pulse. The stamp will then prove it was made after that block, not just before its own.</p>
+              <p class="field-help">On BRC Pulse → Stamps, press <strong>Copy both</strong> next to the recent block and paste it here. The stamp will then prove it was made after that block, not just before its own.</p>
               <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
               <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
             </details>
@@ -411,7 +411,7 @@ footer p { margin: 0.25rem 0; }
                     <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase">Copy</button></div></li>
                   <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
                 </ol>
-                <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>. If it doesn't, the phrase or address was pasted wrong.</p>
+                <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="st-check-owner"></span>. If either doesn't, the phrase or the recipient address was pasted wrong.</p>
               </div>
             </div>
           </li>
@@ -441,11 +441,11 @@ footer p { margin: 0.25rem 0; }
         <details class="how">
           <summary>What a stamp proves, what it costs, and getting your coins back</summary>
           <div class="how-body">
-            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. Change one byte and it no longer matches. If you added a recent block, it also proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it.</p>
+            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a recent block, it also proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it. Miners set block times, so allow about half an hour either way.</p>
             <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
             <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
             <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>
-            <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same stamp phrase. The stamp stays valid after you redeem, because the lock stays in the chain's history. Redeeming makes the phrase public, which is harmless.</p>
+            <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same stamp phrase. The stamp stays valid after you redeem, because the lock stays in the chain's history. Redeeming reveals only a scrambled form of the phrase, so the fingerprint and salt stay private.</p>
             <p><strong>Keep the receipt.</strong> Without it, the stamp can't be found or proven. Keep it next to the file, or email it to yourself.</p>
           </div>
         </details>

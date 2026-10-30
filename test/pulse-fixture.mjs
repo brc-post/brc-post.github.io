@@ -14,7 +14,7 @@ function merkle(leaves) {
   return layer[0];
 }
 const miners = [rand(), rand(), rand()];
-const T0 = Math.floor(Date.now() / 1000) - 220 * 150;
+const T0 = Math.floor(Date.now() / 1000) - 232 * 150;
 function block(h, txs) {
   const header = cat(be32(h), c.hexToBytes(rand()), merkle(txs), c.hexToBytes(rand()), be64(T0 + (h - 92300) * 150), be32(0x1d0a0000), be32(h * 7), c.hexToBytes(miners.at(h % 3)));
   return c.bytesToHex(cat(header, be32(txs.length), ...txs));
@@ -22,7 +22,7 @@ function block(h, txs) {
 const me = c.walletFromPrivateKeyHex(rand());
 const file = new TextEncoder().encode('Farm lease, signed copy. Version 3.\n');
 const blocks = {};
-for (let h = 92300; h <= 92520; h++) if (h !== 92510) blocks[h] = block(h, h % 5 ? [] : [cat(be32(0xc01dfeed), c.hexToBytes(rand(148)))]);
+for (let h = 92300; h <= 92530; h++) if (h !== 92510) blocks[h] = block(h, h % 5 ? [] : [cat(be32(0xc01dfeed), c.hexToBytes(rand(148)))]);
 const afterHash = c.readBlock(blocks[92500]).hash;
 const st = c.newStamp({ fingerprint: c.fingerprint(file), owner: me.address, after: { height: 92500, hash: afterHash } });
 const pre = cat(be32(0x4c4f434b), be32(0xc01dfeed), c.hexToBytes(me.address), be64(100000n), be64(1000n), be32(3), c.hexToBytes(c.stampScriptHash(st)));
@@ -32,5 +32,15 @@ const receipt = c.receiptText(st, { lockId: c.fingerprint(lock), fileName: 'leas
 // A receipt for a lock that isn't on the chain, and one whose salt was edited.
 const missing = c.receiptText(st, { lockId: rand() });
 const edited = receipt.replace(/Salt: ([0-9a-f]{32})/, (m, s) => `Salt: ${s.slice(0, 31)}${s.at(-1) === '0' ? '1' : '0'}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92520, blocks, receipt, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+// A lying helper's invented block above the real tip, holding a lock for a brand-new receipt.
+const st2 = c.newStamp({ fingerprint: c.fingerprint(new TextEncoder().encode('forged')), owner: me.address });
+const pre2 = cat(be32(0x4c4f434b), be32(0xc01dfeed), c.hexToBytes(me.address), be64(100000n), be64(1000n), be32(4), c.hexToBytes(c.stampScriptHash(st2)));
+const lock2 = cat(pre2, c.ed25519.sign(pre2, me.privateKey));
+const fakeBlock = block(99999, [lock2]);
+const fakeReceipt = c.receiptText(st2, { lockId: c.fingerprint(lock2), block: 99999 });
+const fakeReceiptNoBlock = c.receiptText(st2, { lockId: c.fingerprint(lock2) });
+// The receipt's Owner line differs from the address the app actually locked to.
+const other = c.walletFromPrivateKeyHex(rand());
+const wrongOwner = receipt.replace(`Owner: ${me.address}`, `Owner: ${other.address}`);
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');

@@ -200,6 +200,7 @@ with sync_playwright() as pw:
     pre = hashlib.sha256(phrase.encode()).digest()
     script = b'\xa8\x20' + hashlib.sha256(pre).digest() + b'\x88\x20' + bytes.fromhex(owner) + b'\xac'
     expect(page.locator('#st-check')).to_have_text('PUSH(32) ' + script.hex()[4:24] + '\u2026')
+    expect(page.locator('#st-check-owner')).to_have_text('PUSH(32) ' + owner[:20] + '\u2026')
     ok('Stamp makes the exact phrase and script the official app will build')
 
     page.fill('#st-lockid', '12345')

@@ -20,7 +20,8 @@
 // The salt keeps the fingerprint private: nobody can test guesses of the file's
 // contents against the chain without the receipt.
 // The owner can take the locked coins back later with the same phrase (Redeem in the
-// official app). Redeeming reveals the phrase publicly, which is harmless.
+// official app). Redeeming reveals only SHA256(phrase) (the app's preimage), never
+// the phrase itself, so the fingerprint and salt stay private.
 
 import { sha256 } from '@noble/hashes/sha2';
 import { bytesToHex, hexToBytes } from './vault-core.js';
@@ -236,7 +237,9 @@ export function readBlock(block) {
 }
 
 /**
- * Check a receipt against the block that should contain its lock.
+ * Check a receipt against the block that should contain its lock. This checks the
+ * block's contents only; whether the block is really on the chain is checked
+ * online by BRC Pulse, which compares it across independent helper servers.
  * Returns { ok: true, height, timestamp, from, amount } or { ok: false, reason }.
  */
 export function checkStampInBlock(receipt, block) {

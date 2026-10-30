@@ -558,6 +558,7 @@ $('#btn-st-make').addEventListener('click', () => {
     const scriptHex = stamp.stampScriptHex(stStamp);
     // The app's preview prints the hash line as "PUSH(32) <first 20 hex>…" (src/chain/scriptDisasm.ts).
     $('#st-check').textContent = `PUSH(32) ${scriptHex.slice(4, 24)}…`;
+    $('#st-check-owner').textContent = `PUSH(32) ${stStamp.owner.slice(0, 20)}…`;
     $('#st-recipe').hidden = false;
     $('#st-step2').dataset.done = '';
   } catch (e) {
