@@ -35,6 +35,7 @@ blocks[92510] = block(92510, [cat(be32(0xc01dfeed), c.hexToBytes(rand(148))), lo
 const receipt = c.receiptText(st, { lockId: c.fingerprint(lock), fileName: 'lease-v3.txt', fileSize: file.length });
 // A receipt for a lock that isn't on the chain, and one whose salt was edited.
 const missing = c.receiptText(st, { lockId: rand() });
+const noLockId = c.receiptText(st, { fileName: 'lease-v3.txt', fileSize: file.length });
 const edited = receipt.replace(/Salt: ([0-9a-f]{32})/, (m, s) => `Salt: ${s.slice(0, 31)}${s.at(-1) === '0' ? '1' : '0'}`);
 // A lying helper's invented block above the real tip, holding a lock for a brand-new receipt.
 const st2 = c.newStamp({ fingerprint: c.fingerprint(new TextEncoder().encode('forged')), owner: me.address });
@@ -47,5 +48,5 @@ const fakeReceiptNoBlock = c.receiptText(st2, { lockId: c.fingerprint(lock2) });
 const other = c.walletFromPrivateKeyHex(rand());
 const wrongOwner = receipt.replace(`Owner: ${me.address}`, `Owner: ${other.address}`);
 const badDrand = c.receiptText(st0, { lockId: c.fingerprint(lock) }).replace(`Drand: ${beacon.round}`, `Drand: ${beacon.round + 1}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');

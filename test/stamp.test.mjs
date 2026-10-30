@@ -115,6 +115,25 @@ t('end to end: stamp, receipt, find the lock in its block, prove the date and wh
   assert.equal(res.amount, 100000n);
 });
 
+t('a receipt without a Lock ID still finds its lock, by the script it holds', () => {
+  const st = c.newStamp({ fingerprint: fp, owner: me.address });
+  const lock = lockTx(me, c.stampScriptHash(st));
+  const other = c.newStamp({ fingerprint: fp, owner: me.address }); // same file, different salt
+  const decoy = lockTx(me, c.stampScriptHash(other));
+  const blk = block(92510, [transferTx(), decoy, lock]);
+  const text = c.receiptText(st, { fileName: 'contract-v3.txt', fileSize: file.length });
+  assert.doesNotMatch(text, /Lock ID/);
+  const r = c.parseReceipt(text);
+  assert.equal(r.lockId, null);
+  const res = c.checkStampInBlock(r, blk);
+  assert.equal(res.ok, true);
+  assert.equal(res.from, me.address);
+  assert.equal(c.checkStampInBlock(r, block(92511, [decoy, transferTx()])).ok, false);
+  // An empty Lock ID box is the same as none; a half-pasted one is still refused.
+  assert.doesNotMatch(c.receiptText(st, { lockId: '  ' }), /Lock ID/);
+  assert.throws(() => c.receiptText(st, { lockId: '12345' }), /Lock ID should be 64/);
+});
+
 t('a changed file, salt, owner or "after" no longer matches', () => {
   const st = c.newStamp({ fingerprint: fp, owner: me.address });
   const lock = lockTx(me, c.stampScriptHash(st));

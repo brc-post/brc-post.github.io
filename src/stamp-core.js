@@ -135,8 +135,11 @@ export function stampScriptHex(st) {
 const R_BEGIN = '-----BEGIN BRC STAMP RECEIPT-----';
 const R_END = '-----END BRC STAMP RECEIPT-----';
 
-/** The receipt to keep with the file. `block` (height) is optional and filled in once the lock is found. */
-export function receiptText(st, { lockId, block = null, fileName = '', fileSize = null }) {
+/**
+ * The receipt to keep with the file. `lockId` is optional: BRC Pulse can find the lock from the
+ * script it holds. `block` (height) is optional and filled in once the lock is found.
+ */
+export function receiptText(st, { lockId = null, block = null, fileName = '', fileSize = null } = {}) {
   const lines = [R_BEGIN];
   if (fileName) {
     const safe = String(fileName).replace(/[\r\n\u2028\u2029]/g, ' ').slice(0, 200);
@@ -147,7 +150,7 @@ export function receiptText(st, { lockId, block = null, fileName = '', fileSize 
   if (st.after) lines.push(`After: ${st.after.height} ${st.after.hash}`);
   if (st.drand) lines.push(`Drand: ${st.drand.round} ${st.drand.signature}`);
   lines.push(`Owner: ${st.owner}`);
-  lines.push(`Lock ID: ${cleanHex(lockId, 'The Lock ID')}`);
+  if (lockId != null && String(lockId).trim()) lines.push(`Lock ID: ${cleanHex(lockId, 'The Lock ID')}`);
   if (block != null) lines.push(`Block: ${block}`);
   lines.push(R_END);
   return lines.join('\n');
@@ -186,7 +189,8 @@ export function parseReceipt(text) {
     drand = { round: Number(m[1]), signature: m[2] };
   }
   const st = newStamp({ fingerprint: need('Fingerprint'), owner: need('Owner'), salt: need('Salt'), after, drand });
-  const lockId = cleanHex(need('Lock ID'), 'The Lock ID');
+  const lockLine = field('Lock ID');
+  const lockId = lockLine ? cleanHex(lockLine, 'The Lock ID') : null;
   const blockLine = field('Block');
   let block = null;
   if (blockLine) {
@@ -263,9 +267,13 @@ export function readBlock(block) {
  */
 export function checkStampInBlock(receipt, block) {
   const blk = readBlock(block);
-  const lock = blk.txs.find((t) => t.kind === 'lock' && t.id === receipt.lockId);
-  if (!lock) return { ok: false, reason: `Lock ${receipt.lockId.slice(0, 10)}… is not in block ${blk.height}.` };
-  if (lock.scriptHash !== stampScriptHash(receipt.stamp)) {
+  const locks = blk.txs.filter((t) => t.kind === 'lock');
+  // Without a Lock ID, the lock is the one holding this stamp's script (for the Owner line, or the wallet that signed it).
+  const lock = receipt.lockId
+    ? locks.find((t) => t.id === receipt.lockId)
+    : locks.find((t) => t.scriptHash === stampScriptHash(receipt.stamp) || t.scriptHash === stampScriptHash({ ...receipt.stamp, owner: t.from }));
+  if (!lock) return { ok: false, reason: receipt.lockId ? `Lock ${receipt.lockId.slice(0, 10)}… is not in block ${blk.height}.` : `No lock holding this stamp is in block ${blk.height}.` };
+  if (receipt.lockId && lock.scriptHash !== stampScriptHash(receipt.stamp)) {
     return { ok: false, reason: 'A lock with this ID exists, but it does not hold this stamp. The fingerprint, salt or owner on the receipt is different from what was stamped.' };
   }
   return { ok: true, height: blk.height, timestamp: blk.timestamp, blockHash: blk.hash, from: lock.from, amount: lock.amount };

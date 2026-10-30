@@ -281,10 +281,25 @@ with sync_playwright() as pw:
     expect(page.locator('#st-check-owner')).to_have_text('PUSH(32) ' + owner[:20] + '\u2026')
     ok('Stamp makes the exact phrase and script the official app will build')
 
+    expect(page.locator('#st-lockid-status')).to_have_text('optional')
+    expect(page.locator('#st-test-lock')).to_be_visible()
     page.fill('#st-lockid', '12345')
+    expect(page.locator('#st-lockid-status')).to_contain_text('5 of 64')
     page.click('#btn-st-receipt')
     expect(page.locator('#st-receipt-msg')).to_contain_text('Lock ID should be 64')
-    page.fill('#st-lockid', 'cd' * 32)
+    page.fill('#st-lockid', 'ab' * 32 + 'c')
+    expect(page.locator('#st-lockid-status')).to_have_text('not a Lock ID')
+    page.fill('#st-lockid', '')
+    page.click('#btn-st-receipt')
+    expect(page.locator('#pm-card')).to_be_visible()
+    assert 'Lock ID' not in page.locator('#st-receipt').text_content()
+    ok('the Lock ID is optional: a receipt can be made without it')
+    page.click('#btn-st-testlock')
+    expect(page.locator('#st-lockid-status')).to_have_text('looks right')
+    page.fill('#st-lockid', 'Lock ID:  0x' + 'CD' * 16 + '\n' + 'cd' * 16)
+    expect(page.locator('#st-lockid')).to_have_value('cd' * 32)
+    expect(page.locator('#st-lockid-status')).to_have_text('looks right')
+    ok('a pasted Lock ID is tidied (label, 0x, line breaks) and checked as you go')
     page.click('#btn-st-receipt')
     receipt = page.locator('#st-receipt').text_content()
     assert f"Drand: {beacon['round']} {beacon['signature']}" in receipt, receipt
@@ -354,6 +369,25 @@ with sync_playwright() as pw:
     op = p3.evaluate("getComputedStyle(document.querySelector('.tiles .tile:last-child')).opacity")
     assert float(op) == 1.0, f'tiles hidden with reduced motion ({op})'
     ok('with reduced motion, nothing waits on an animation')
+
+    # --- Swipe right from the left edge goes back (for apps that keep the edge swipe) ---
+    p2.evaluate('location.hash = "seal"')
+    expect(p2.locator('#p-seal')).to_be_visible()
+    swipe_js = '''(pts) => {
+      const t = (x, y) => new Touch({ identifier: 1, target: document.body, clientX: x, clientY: y });
+      const fire = (type, x, y) => document.body.dispatchEvent(new TouchEvent(type, { bubbles: true, cancelable: true, touches: type === 'touchend' ? [] : [t(x, y)], changedTouches: [t(x, y)] }));
+      fire('touchstart', pts[0][0], pts[0][1]);
+      for (const p of pts.slice(1)) fire('touchmove', p[0], p[1]);
+      const last = pts[pts.length - 1]; fire('touchend', last[0], last[1]);
+    }'''
+    p2.evaluate(swipe_js, [[30, 400], [50, 402], [70, 403]])  # too short: stays
+    p2.wait_for_timeout(500)
+    expect(p2.locator('#p-seal')).to_be_visible()
+    p2.evaluate(swipe_js, [[200, 400], [260, 400], [360, 400]])  # starts mid-screen: ignored
+    expect(p2.locator('#p-seal')).to_be_visible()
+    p2.evaluate(swipe_js, [[20, 400], [60, 402], [120, 404], [190, 405]])
+    expect(p2.locator('#s-home')).to_be_visible()
+    ok('swiping right from the left edge goes back; short or mid-screen swipes do not')
 
     others = [u for u in requests if not u.startswith('file:') and not u.startswith('data:')]
     assert not others, f'unexpected network requests: {others}'

@@ -134,6 +134,7 @@ function renderWallet() {
   $('#btn-sheet-done').hidden = !wallet;
   $('#who').hidden = !testWallets;
   $('#seal-quick').hidden = !testWallets;
+  $('#st-test-lock').hidden = !testWallets;
   const testName = testWallets ? (wallet === testWallets.alice ? 'Alice' : 'Bob') : '';
   if (!wallet) {
     title.textContent = 'No wallet loaded';
@@ -735,7 +736,34 @@ $('#st-after-height').addEventListener('input', () => {
   const m = $('#st-after-height').value.trim().match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
   if (m) { $('#st-after-height').value = m[1]; $('#st-after-hash').value = m[2].toLowerCase(); }
 });
-$('#st-lockid').addEventListener('input', () => resetStampFrom(3));
+/** Pull the 64-character Lock ID out of whatever was pasted ("Lock ID: ab12…", spaces, line breaks). */
+function tidyLockId() {
+  const box = $('#st-lockid'), out = $('#st-lockid-status');
+  const raw = box.value;
+  const found = raw.replace(/\s+/g, '').match(/(?<![0-9a-fA-F])(?:0x)?([0-9a-fA-F]{64})(?![0-9a-fA-F])/);
+  if (found && found[1].toLowerCase() !== raw) box.value = found[1].toLowerCase();
+  delete out.dataset.over; delete out.dataset.good;
+  const v = box.value.trim();
+  if (!v) out.textContent = 'optional';
+  else if (/^[0-9a-f]{64}$/.test(v)) { out.textContent = 'looks right'; out.dataset.good = ''; }
+  else { const n = (v.match(/[0-9a-fA-F]/g) || []).length; out.textContent = n < 64 ? `${n} of 64 characters, part is missing` : 'not a Lock ID'; out.dataset.over = ''; }
+}
+$('#st-lockid').addEventListener('input', () => { tidyLockId(); resetStampFrom(3); });
+$('#btn-st-paste').addEventListener('click', async () => {
+  try {
+    $('#st-lockid').value = await navigator.clipboard.readText();
+    tidyLockId(); resetStampFrom(3);
+  } catch {
+    // Some browsers only paste from a long-press in the box itself.
+    $('#st-lockid').focus();
+    const out = $('#st-lockid-status'); out.textContent = 'tap and hold in the box, then Paste'; delete out.dataset.good;
+  }
+});
+$('#btn-st-testlock').addEventListener('click', () => {
+  const b = new Uint8Array(32); crypto.getRandomValues(b);
+  $('#st-lockid').value = vault.bytesToHex(b);
+  tidyLockId(); resetStampFrom(3);
+});
 
 $('#btn-st-make').addEventListener('click', () => {
   resetStampFrom(2);
@@ -812,7 +840,7 @@ $('#btn-st-receipt').addEventListener('click', () => {
   resetStampFrom(3);
   if (!stStamp) { say('#st-receipt-msg', 'Make the postmark phrase first (step 2).', 'bad'); play($('#st-receipt-msg'), 'anim-shake'); return; }
   try {
-    stReceipt = stamp.receiptText(stStamp, { lockId: $('#st-lockid').value, fileName: stFile.name, fileSize: stFile.size });
+    stReceipt = stamp.receiptText(stStamp, { lockId: $('#st-lockid').value.trim() || null, fileName: stFile.name, fileSize: stFile.size });
     $('#st-receipt').textContent = stReceipt;
     $('#st-receipt-out').hidden = false;
     $('#st-step3').dataset.done = '';
@@ -884,6 +912,57 @@ $('#st-cmp-file').addEventListener('change', async (e) => {
   }
   runCompare();
 });
+
+// ---------------------------------------------------------------------------
+// Swipe right to go back. Inside apps that keep the edge swipe for themselves,
+// this gives the page its own back gesture. Starts near the left edge only.
+// ---------------------------------------------------------------------------
+
+let swipe = null;
+const hint = $('#edge-hint');
+function endSwipe(goBack) {
+  if (!swipe) return;
+  const scr = swipe.screen;
+  swipe = null;
+  scr.classList.remove('dragging');
+  hint.style.opacity = '0';
+  hint.style.transform = '';
+  if (goBack) {
+    scr.style.transform = ''; scr.style.opacity = '';
+    scr.querySelector('[data-back]').click();
+    return;
+  }
+  scr.classList.add('snap');
+  scr.style.transform = ''; scr.style.opacity = '';
+  setTimeout(() => scr.classList.remove('snap'), 400);
+}
+document.addEventListener('touchstart', (e) => {
+  if (current === 'home' || sheet.open || e.touches.length !== 1) return;
+  const t = e.touches[0];
+  if (t.clientX > Math.min(72, innerWidth * 0.2)) return;
+  if (e.target.closest('input, textarea, pre, .inline-copy, .chips')) return;
+  swipe = { x: t.clientX, y: t.clientY, t: performance.now(), dx: 0, horizontal: null, screen: $(SCREENS[current]) };
+}, { passive: true });
+document.addEventListener('touchmove', (e) => {
+  if (!swipe) return;
+  const t = e.touches[0], dx = t.clientX - swipe.x, dy = t.clientY - swipe.y;
+  if (swipe.horizontal === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) swipe.horizontal = Math.abs(dx) > Math.abs(dy) * 1.2 && dx > 0;
+  if (swipe.horizontal === false) { swipe = null; return; }
+  if (!swipe.horizontal) return;
+  swipe.dx = Math.max(0, dx);
+  const p = Math.min(1, swipe.dx / 120);
+  swipe.screen.classList.add('dragging');
+  swipe.screen.style.transform = `translateX(${Math.round(swipe.dx * 0.55)}px)`;
+  swipe.screen.style.opacity = String(1 - p * 0.25);
+  hint.style.opacity = String(p);
+  hint.style.transform = `translateX(${Math.round(p * 64)}px) scale(${0.7 + p * 0.3})`;
+}, { passive: true });
+document.addEventListener('touchend', () => {
+  if (!swipe) return;
+  const fast = swipe.dx > 60 && swipe.dx / Math.max(1, performance.now() - swipe.t) > 0.5;
+  endSwipe(swipe.horizontal === true && (swipe.dx > 100 || fast));
+});
+document.addEventListener('touchcancel', () => endSwipe(false)); // the browser took the gesture (e.g. Safari's own back swipe)
 
 renderWallet();
 readHash();
