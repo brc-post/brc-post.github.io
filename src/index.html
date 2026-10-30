@@ -81,6 +81,10 @@ a { color: var(--brand-deep); }
 
 .test-banner { margin: 0.9rem 0 0; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.84rem; line-height: 1.45; }
 .test-banner strong { font-weight: 600; }
+.frame-warning { margin: 0.9rem 0 0; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); background: var(--danger-tint); color: #7a2412; font-size: 0.84rem; line-height: 1.45; }
+.frame-warning strong { font-weight: 600; }
+.unsigned-box { margin-top: 0.4rem; white-space: pre-wrap; word-break: break-word; border: 1px dashed #e0a899; background: var(--danger-tint); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.93rem; }
+.signed-box { white-space: pre-wrap; word-break: break-word; background: var(--surface); border: 1px solid #c9e6db; border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.93rem; }
 
 /* ---------- Screens ---------- */
 .screen { padding: 1.4rem 0 0.5rem; }
@@ -449,11 +453,12 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true">/*__VAULT_MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
-      <span class="status-pill" role="status" title="This page has no network access. Nothing you type leaves your device."><span class="dot" aria-hidden="true"></span><span>Offline<span class="pill-word"> only</span></span></span>
+      <span class="status-pill" role="status" title="This page has no network access and sends nothing anywhere."><span class="dot" aria-hidden="true"></span><span>Offline<span class="pill-word"> only</span></span></span>
     </div>
   </header>
 
   <main class="wrap">
+    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Loading a real wallet is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your wallet. Test wallets still work.</p>
     <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
 
     <!-- ================= HOME ================= -->
@@ -523,7 +528,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Their address</span><input id="sign-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address of the person checking it"></label>
           <div class="chips" id="sign-quick" hidden><button type="button" class="chip" data-sign-to="alice">Alice's address</button><button type="button" class="chip" data-sign-to="bob">Bob's address</button></div>
         </div>
-        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
+        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
         <div class="chips" aria-label="Examples">
           <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
           <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
@@ -564,7 +569,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <div class="card">
         <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
-        <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
+        <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
         <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Load a wallet to use this.</span></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
@@ -768,7 +773,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Seal 0.4, test build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.4, test build <span class="mono">/*__BUILD__*/</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault</a> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse</a> · <span aria-current="page">Seal</span></p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
     </footer>

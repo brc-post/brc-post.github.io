@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-LWHdw540yvixfQaEuBNDEB+cFdIZg+a/0eAlG6eWA6k='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MotwrpNnJXj0fSfGwwZZLXWyAaompDQ3a1N1mPloDAM='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -83,6 +83,10 @@ a { color: var(--brand-deep); }
 
 .test-banner { margin: 0.9rem 0 0; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.84rem; line-height: 1.45; }
 .test-banner strong { font-weight: 600; }
+.frame-warning { margin: 0.9rem 0 0; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); background: var(--danger-tint); color: #7a2412; font-size: 0.84rem; line-height: 1.45; }
+.frame-warning strong { font-weight: 600; }
+.unsigned-box { margin-top: 0.4rem; white-space: pre-wrap; word-break: break-word; border: 1px dashed #e0a899; background: var(--danger-tint); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.93rem; }
+.signed-box { white-space: pre-wrap; word-break: break-word; background: var(--surface); border: 1px solid #c9e6db; border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.93rem; }
 
 /* ---------- Screens ---------- */
 .screen { padding: 1.4rem 0 0.5rem; }
@@ -451,11 +455,12 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true"><rect x="361.5" y="143.9" width="1208.2" height="1208.2" rx="198.7" fill="none" stroke="currentColor" stroke-width="107.8"/><path fill="currentColor" d="M544.8 415.0L868.2 1150.0L1063.0 1150.0L1386.4 415.0L1121.0 415.0A185.7 185.7 0 0 1 1134.1 594.6L965.6 958.7L797.1 594.6A185.7 185.7 0 0 1 810.2 415.0Z"/><circle cx="965.6" cy="516.6" r="114.0" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
-      <span class="status-pill" role="status" title="This page has no network access. Nothing you type leaves your device."><span class="dot" aria-hidden="true"></span><span>Offline<span class="pill-word"> only</span></span></span>
+      <span class="status-pill" role="status" title="This page has no network access and sends nothing anywhere."><span class="dot" aria-hidden="true"></span><span>Offline<span class="pill-word"> only</span></span></span>
     </div>
   </header>
 
   <main class="wrap">
+    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Loading a real wallet is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your wallet. Test wallets still work.</p>
     <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
 
     <!-- ================= HOME ================= -->
@@ -525,7 +530,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Their address</span><input id="sign-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address of the person checking it"></label>
           <div class="chips" id="sign-quick" hidden><button type="button" class="chip" data-sign-to="alice">Alice's address</button><button type="button" class="chip" data-sign-to="bob">Bob's address</button></div>
         </div>
-        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
+        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
         <div class="chips" aria-label="Examples">
           <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
           <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
@@ -566,7 +571,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <div class="card">
         <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
-        <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
+        <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
         <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Load a wallet to use this.</span></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
@@ -770,7 +775,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Seal 0.4, test build <span class="mono">2d61ddc3</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.4, test build <span class="mono">328b70ae</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault</a> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse</a> · <span aria-current="page">Seal</span></p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
     </footer>
@@ -7820,7 +7825,7 @@ zoo`.split("\n");
       return false;
     }
   }
-  var HIDDEN_CHARS = /[\p{Cf}\p{Co}ᅟᅠㅤﾠ⠀︀-︍᠋-᠏]|[\u{E0100}-\u{E01EF}]/u;
+  var HIDDEN_CHARS = /[\p{Cf}\p{Co}\u034F\u17B4\u17B5\u3164\u2800ᅟᅠㅤﾠ⠀︀-︍᠋-᠏]|[\u{E0100}-\u{E01EF}]/u;
   function hasHiddenCharacters(text) {
     return HIDDEN_CHARS.test(String(text));
   }
@@ -7851,6 +7856,18 @@ ${message}`);
       armored: [SIGNED_BEGIN, message, SIG_BEGIN, `Address: ${wallet2.address}`, `Signature: ${bytesToHex3(signature)}`, SIG_END].join("\n")
     };
   }
+  function fieldAfter(text, label, stop) {
+    const at = text.indexOf(label);
+    if (at < 0) return null;
+    let rest = text.slice(at + label.length);
+    if (stop) {
+      const end = rest.indexOf(stop);
+      if (end >= 0) rest = rest.slice(0, end);
+    }
+    const hex = rest.replace(/\s+/g, "");
+    if (!hex || !/^[0-9a-fA-F]+$/.test(hex)) return stop ? null : /^[0-9a-fA-F]/.test(hex) ? [rest, hex.match(/^[0-9a-fA-F]+/)[0]] : null;
+    return [rest, hex];
+  }
   function parseSigned(text) {
     const t = cleanPaste(text);
     const a = t.indexOf(SIGNED_BEGIN);
@@ -7863,8 +7880,8 @@ ${message}`);
     if (t.indexOf(SIGNED_BEGIN, a + 1) >= 0) throw new Error("This contains more than one signed message. Check one at a time.");
     const message = normalizeMessage(t.slice(a + SIGNED_BEGIN.length, b));
     const tail = t.slice(b + SIG_BEGIN.length, c);
-    const addrMatch = tail.match(/Address:\s*([0-9a-fA-F\s]+?)\s*(?=Signature:|$)/);
-    const sigMatch = tail.match(/Signature:\s*([0-9a-fA-F\s]+)/);
+    const addrMatch = fieldAfter(tail, "Address:", "Signature:");
+    const sigMatch = fieldAfter(tail, "Signature:", null);
     if (!addrMatch) throw new Error("The Address line is missing from the signature.");
     if (!sigMatch) throw new Error("The Signature line is missing.");
     const address = parseAddress(addrMatch[1]);
@@ -10284,6 +10301,7 @@ ${message}`);
     }
   }
   function parseDrand(text) {
+    if (String(text || "").length > 2e3) throw new Error("This is far too long to be a drand beacon.");
     const t = String(text || "").trim();
     let round, sig;
     if (t.startsWith("{")) {
@@ -10296,7 +10314,7 @@ ${message}`);
       round = Number(j.round);
       sig = String(j.signature || "");
     } else {
-      const m = t.replace(/,/g, "").match(/^(\d+)\s*[:\s]\s*([0-9a-fA-F\s]+)$/);
+      const m = t.replace(/,/g, "").replace(/\s+/g, " ").match(/^(\d+)(?: ?: ?| )([0-9a-fA-F ]+)$/);
       if (!m) throw new Error('A drand beacon is a round number and a signature, like "33522523 a6aeb7\u2026". Copy it from BRC Pulse \u2192 Stamps.');
       round = Number(m[1]);
       sig = m[2];
@@ -10384,6 +10402,7 @@ ${message}`);
     return lines.join("\n");
   }
   function parseReceipt(text) {
+    if (String(text || "").length > 2e4) throw new Error("This is far too long to be a stamp receipt.");
     const t = String(text || "").replace(/\r\n?/g, "\n").replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
     const a = t.indexOf(R_BEGIN);
     const b = t.indexOf(R_END);
@@ -10391,8 +10410,15 @@ ${message}`);
     if (b < a) throw new Error("The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.");
     const body = t.slice(a + R_BEGIN.length, b);
     const field2 = (name) => {
-      const m = body.match(new RegExp(`^\\s*>?\\s*${name}:\\s*(.+)$`, "mi"));
-      return m ? m[1].trim() : null;
+      const want = name.toLowerCase() + ":";
+      for (const raw of body.split("\n")) {
+        const line = raw.replace(/^[ \t]*>?[ \t]*/, "");
+        if (line.slice(0, want.length).toLowerCase() === want) {
+          const v = line.slice(want.length).trim();
+          return v || null;
+        }
+      }
+      return null;
     };
     const need = (name) => {
       const v = field2(name);
@@ -10508,7 +10534,16 @@ ${message}`);
     b.fill(0);
     return w;
   }
+  var KNOWN = Object.freeze({});
+  var EMBEDDED = (() => {
+    try {
+      return window.top !== window.self || !!window.opener;
+    } catch {
+      return true;
+    }
+  })();
   function nameFor(address) {
+    if (KNOWN[address]) return KNOWN[address];
     if (testWallets) {
       if (address === testWallets.alice.address) return "test wallet Alice";
       if (address === testWallets.bob.address) return "test wallet Bob";
@@ -10633,6 +10668,11 @@ ${message}`);
     renderWallet();
   });
   $("#btn-load").addEventListener("click", () => {
+    if (EMBEDDED) {
+      $("#frame-warning").hidden = false;
+      play($("#frame-warning"), "anim-shake");
+      return;
+    }
     $("#loader").hidden = false;
     $("#wallet-paste").focus();
   });
@@ -10662,6 +10702,7 @@ ${message}`);
   }
   async function readWalletText(text) {
     say("#load-msg", "");
+    if (EMBEDDED) throw new Error("BRC Seal is open inside another page, so real wallets are turned off. Open it in its own tab.");
     const id = identifyInput(text);
     if (id.kind === "vault-backup" || id.kind === "desktop-backup") {
       pendingBackup = id.backup;
@@ -10843,7 +10884,10 @@ ${message}`);
       go(a.dataset.go || a.getAttribute("href").slice(1) || "home");
     });
   }
+  var firstRoute = true;
   function readHash() {
+    const initial = firstRoute;
+    firstRoute = false;
     let h2 = "";
     try {
       h2 = decodeURIComponent(location.hash.replace(/^#/, ""));
@@ -10853,8 +10897,17 @@ ${message}`);
     }
     const to = h2.match(/(?:^|&)to=([0-9a-fA-F]{64})(?:&|$)/);
     if (to) {
-      $("#seal-to").value = to[1].toLowerCase();
+      if (!initial) return;
       show("seal");
+      try {
+        history.replaceState(null, "", "#seal");
+      } catch {
+      }
+      if (EMBEDDED) {
+        say("#seal-msg", "A link tried to fill in the address, but BRC Seal is open inside another page, so it was ignored. Paste the address yourself.", "warn");
+        return;
+      }
+      if (!$("#seal-to").value.trim()) $("#seal-to").value = to[1].toLowerCase();
       say("#seal-msg", "Address filled in from a link. Check it is the one you meant before sealing.", "warn");
       return;
     }
@@ -10920,7 +10973,7 @@ ${message}`);
   var signMode = "public";
   var PRIVACY = {
     public: ["Public and permanent. ", "Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person."],
-    private: ["Only they can check it. ", "Your signed message is sealed to their address, so nobody else sees it or your address. They could still show it to others, so choose someone you trust."]
+    private: ["Only they can check it. ", "Your signature is sealed inside a letter to their address and tied to them, so nobody else sees it or your address. They could still show others that you wrote it to them, so choose someone you trust."]
   };
   function renderSignMode() {
     for (const b of $$("#sign-mode button")) b.setAttribute("aria-checked", String(b.dataset.mode === signMode));
@@ -10958,7 +11011,7 @@ ${message}`);
       const s = signMessage(wallet, $("#sign-text").value);
       if (signMode === "private") {
         if (!$("#sign-to").value.trim()) throw new Error("Paste the address of the person who will check it.");
-        const n = sealNote($("#sign-to").value, s.armored, null);
+        const n = sealNote($("#sign-to").value, s.message, wallet);
         if (n.to === wallet.address) throw new Error("That's your own address. Paste the address of the person who will check it.");
         $("#sign-to").value = n.to;
         const who = nameFor(n.to);
@@ -11105,16 +11158,33 @@ ${message}`);
       tone = "warn";
       lede = "Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.";
     }
-    const rows = [["From", fromRow], ["Letter", el("div", { class: "message-box", text: o.message })]];
-    if (/BEGIN BRC SIGNED MESSAGE/.test(o.message)) {
+    let rows = [["From", fromRow], ["Letter", el("div", { class: "message-box", text: o.message })]];
+    const sb = o.message.indexOf("-----BEGIN BRC SIGNED MESSAGE-----");
+    const se = o.message.indexOf("-----END BRC SIGNATURE-----");
+    if (sb >= 0) {
       let inner;
       try {
         inner = verifySigned(o.message);
       } catch (e) {
         inner = { valid: false, reason: e.message };
       }
-      rows.splice(1, 0, ["Signature inside", inner.valid ? el("span", {}, el("span", { class: "ok-text", text: "Valid. " }), el("span", { text: "Signed by " }), addressNode(inner.address), inner.hidden ? el("span", { text: ". The message has hidden characters, so read it carefully." }) : null) : el("span", { class: "bad-text", text: `Not valid. ${inner.reason}` })]);
-      if (!inner.valid && tone === "good") tone = "warn";
+      const outside = se > sb ? (o.message.slice(0, sb) + "\n" + o.message.slice(se + "-----END BRC SIGNATURE-----".length)).trim() : "";
+      rows = [["From", fromRow]];
+      if (inner.valid) {
+        rows.push(["Signed by", el("span", {}, addressNode(inner.address), el("span", { class: "ok-text", text: "  signature checked" }))]);
+        rows.push(["Signed text", el("div", { class: "signed-box", text: inner.message })]);
+        rows.push(["Note", el("span", { text: "This signed message could have been copied from anywhere. It proves who wrote those words, not who sealed this letter or who it was meant for." })]);
+      } else {
+        rows.push(["Signature", el("span", { class: "bad-text", text: `Not valid. ${inner.reason}` })]);
+        rows.push(["Letter", el("div", { class: "message-box", text: o.message })]);
+        if (tone === "good") tone = "warn";
+      }
+      if (inner.valid && outside) {
+        rows.push(["Not signed", el("div", { class: "unsigned-box", text: outside })]);
+        tone = "warn";
+        title = "Opened, but part of it is not signed";
+        lede = "Only the signed text below is vouched for. The words in the red box were added by whoever sealed the letter, and could be from anyone.";
+      }
     }
     out.append(verdict(tone, title, el("p", { text: lede }), kv(rows)));
   });
@@ -11507,6 +11577,32 @@ ${message}`);
     endSwipe(swipe.horizontal === true && (swipe.dx > 100 || fast));
   });
   document.addEventListener("touchcancel", () => endSwipe(false));
+  for (const ev of ["dragover", "drop"]) document.addEventListener(ev, (e) => {
+    if (!(e.target instanceof Element && e.target.closest(".drop"))) e.preventDefault();
+  });
+  var IDLE_MS = 10 * 60 * 1e3;
+  var lastActive = Date.now();
+  for (const ev of ["pointerdown", "keydown", "input", "touchstart"]) document.addEventListener(ev, () => {
+    lastActive = Date.now();
+  }, { passive: true, capture: true });
+  function idleCheck() {
+    if (wallet && !testWallets && Date.now() - lastActive > IDLE_MS) {
+      forgetEverything();
+      clearLoader();
+      clearSecretsFromPage();
+      renderWallet();
+      $("#wallet-sub").textContent = "Your wallet was forgotten after 10 minutes without use. Load it again when you need it.";
+      for (const node of $$("[data-wallet-sub]")) node.textContent = "Forgotten after 10 minutes idle";
+    }
+  }
+  setInterval(idleCheck, 15 * 1e3);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) idleCheck();
+  });
+  if (EMBEDDED) {
+    $("#frame-warning").hidden = false;
+    $("#btn-load").title = "Turned off inside another page";
+  }
   renderWallet();
   readHash();
 })();

@@ -102,7 +102,16 @@ function randomWallet() {
   return w;
 }
 
+// Addresses BRC Seal recognises by name. The giveaway mailbox goes here once it exists,
+// so a letter sealed to anything else is plainly "not the known mailbox".
+const KNOWN = Object.freeze({});
+
+// Opened inside another page (a frame), or by another window: that page could watch the
+// keyboard or rewire buttons, so real wallets aren't loaded here. Test wallets still work.
+const EMBEDDED = (() => { try { return window.top !== window.self || !!window.opener; } catch { return true; } })();
+
 function nameFor(address) {
+  if (KNOWN[address]) return KNOWN[address];
   if (testWallets) {
     if (address === testWallets.alice.address) return 'test wallet Alice';
     if (address === testWallets.bob.address) return 'test wallet Bob';
@@ -237,6 +246,7 @@ $('#btn-forget').addEventListener('click', () => {
 });
 
 $('#btn-load').addEventListener('click', () => {
+  if (EMBEDDED) { $('#frame-warning').hidden = false; play($('#frame-warning'), 'anim-shake'); return; }
   $('#loader').hidden = false;
   $('#wallet-paste').focus();
 });
@@ -270,6 +280,7 @@ function clearSecretsFromPage() {
 
 async function readWalletText(text) {
   say('#load-msg', '');
+  if (EMBEDDED) throw new Error('BRC Seal is open inside another page, so real wallets are turned off. Open it in its own tab.');
   const id = vault.identifyInput(text);
   if (id.kind === 'vault-backup' || id.kind === 'desktop-backup') {
     pendingBackup = id.backup;
@@ -433,13 +444,22 @@ for (const a of $$('a[href^="#"]')) {
 }
 
 // Routes, including links from BRC Pulse: #to=<address> opens Seal with the address filled in.
+// A link like #to=<address> (from BRC Pulse) fills in the Seal address, but only when the page
+// first opens, only into an empty box, and never inside another page. Later changes to the
+// address bar are ignored, so another window can't quietly swap the address while you write.
+let firstRoute = true;
 function readHash() {
+  const initial = firstRoute;
+  firstRoute = false;
   let h = '';
   try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch { show('home'); return; }
   const to = h.match(/(?:^|&)to=([0-9a-fA-F]{64})(?:&|$)/);
   if (to) {
-    $('#seal-to').value = to[1].toLowerCase();
+    if (!initial) return;
     show('seal');
+    try { history.replaceState(null, '', '#seal'); } catch { /* inside a viewer that can't change the address */ }
+    if (EMBEDDED) { say('#seal-msg', 'A link tried to fill in the address, but BRC Seal is open inside another page, so it was ignored. Paste the address yourself.', 'warn'); return; }
+    if (!$('#seal-to').value.trim()) $('#seal-to').value = to[1].toLowerCase();
     say('#seal-msg', 'Address filled in from a link. Check it is the one you meant before sealing.', 'warn');
     return;
   }
@@ -511,7 +531,7 @@ $('#sign-text').addEventListener('input', updateSignCount);
 let signMode = 'public';
 const PRIVACY = {
   public: ['Public and permanent. ', "Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person."],
-  private: ['Only they can check it. ', 'Your signed message is sealed to their address, so nobody else sees it or your address. They could still show it to others, so choose someone you trust.'],
+  private: ['Only they can check it. ', 'Your signature is sealed inside a letter to their address and tied to them, so nobody else sees it or your address. They could still show others that you wrote it to them, so choose someone you trust.'],
 };
 function renderSignMode() {
   for (const b of $$('#sign-mode button')) b.setAttribute('aria-checked', String(b.dataset.mode === signMode));
@@ -541,8 +561,9 @@ $('#btn-sign').addEventListener('click', () => {
     const s = seal.signMessage(wallet, $('#sign-text').value);
     if (signMode === 'private') {
       if (!$('#sign-to').value.trim()) throw new Error('Paste the address of the person who will check it.');
-      // The signed block goes inside an anonymous sealed letter: only that address can open and check it.
-      const n = seal.sealNote($('#sign-to').value, s.armored, null);
+      // A signed letter: the signature covers the recipient and this one letter, so it can't be
+      // re-sealed to anyone else or passed off as written to someone else.
+      const n = seal.sealNote($('#sign-to').value, s.message, wallet);
       if (n.to === wallet.address) throw new Error("That's your own address. Paste the address of the person who will check it.");
       $('#sign-to').value = n.to;
       const who = nameFor(n.to);
@@ -679,15 +700,31 @@ $('#btn-open').addEventListener('click', () => {
     tone = 'warn';
     lede = 'Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.';
   }
-  const rows = [['From', fromRow], ['Letter', el('div', { class: 'message-box', text: o.message })]];
-  // A letter can carry a signed message ("Sign privately for one person"). Check it right here.
-  if (/BEGIN BRC SIGNED MESSAGE/.test(o.message)) {
+  let rows = [['From', fromRow], ['Letter', el('div', { class: 'message-box', text: o.message })]];
+  // Someone may have pasted a signed message into the letter. Signed messages are public and
+  // can be copied, so show exactly which words are signed, and flag any words that aren't.
+  const sb = o.message.indexOf('-----BEGIN BRC SIGNED MESSAGE-----');
+  const se = o.message.indexOf('-----END BRC SIGNATURE-----');
+  if (sb >= 0) {
     let inner;
     try { inner = seal.verifySigned(o.message); } catch (e) { inner = { valid: false, reason: e.message }; }
-    rows.splice(1, 0, ['Signature inside', inner.valid
-      ? el('span', {}, el('span', { class: 'ok-text', text: 'Valid. ' }), el('span', { text: 'Signed by ' }), addressNode(inner.address), inner.hidden ? el('span', { text: '. The message has hidden characters, so read it carefully.' }) : null)
-      : el('span', { class: 'bad-text', text: `Not valid. ${inner.reason}` })]);
-    if (!inner.valid && tone === 'good') tone = 'warn';
+    const outside = se > sb ? (o.message.slice(0, sb) + '\n' + o.message.slice(se + '-----END BRC SIGNATURE-----'.length)).trim() : '';
+    rows = [['From', fromRow]];
+    if (inner.valid) {
+      rows.push(['Signed by', el('span', {}, addressNode(inner.address), el('span', { class: 'ok-text', text: '  signature checked' }))]);
+      rows.push(['Signed text', el('div', { class: 'signed-box', text: inner.message })]);
+      rows.push(['Note', el('span', { text: "This signed message could have been copied from anywhere. It proves who wrote those words, not who sealed this letter or who it was meant for." })]);
+    } else {
+      rows.push(['Signature', el('span', { class: 'bad-text', text: `Not valid. ${inner.reason}` })]);
+      rows.push(['Letter', el('div', { class: 'message-box', text: o.message })]);
+      if (tone === 'good') tone = 'warn';
+    }
+    if (inner.valid && outside) {
+      rows.push(['Not signed', el('div', { class: 'unsigned-box', text: outside })]);
+      tone = 'warn';
+      title = 'Opened, but part of it is not signed';
+      lede = 'Only the signed text below is vouched for. The words in the red box were added by whoever sealed the letter, and could be from anyone.';
+    }
   }
   out.append(verdict(tone, title, el('p', { text: lede }), kv(rows)));
 });
@@ -1030,5 +1067,27 @@ document.addEventListener('touchend', () => {
 });
 document.addEventListener('touchcancel', () => endSwipe(false)); // the browser took the gesture (e.g. Safari's own back swipe)
 
+// A file dropped anywhere outside a drop zone would otherwise open in the tab, showing a
+// wallet file's contents. Ignore such drops.
+for (const ev of ['dragover', 'drop']) document.addEventListener(ev, (e) => { if (!(e.target instanceof Element && e.target.closest('.drop'))) e.preventDefault(); });
+
+// A real wallet is forgotten after 10 minutes without use, in case the tab is left open.
+const IDLE_MS = 10 * 60 * 1000;
+let lastActive = Date.now();
+for (const ev of ['pointerdown', 'keydown', 'input', 'touchstart']) document.addEventListener(ev, () => { lastActive = Date.now(); }, { passive: true, capture: true });
+function idleCheck() {
+  if (wallet && !testWallets && Date.now() - lastActive > IDLE_MS) {
+    forgetEverything();
+    clearLoader();
+    clearSecretsFromPage();
+    renderWallet();
+    $('#wallet-sub').textContent = 'Your wallet was forgotten after 10 minutes without use. Load it again when you need it.';
+    for (const node of $$('[data-wallet-sub]')) node.textContent = 'Forgotten after 10 minutes idle';
+  }
+}
+setInterval(idleCheck, 15 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) idleCheck(); });
+
+if (EMBEDDED) { $('#frame-warning').hidden = false; $('#btn-load').title = 'Turned off inside another page'; }
 renderWallet();
 readHash();

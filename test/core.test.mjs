@@ -258,6 +258,14 @@ const fixture = {
 };
 writeFileSync('build/crosscheck.json', JSON.stringify(fixture, null, 2));
 
+t('review fixes: crafted pastes stay fast, U+034F is flagged as hidden', () => {
+  const fast = (f) => { const s = Date.now(); try { f(); } catch {} return Date.now() - s; };
+  assert.ok(fast(() => c.verifySigned('-----BEGIN BRC SIGNED MESSAGE-----\nhi\n-----BEGIN BRC SIGNATURE-----\nAddress:' + ' '.repeat(60000) + '\n-----END BRC SIGNATURE-----')) < 200);
+  assert.ok(fast(() => c.parseReceipt('-----BEGIN BRC STAMP RECEIPT-----' + '\n'.repeat(15000) + 'x-----END BRC STAMP RECEIPT-----')) < 200);
+  assert.ok(fast(() => c.parseDrand('1' + ' '.repeat(1990) + 'z')) < 200);
+  assert.equal(c.hasHiddenCharacters('pay 1\u034F0 BRC'), true);
+});
+
 console.log(`\n${passed} core tests passed`);
 
 // A BRC Vault backup and a wallet file for the page test (fast scrypt setting so the test is quick).

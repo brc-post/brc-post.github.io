@@ -136,7 +136,7 @@ function strictVerify(sigBytes, msgBytes, address) {
 
 // Characters that are invisible, change text direction, or look like blanks.
 // A signed message must be exactly what it looks like on screen.
-const HIDDEN_CHARS = /[\p{Cf}\p{Co}ᅟᅠㅤﾠ⠀︀-︍᠋-᠏]|[\u{E0100}-\u{E01EF}]/u;
+const HIDDEN_CHARS = /[\p{Cf}\p{Co}\u034F\u17B4\u17B5\u3164\u2800ᅟᅠㅤﾠ⠀︀-︍᠋-᠏]|[\u{E0100}-\u{E01EF}]/u;
 
 /** Does this text contain hidden or direction-changing characters? */
 export function hasHiddenCharacters(text) {
@@ -185,6 +185,17 @@ export function signMessage(wallet, text) {
   };
 }
 
+/** The hex (spaces allowed) that follows `label`, up to `stop` or the end. Returns [all, hex] like a match, or null. */
+function fieldAfter(text, label, stop) {
+  const at = text.indexOf(label);
+  if (at < 0) return null;
+  let rest = text.slice(at + label.length);
+  if (stop) { const end = rest.indexOf(stop); if (end >= 0) rest = rest.slice(0, end); }
+  const hex = rest.replace(/\s+/g, '');
+  if (!hex || !/^[0-9a-fA-F]+$/.test(hex)) return stop ? null : (/^[0-9a-fA-F]/.test(hex) ? [rest, hex.match(/^[0-9a-fA-F]+/)[0]] : null);
+  return [rest, hex];
+}
+
 /** Pull the message, address and signature out of a pasted signed-message block. */
 export function parseSigned(text) {
   const t = cleanPaste(text);
@@ -198,8 +209,9 @@ export function parseSigned(text) {
   if (t.indexOf(SIGNED_BEGIN, a + 1) >= 0) throw new Error('This contains more than one signed message. Check one at a time.');
   const message = normalizeMessage(t.slice(a + SIGNED_BEGIN.length, b));
   const tail = t.slice(b + SIG_BEGIN.length, c);
-  const addrMatch = tail.match(/Address:\s*([0-9a-fA-F\s]+?)\s*(?=Signature:|$)/);
-  const sigMatch = tail.match(/Signature:\s*([0-9a-fA-F\s]+)/);
+  // Read field values without regexes that can backtrack on long runs of spaces.
+  const addrMatch = fieldAfter(tail, 'Address:', 'Signature:');
+  const sigMatch = fieldAfter(tail, 'Signature:', null);
   if (!addrMatch) throw new Error('The Address line is missing from the signature.');
   if (!sigMatch) throw new Error('The Signature line is missing.');
   const address = parseAddress(addrMatch[1]);

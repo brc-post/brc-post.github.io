@@ -159,6 +159,7 @@ export function receiptText(st, { lockId = null, block = null, fileName = '', fi
 /** Read a pasted receipt. The "File:" line is a label only; the fingerprint is what counts. */
 export function parseReceipt(text) {
   // Same cleaning as BRC Pulse's reader: line endings, invisible characters, 0x, thousands commas.
+  if (String(text || '').length > 20000) throw new Error('This is far too long to be a stamp receipt.');
   const t = String(text || '').replace(/\r\n?/g, '\n').replace(/[\u200B-\u200D\u2060\uFEFF]/g, '');
   const a = t.indexOf(R_BEGIN);
   const b = t.indexOf(R_END);
@@ -166,8 +167,13 @@ export function parseReceipt(text) {
   if (b < a) throw new Error('The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.');
   const body = t.slice(a + R_BEGIN.length, b);
   const field = (name) => {
-    const m = body.match(new RegExp(`^\\s*>?\\s*${name}:\\s*(.+)$`, 'mi'));
-    return m ? m[1].trim() : null;
+    // Line by line, so a paste full of blank lines can't make the search slow.
+    const want = name.toLowerCase() + ':';
+    for (const raw of body.split('\n')) {
+      const line = raw.replace(/^[ \t]*>?[ \t]*/, '');
+      if (line.slice(0, want.length).toLowerCase() === want) { const v = line.slice(want.length).trim(); return v || null; }
+    }
+    return null;
   };
   const need = (name) => {
     const v = field(name);
@@ -276,7 +282,9 @@ export function checkStampInBlock(receipt, block) {
   if (receipt.lockId && lock.scriptHash !== stampScriptHash(receipt.stamp)) {
     return { ok: false, reason: 'A lock with this ID exists, but it does not hold this stamp. The fingerprint, salt or owner on the receipt is different from what was stamped.' };
   }
-  return { ok: true, height: blk.height, timestamp: blk.timestamp, blockHash: blk.hash, from: lock.from, amount: lock.amount };
+  // ownerFixed: the coins go back to the wallet that signed the lock, not the receipt's Owner line.
+  const ownerFixed = lock.scriptHash !== stampScriptHash(receipt.stamp) ? lock.from : null;
+  return { ok: true, height: blk.height, timestamp: blk.timestamp, blockHash: blk.hash, from: lock.from, amount: lock.amount, ownerFixed };
 }
 
 /** When the receipt's drand beacon was published (seconds), or null. */

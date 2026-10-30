@@ -49,6 +49,7 @@ export function verifyDrand(round, signatureHex) {
  * or the JSON a drand relay returns. Returns { round, signature } or throws.
  */
 export function parseDrand(text) {
+  if (String(text || '').length > 2000) throw new Error('This is far too long to be a drand beacon.');
   const t = String(text || '').trim();
   let round, sig;
   if (t.startsWith('{')) {
@@ -56,7 +57,8 @@ export function parseDrand(text) {
     try { j = JSON.parse(t); } catch { throw new Error("This looks like drand JSON but it can't be read. Copy it again."); }
     round = Number(j.round); sig = String(j.signature || '');
   } else {
-    const m = t.replace(/,/g, '').match(/^(\d+)\s*[:\s]\s*([0-9a-fA-F\s]+)$/);
+    // Collapse whitespace first, so the pattern below can't backtrack on long runs of spaces.
+    const m = t.replace(/,/g, '').replace(/\s+/g, ' ').match(/^(\d+)(?: ?: ?| )([0-9a-fA-F ]+)$/);
     if (!m) throw new Error('A drand beacon is a round number and a signature, like "33522523 a6aeb7…". Copy it from BRC Pulse → Stamps.');
     round = Number(m[1]); sig = m[2];
   }
