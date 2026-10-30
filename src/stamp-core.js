@@ -155,7 +155,8 @@ export function receiptText(st, { lockId, block = null, fileName = '', fileSize 
 
 /** Read a pasted receipt. The "File:" line is a label only; the fingerprint is what counts. */
 export function parseReceipt(text) {
-  const t = String(text || '').replace(/\r\n?/g, '\n');
+  // Same cleaning as BRC Pulse's reader: line endings, invisible characters, 0x, thousands commas.
+  const t = String(text || '').replace(/\r\n?/g, '\n').replace(/[\u200B-\u200D\u2060\uFEFF]/g, '');
   const a = t.indexOf(R_BEGIN);
   const b = t.indexOf(R_END);
   if (a < 0) throw new Error('This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.');
@@ -173,14 +174,14 @@ export function parseReceipt(text) {
   let after = null;
   const afterLine = field('After');
   if (afterLine) {
-    const m = afterLine.match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
+    const m = afterLine.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/);
     if (!m) throw new Error('The receipt\'s "After:" line should be a block number and a block ID.');
     after = { height: m[1], hash: m[2] };
   }
   let drand = null;
   const drandLine = field('Drand');
   if (drandLine) {
-    const m = drandLine.match(/^(\d+)\s+([0-9a-fA-F]{96})$/);
+    const m = drandLine.replace(/,/g, '').match(/^(\d+)\s+(?:0x)?([0-9a-fA-F]{96})$/);
     if (!m) throw new Error('The receipt\'s "Drand:" line should be a round number and a 96-character signature.');
     drand = { round: Number(m[1]), signature: m[2] };
   }

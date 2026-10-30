@@ -543,7 +543,12 @@ $('#st-drand').addEventListener('input', () => {
   const v = $('#st-drand').value.trim(), out = $('#st-drand-status');
   delete out.dataset.over;
   if (!v) { out.textContent = ''; return; }
-  try { const b = drand.parseDrand(v); out.textContent = `✓ round ${b.round.toLocaleString('en-US')}, ${utcTime(drand.drandRoundTime(b.round))}`; }
+  try {
+    const b = drand.parseDrand(v), age = Date.now() / 1000 - drand.drandRoundTime(b.round);
+    out.textContent = `✓ round ${b.round.toLocaleString('en-US')}, ${utcTime(drand.drandRoundTime(b.round))}`;
+    // An old beacon still works, but only proves "after" that older moment.
+    if (age > 15 * 60) { out.textContent += `: ${Math.round(age / 60).toLocaleString('en-US')} minutes old, copy a fresh one for a tighter proof`; out.dataset.over = ''; }
+  }
   catch { out.textContent = 'not a valid beacon'; out.dataset.over = ''; }
 });
 // BRC Pulse's "Copy both" gives "92510 <block id>": split it into the two boxes.

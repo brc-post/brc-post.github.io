@@ -211,3 +211,17 @@ t('block "after" and drand together', () => {
 });
 
 console.log(`${passed} stamp tests passed (with drand)`);
+
+t('receipts read the same in Seal as in Pulse: commas, 0x and invisible characters', () => {
+  const b = vec.at(-1);
+  const st = c.newStamp({ fingerprint: fp, owner: me.address, after: { height: 92500, hash: 'cd'.repeat(32) }, drand: b });
+  const txt = c.receiptText(st, { lockId: 'ef'.repeat(32) })
+    .replace(`Drand: ${b.round}`, `Drand: ${b.round.toLocaleString('en-US')}`)
+    .replace(`After: 92500 `, 'After: 92,500 0x')
+    .replace('Owner: ', 'Owner: \u200B');
+  const r = c.parseReceipt(txt);
+  assert.equal(r.stamp.drand.round, b.round);
+  assert.equal(r.stamp.after.height, 92500);
+  assert.equal(c.stampScriptHash(r.stamp), c.stampScriptHash(st));
+});
+console.log(`${passed} stamp tests passed (with parity check)`);

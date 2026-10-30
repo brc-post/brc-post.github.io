@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3IkKXCW3pJj+z45P2e4920+rK/uqNAHCC3M4GLRse3E='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-otDFe5HBNIrAY7u43qS+J6nb6GJbbiL9RRD8MGl5z3E='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -457,7 +457,7 @@ footer p { margin: 0.25rem 0; }
     </section>
 
     <footer>
-      <p>BRC Seal 0.1, test build <span class="mono">dc890a5c</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.1, test build <span class="mono">a2d0c57b</span>. Works offline. Nothing you type leaves this page.</p>
       <p>Part of the BRC family with BRC Vault and BRC Pulse. Not affiliated with BrowserCoin.</p>
     </footer>
   </main>
@@ -10025,7 +10025,7 @@ ${message}`);
     return lines.join("\n");
   }
   function parseReceipt(text) {
-    const t = String(text || "").replace(/\r\n?/g, "\n");
+    const t = String(text || "").replace(/\r\n?/g, "\n").replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
     const a = t.indexOf(R_BEGIN);
     const b = t.indexOf(R_END);
     if (a < 0) throw new Error("This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.");
@@ -10043,14 +10043,14 @@ ${message}`);
     let after = null;
     const afterLine = field2("After");
     if (afterLine) {
-      const m = afterLine.match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
+      const m = afterLine.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/);
       if (!m) throw new Error(`The receipt's "After:" line should be a block number and a block ID.`);
       after = { height: m[1], hash: m[2] };
     }
     let drand = null;
     const drandLine = field2("Drand");
     if (drandLine) {
-      const m = drandLine.match(/^(\d+)\s+([0-9a-fA-F]{96})$/);
+      const m = drandLine.replace(/,/g, "").match(/^(\d+)\s+(?:0x)?([0-9a-fA-F]{96})$/);
       if (!m) throw new Error(`The receipt's "Drand:" line should be a round number and a 96-character signature.`);
       drand = { round: Number(m[1]), signature: m[2] };
     }
@@ -10604,8 +10604,12 @@ ${message}`);
       return;
     }
     try {
-      const b = parseDrand(v);
+      const b = parseDrand(v), age = Date.now() / 1e3 - drandRoundTime(b.round);
       out.textContent = `\u2713 round ${b.round.toLocaleString("en-US")}, ${utcTime(drandRoundTime(b.round))}`;
+      if (age > 15 * 60) {
+        out.textContent += `: ${Math.round(age / 60).toLocaleString("en-US")} minutes old, copy a fresh one for a tighter proof`;
+        out.dataset.over = "";
+      }
     } catch {
       out.textContent = "not a valid beacon";
       out.dataset.over = "";
