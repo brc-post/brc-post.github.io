@@ -397,19 +397,32 @@ function show(name) {
   document.title = name === 'home' ? 'BRC Seal' : `${screen.querySelector('h2').textContent} · BRC Seal`;
 }
 
+// Inside an embedded viewer (for example a preview frame) the page may not be allowed to change its
+// own address. Then Seal keeps its own back history instead of the browser's.
+let canUseHistory = true;
+const memoryBack = [];
+
 /** Go to a screen, adding a history entry so Back (and the phone's back gesture) return here. */
 function go(name) {
   if (current === name) return;
-  history.pushState({ brcSeal: true }, '', '#' + name);
-  readHash();
+  if (canUseHistory) {
+    try { history.pushState({ brcSeal: true }, '', '#' + name); readHash(); return; } catch { canUseHistory = false; }
+  }
+  memoryBack.push(current);
+  show(name);
 }
 
-for (const b of $$('[data-back]')) {
-  b.addEventListener('click', () => {
-    if (history.state && history.state.brcSeal) history.back();
-    else { history.replaceState(null, '', '#' + (PARENT[current] || 'home')); readHash(); }
-  });
+function goBack() {
+  if (canUseHistory && history.state && history.state.brcSeal) { history.back(); return; }
+  if (memoryBack.length) { show(memoryBack.pop()); return; }
+  const parent = PARENT[current] || 'home';
+  if (canUseHistory) {
+    try { history.replaceState(null, '', '#' + parent); readHash(); return; } catch { canUseHistory = false; }
+  }
+  show(parent);
 }
+
+for (const b of $$('[data-back]')) b.addEventListener('click', goBack);
 for (const a of $$('a[href^="#"]')) {
   a.addEventListener('click', (e) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
@@ -920,14 +933,14 @@ $('#st-cmp-file').addEventListener('change', async (e) => {
 
 let swipe = null;
 const hint = $('#edge-hint');
-function endSwipe(goBack) {
+function endSwipe(back) {
   if (!swipe) return;
   const scr = swipe.screen;
   swipe = null;
   scr.classList.remove('dragging');
   hint.style.opacity = '0';
   hint.style.transform = '';
-  if (goBack) {
+  if (back) {
     scr.style.transform = ''; scr.style.opacity = '';
     scr.querySelector('[data-back]').click();
     return;

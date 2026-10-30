@@ -358,6 +358,27 @@ with sync_playwright() as pw:
     p2.screenshot(path=str(out / '06-phone.png'), full_page=True)
     ok('fits a 390px phone screen without sideways scrolling')
 
+    # --- Inside an embedded viewer that can't change its address (like a preview frame) ---
+    html = pathlib.Path('dist/brc-seal.html').read_text()
+    framed = browser.new_context(viewport={'width': 390, 'height': 844}).new_page()
+    framed.on('pageerror', lambda e: errors.append('framed: ' + str(e)))
+    framed.set_content('<iframe id="f" sandbox="allow-scripts allow-modals" style="width:390px;height:800px;border:0"></iframe>')
+    framed.eval_on_selector('#f', '(f, h) => { f.srcdoc = h; }', html)
+    fr = framed.frame_locator('#f')
+    expect(fr.locator('#go-sign')).to_be_visible()
+    fr.locator('#go-sign').click()
+    expect(fr.locator('#p-sign')).to_be_visible()
+    fr.locator('#p-sign [data-back]').click()
+    expect(fr.locator('#s-home')).to_be_visible()
+    fr.locator('#go-received').click()
+    fr.locator('#go-open').click()
+    expect(fr.locator('#p-open')).to_be_visible()
+    fr.locator('#p-open [data-back]').click()
+    expect(fr.locator('#s-received')).to_be_visible()
+    fr.locator('#s-received [data-back]').click()
+    expect(fr.locator('#s-home')).to_be_visible()
+    ok('inside a frame that cannot change its address, screens and Back still work')
+
     # --- Reduced motion: everything still appears, straight away ---
     calm = browser.new_context(viewport={'width': 390, 'height': 844}, reduced_motion='reduce')
     p3 = calm.new_page()
