@@ -5,7 +5,8 @@ Sign, verify and seal messages with BrowserCoin (BRC) addresses.
 One offline web page: dist/brc-seal.html. Open it in Chrome or Safari.
 It has no network access at all, and nothing you type leaves the page.
 
-Part of the BRC family with BRC Vault (backups) and BRC Pulse (live dashboard).
+Part of the BRC Vault family, with BRC Vault (backups) and BRC Pulse (live
+dashboard). An independent community project, not affiliated with BrowserCoin.
 
 What it does
 ------------
