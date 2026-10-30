@@ -394,12 +394,12 @@ export function openNote(text, wallet) {
 
 function raffleHeight(height) {
   const h = typeof height === 'string' ? Number(height.replace(/[,\s]/g, '')) : height;
-  if (!Number.isSafeInteger(h) || h <= 0) throw new Error('The raffle block height must be a whole number, like 100000.');
+  if (!Number.isSafeInteger(h) || h <= 0) throw new Error('The giveaway block height must be a whole number, like 100000.');
   return h;
 }
 
 export function raffleEntryText(height) {
-  return `I'm entering the BrowserCoin block ${raffleHeight(height).toLocaleString('en-US')} raffle.`;
+  return `I'm entering the BrowserCoin block ${raffleHeight(height).toLocaleString('en-US')} giveaway.`;
 }
 
 /**

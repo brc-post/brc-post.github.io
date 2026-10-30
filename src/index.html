@@ -19,9 +19,10 @@
   --sunken: #f0f2f5;
   --ink: #101318;
   --ink-2: #3a414c;
-  --muted: #69717d;
-  --hairline: #e3e6eb;
+  --muted: #5d6470;
+  --hairline: #e8eaee;
   --hairline-strong: #d3d8df;
+  --logo-ink: #353535;
   --brand: #5956fd;
   --brand-deep: #4340e0;
   --brand-tint: #eeeeff;
@@ -32,132 +33,190 @@
   --danger-tint: #fbece8;
   --caution: #8c5800;
   --caution-tint: #fbf3e2;
-  --radius-lg: 20px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --shadow-card: 0 1px 2px rgba(16, 19, 24, 0.04), 0 8px 24px -6px rgba(16, 19, 24, 0.08), 0 32px 64px -24px rgba(16, 19, 24, 0.12);
+  --radius-xl: 20px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-card: 0 1px 2px rgba(16, 19, 24, 0.04), 0 8px 24px -10px rgba(16, 19, 24, 0.10);
+  --shadow-lift: 0 2px 4px rgba(16, 19, 24, 0.05), 0 16px 32px -12px rgba(16, 19, 24, 0.18);
   --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Motion: one easing for things settling, one spring for things landing. */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-fast: 160ms;
+  --t-med: 320ms;
+  --t-slow: 560ms;
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
-body { margin: 0; background: var(--canvas); color: var(--ink); font: 400 16px/1.55 var(--sans); font-feature-settings: "ss01"; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 400 16px/1.55 var(--sans); font-feature-settings: "ss01"; overflow-x: hidden; }
 button, input, textarea { font: inherit; color: inherit; }
+a { color: var(--brand-deep); }
 ::selection { background: var(--brand-tint); }
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 6px; }
-.wrap { width: min(100% - 2rem, 46rem); margin-inline: auto; }
+.wrap { width: min(100% - 2rem, 40rem); margin-inline: auto; }
 
 /* ---------- Top bar (shared look with BRC Vault and BRC Pulse) ---------- */
-.topbar { position: sticky; top: 0; z-index: 5; background: rgba(245, 246, 248, 0.82); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; }
+.topbar { position: sticky; top: 0; z-index: 5; background: rgba(245, 246, 248, 0.82); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; transition: border-color var(--t-med) var(--ease); }
 .topbar.is-scrolled { border-bottom-color: var(--hairline); }
 .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 3.75rem; gap: 0.75rem; }
-.wordmark { font-size: 1.22rem; line-height: 1; letter-spacing: -0.066em; text-transform: uppercase; white-space: nowrap; }
+.wordmark { font-size: 1.22rem; line-height: 1; letter-spacing: -0.066em; text-transform: uppercase; white-space: nowrap; color: var(--logo-ink); }
 .wordmark .wm-light { font-weight: 408; }
 .wordmark .wm-bold { font-weight: 662; }
 .family { display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 11px; background: var(--sunken); border: 1px solid var(--hairline); }
-.family a, .family .cur { display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px; border-radius: 8px; color: var(--muted); text-decoration: none; }
-.family svg { width: 17px; height: 17px; display: block; flex: none; color: #353535; }
-.family .wordmark { font-size: 0.82rem; }
+.family a, .family .cur { display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px; border-radius: 8px; color: var(--muted); text-decoration: none; transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease); }
+.family svg { width: 17px; height: 17px; display: block; flex: none; color: var(--logo-ink); }
+.family .wordmark { font-size: 0.82rem; color: inherit; }
 .family .cur { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16, 19, 24, 0.08), 0 2px 8px rgba(16, 19, 24, 0.05); }
-.family a:hover { color: var(--ink); }
+.family .cur .wordmark { color: var(--logo-ink); }
+.family a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.6); }
 @media (max-width: 36rem) { .family a .wordmark { display: none; } .family a, .family .cur { padding: 0 8px; } }
 .status-pill { display: inline-flex; align-items: center; gap: 0.45rem; height: 2rem; padding: 0 0.8rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font-size: 0.82rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .status-pill .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--good-bright); box-shadow: 0 0 0 3px var(--good-tint); }
 @media (max-width: 30rem) { .status-pill .pill-word { display: none; } .status-pill { padding: 0 0.6rem; } }
 
-.test-banner { margin: 1rem 0 0; padding: 0.7rem 0.95rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.88rem; }
+.test-banner { margin: 0.9rem 0 0; padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); background: var(--caution-tint); color: #5c3d06; font-size: 0.84rem; line-height: 1.45; }
 .test-banner strong { font-weight: 600; }
 
-/* ---------- Hero ---------- */
-.hero { padding: 3.25rem 0 2rem; }
-.hero h1 { margin: 0; font-weight: 600; font-size: clamp(2.3rem, 7vw, 3.6rem); line-height: 1.03; letter-spacing: -0.045em; max-width: 15ch; }
-.hero p { margin: 1.1rem 0 0; font-size: 1.12rem; line-height: 1.55; color: var(--muted); max-width: 36rem; }
-.hero p strong { color: var(--ink); font-weight: 500; }
+/* ---------- Screens ---------- */
+.screen { padding: 1.4rem 0 0.5rem; }
+.screen:focus { outline: none; }
 
-/* ---------- Cards ---------- */
-.card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 1px solid rgba(16, 19, 24, 0.05); }
-.card + .card { margin-top: 1.25rem; }
+/* ---------- Home: the brand up front ---------- */
+.hero { position: relative; padding: 1.6rem 0 1.5rem; }
+.hero::before { content: ""; position: absolute; z-index: -1; left: -4rem; top: -3rem; width: 22rem; height: 22rem; border-radius: 50%; background: radial-gradient(closest-side, rgba(89, 86, 253, 0.13), rgba(89, 86, 253, 0)); pointer-events: none; }
+.lockup { display: flex; align-items: center; gap: 0.9rem; }
+.lockup .big-mark { width: 4.25rem; height: 4.25rem; flex: none; color: var(--logo-ink); overflow: visible; }
+.lockup .wordmark { font-size: 2.35rem; }
+.hero h1 { margin: 1.5rem 0 0; font-weight: 650; font-size: clamp(2.1rem, 8.4vw, 2.75rem); line-height: 1.04; letter-spacing: -0.04em; }
+.hero h1 .w { display: inline-block; }
+.hero h1 .accent { color: var(--brand); }
+.hero p { margin: 0.75rem 0 0; font-size: 1.04rem; line-height: 1.5; color: var(--muted); max-width: 30rem; }
 
-/* Wallet strip: which wallet this page is acting as */
-.wallet { padding: 1.1rem 1.5rem; }
-.wallet-row { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
-.wallet-icon { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 10px; background: var(--sunken); border: 1px solid var(--hairline); display: grid; place-items: center; color: var(--ink-2); }
-.wallet-icon svg { width: 1.15rem; height: 1.15rem; }
-.wallet[data-state="loaded"] .wallet-icon { background: var(--good-tint); border-color: #c9e6db; color: var(--good); }
-.wallet-text { flex: 1 1 14rem; min-width: 0; }
-.wallet-text strong { display: block; font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; }
-.wallet-text span { display: block; color: var(--muted); font-size: 0.88rem; }
-.wallet-text .mono { color: var(--ink-2); }
-.wallet-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.loader { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--hairline); }
-.who { display: inline-grid; grid-auto-flow: column; padding: 3px; gap: 2px; background: var(--sunken); border-radius: 10px; margin-top: 0.9rem; }
-.who button { appearance: none; border: 0; background: transparent; height: 2.1rem; padding: 0 0.9rem; border-radius: 8px; font-size: 0.88rem; font-weight: 500; color: var(--muted); cursor: pointer; }
-.who button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
+.tiles { display: flex; flex-direction: column; gap: 0.65rem; }
+.tile { display: flex; gap: 0.9rem; align-items: center; padding: 1rem; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--hairline); text-decoration: none; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 19, 24, 0.03); transition: transform var(--t-med) var(--ease), box-shadow var(--t-med) var(--ease), border-color var(--t-med) var(--ease); -webkit-tap-highlight-color: transparent; }
+.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); border-color: #dfe2e8; }
+.tile:active { transform: scale(0.985); transition-duration: 90ms; }
+.tile-icon { flex: none; width: 2.9rem; height: 2.9rem; border-radius: 14px; background: var(--brand-tint); display: grid; place-items: center; color: var(--brand-deep); transition: background var(--t-med) var(--ease), color var(--t-med) var(--ease), transform var(--t-med) var(--spring); }
+.tile-icon svg { width: 1.5rem; height: 1.5rem; }
+.tile:hover .tile-icon { background: var(--brand); color: #fff; transform: rotate(-4deg) scale(1.04); }
+.tile-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tile-text strong { font-size: 1.06rem; font-weight: 600; letter-spacing: -0.012em; }
+.tile-text span { font-size: 0.9rem; line-height: 1.35; color: var(--muted); }
+.tile .chev { flex: none; width: 1.1rem; height: 1.1rem; color: #9aa1ab; transition: transform var(--t-med) var(--spring), color var(--t-med) var(--ease); }
+.tile:hover .chev { transform: translateX(3px); color: var(--ink); }
+.tile.ghost { background: transparent; border-style: dashed; border-color: #cfd4db; box-shadow: none; }
+.tile.ghost .tile-icon { background: var(--surface); border: 1px solid var(--hairline); color: var(--ink-2); }
+.tile.ghost:hover { background: var(--surface); border-style: solid; }
+.tile.ghost:hover .tile-icon { background: var(--ink); color: #fff; border-color: var(--ink); }
 
-/* Tabs */
-.tabs-head { padding: 1.25rem 1.5rem 0; }
-.segmented { display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px; background: var(--sunken); border-radius: 12px; gap: 2px; }
-.segmented button { appearance: none; border: 0; background: transparent; height: 2.6rem; border-radius: 9px; font-weight: 500; font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: color 0.2s var(--ease), background 0.2s var(--ease); }
-.segmented button[aria-selected="true"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
-.segmented button:hover:not([aria-selected="true"]) { color: var(--ink-2); }
-.panel { padding: 0.25rem 1.5rem 1.6rem; }
-.panel-lede { margin: 1.1rem 0 0; color: var(--muted); font-size: 0.95rem; }
-.panel-lede strong { color: var(--ink); font-weight: 500; }
+.trust { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 1.1rem 0 0; padding: 0; list-style: none; font-size: 0.84rem; color: var(--muted); }
+.trust li { display: inline-flex; align-items: center; gap: 0.4rem; }
+.trust svg { width: 0.95rem; height: 0.95rem; color: var(--good); }
 
-/* Inputs */
+/* Wallet chip: which wallet the page is acting as. Opens the wallet sheet. */
+.wallet-chip { appearance: none; display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-top: 1.25rem; padding: 0.7rem 0.85rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--hairline); text-align: left; cursor: pointer; transition: border-color var(--t-med) var(--ease), box-shadow var(--t-med) var(--ease); }
+.wallet-chip:hover { border-color: var(--hairline-strong); box-shadow: var(--shadow-card); }
+.wallet-chip .wc-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.wallet-chip .wc-text strong { font-size: 0.92rem; font-weight: 600; }
+.wallet-chip .wc-text span { font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wallet-chip .wc-text .mono { font-size: 0.78rem; }
+.wallet-chip .wc-act { font-size: 0.88rem; font-weight: 500; color: var(--brand-deep); padding: 0.4rem 0.2rem; }
+.wallet-mini { appearance: none; display: inline-flex; align-items: center; gap: 0.45rem; height: 2.25rem; padding: 0 0.7rem 0 0.35rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font-size: 0.84rem; font-weight: 500; color: var(--ink-2); cursor: pointer; white-space: nowrap; max-width: 11rem; transition: border-color var(--t-fast) var(--ease); }
+.wallet-mini:hover { border-color: var(--hairline-strong); }
+.wallet-mini .wm-name { overflow: hidden; text-overflow: ellipsis; }
+.wallet-chip.flash, .wallet-mini.flash { animation: chipFlash 900ms var(--ease); }
+
+.idc { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; width: 2.1rem; height: 2.1rem; padding: 4px; border-radius: 10px; background: var(--brand-tint); }
+.idc i { border-radius: 2px; }
+.wallet-mini .idc { width: 1.6rem; height: 1.6rem; padding: 3px; border-radius: 999px; gap: 1px; }
+.idc.empty { background: var(--sunken); border: 1.5px dashed var(--hairline-strong); }
+
+/* ---------- Screen header ---------- */
+.screen-head { display: flex; align-items: center; gap: 0.75rem; }
+.back { appearance: none; flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 14px; background: var(--surface); border: 1px solid var(--hairline); color: var(--ink); cursor: pointer; transition: transform var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
+.back:hover { border-color: var(--hairline-strong); }
+.back:hover svg { transform: translateX(-2px); }
+.back svg { width: 1.1rem; height: 1.1rem; transition: transform var(--t-med) var(--spring); }
+.back:active { transform: scale(0.94); }
+.screen-head .spacer { flex: 1; }
+.screen-title { display: flex; align-items: center; gap: 0.8rem; margin: 1.3rem 0 0; }
+.screen-title .tile-icon { width: 3.1rem; height: 3.1rem; }
+.screen-title h2 { margin: 0; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.035em; font-weight: 650; }
+.screen-title h2:focus { outline: none; }
+.lede { margin: 0.7rem 0 0; color: var(--muted); font-size: 0.98rem; line-height: 1.5; }
+.lede strong { color: var(--ink); font-weight: 500; }
+
+/* ---------- Cards and inputs ---------- */
+.card { margin-top: 1.1rem; padding: 1.15rem 1.2rem 1.3rem; background: var(--surface); border-radius: var(--radius-xl); border: 1px solid var(--hairline); box-shadow: var(--shadow-card); }
 .field { display: block; margin-top: 1rem; }
+.card > .field:first-child { margin-top: 0; }
 .field > span { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.86rem; font-weight: 500; color: var(--ink-2); margin-bottom: 0.4rem; }
 .field > span .count { font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
 .field > span .count[data-over] { color: var(--danger); font-weight: 500; }
-.field input, .field textarea { display: block; width: 100%; border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm); background: var(--surface); transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+.field > span .count[data-good] { color: var(--good); }
+.field input, .field textarea { display: block; width: 100%; border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm); background: var(--surface); transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
 .field input { height: 2.9rem; padding: 0 0.95rem; font-size: 1rem; }
 .field input.mono-input { font: 0.85rem var(--mono); }
-.field textarea { min-height: 7rem; resize: vertical; padding: 0.75rem 0.85rem; font-size: 0.97rem; line-height: 1.5; }
-.field textarea.mono-input { font: 0.8rem/1.55 var(--mono); min-height: 9rem; }
+.field textarea { min-height: 7rem; resize: vertical; padding: 0.75rem 0.85rem; font-size: 1rem; line-height: 1.5; }
+.field textarea.mono-input { font: 0.8rem/1.55 var(--mono); min-height: 8rem; }
 .field input:focus, .field textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint); }
-.field-help { margin: 0.4rem 0 0; font-size: 0.83rem; color: var(--muted); }
+.field-help { margin: 0.4rem 0 0; font-size: 0.84rem; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
-.chip { appearance: none; border: 1px solid var(--hairline-strong); background: var(--surface); border-radius: 999px; height: 1.9rem; padding: 0 0.75rem; font-size: 0.82rem; color: var(--ink-2); cursor: pointer; }
+.chip { appearance: none; border: 1px solid var(--hairline-strong); background: var(--surface); border-radius: 999px; min-height: 2rem; padding: 0 0.8rem; font-size: 0.84rem; color: var(--ink-2); cursor: pointer; transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
 .chip:hover { border-color: #b9c0ca; background: var(--canvas); }
+.chip:active { transform: scale(0.96); }
 .check { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1rem; padding: 0.8rem 0.95rem; background: var(--sunken); border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--ink-2); cursor: pointer; }
-.check input { flex: none; margin: 0.18rem 0 0; width: 1.05rem; height: 1.05rem; accent-color: var(--ink); }
+.check input { flex: none; margin: 0.18rem 0 0; width: 1.05rem; height: 1.05rem; accent-color: var(--brand); }
 .check[aria-disabled="true"] { opacity: 0.6; cursor: not-allowed; }
-.drop { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1rem; border: 1px dashed var(--hairline-strong); border-radius: var(--radius-md); background: var(--canvas); cursor: pointer; position: relative; transition: border-color 0.2s var(--ease), background 0.2s var(--ease); }
+.drop { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem 1rem; border: 1.5px dashed var(--hairline-strong); border-radius: var(--radius-md); background: var(--canvas); cursor: pointer; position: relative; overflow: hidden; transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease); }
 .drop:hover { border-color: #b9c0ca; background: #f1f3f6; }
 .drop.is-over { border-color: var(--brand); background: var(--brand-tint); }
 .drop:focus-within { outline: 2px solid var(--brand); outline-offset: 3px; }
-.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-.drop-text { font-size: 0.9rem; color: var(--muted); line-height: 1.4; }
-.drop-text strong { display: block; color: var(--ink); font-weight: 500; }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; z-index: 2; }
+.drop-icon { flex: none; width: 2.6rem; height: 2.6rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--hairline); display: grid; place-items: center; color: var(--ink-2); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; transition: background var(--t-med) var(--ease), color var(--t-med) var(--ease), border-color var(--t-med) var(--ease); }
+.drop-icon svg { width: 1.2rem; height: 1.2rem; }
+.drop[data-state="done"] { border-style: solid; border-color: #c9e6db; background: var(--surface); }
+.drop[data-state="done"] .drop-icon { background: var(--brand-tint); color: var(--brand-deep); border-color: transparent; animation: pop var(--t-slow) var(--spring); }
+.drop-text { flex: 1; min-width: 0; font-size: 0.88rem; color: var(--muted); line-height: 1.4; overflow-wrap: anywhere; }
+.drop-text strong { display: block; color: var(--ink); font-weight: 600; font-size: 0.95rem; }
+.drop .bar { position: absolute; left: 0; bottom: 0; height: 3px; width: calc(var(--p, 0) * 100%); background: var(--brand); border-radius: 0 3px 3px 0; transition: width 120ms linear, opacity var(--t-med) var(--ease); opacity: 0; }
+.drop[data-state="reading"] .bar { opacity: 1; }
 
 /* Buttons */
 .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.1rem; }
-.btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.75rem; padding: 0 1.15rem; border-radius: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: background 0.2s var(--ease), transform 0.12s var(--ease), opacity 0.2s; white-space: nowrap; }
-.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 3rem; padding: 0 1.25rem; border-radius: var(--radius-md); font-size: 0.98rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: background var(--t-fast) var(--ease), transform 120ms var(--ease), opacity var(--t-fast), box-shadow var(--t-fast) var(--ease); white-space: nowrap; text-decoration: none; }
+.btn:active:not(:disabled) { transform: scale(0.97); }
 .btn-primary { background: var(--ink); color: #fff; box-shadow: 0 1px 2px rgba(16,19,24,.2), inset 0 1px 0 rgba(255,255,255,.08); }
-.btn-primary:hover:not(:disabled) { background: #262b33; }
+.btn-primary:hover:not(:disabled) { background: #262b33; box-shadow: 0 6px 18px -8px rgba(16,19,24,.5); }
 .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--hairline-strong); }
 .btn-secondary:hover:not(:disabled) { background: var(--canvas); }
-.btn-small { height: 2.25rem; padding: 0 0.85rem; font-size: 0.88rem; }
+.btn-small { height: 2.25rem; padding: 0 0.85rem; font-size: 0.86rem; font-weight: 500; border-radius: var(--radius-sm); }
+.btn-block { width: 100%; }
 .btn:disabled { opacity: 0.32; cursor: not-allowed; }
+.btn svg { width: 1rem; height: 1rem; }
+.btn[data-copied] { color: var(--good); border-color: #c9e6db; background: var(--good-tint); }
+.btn[data-copied] .lbl { animation: pop var(--t-med) var(--spring); }
 
 /* Results */
-.out { margin-top: 1.25rem; }
-.out-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem; }
-.out-head strong { font-size: 0.9rem; font-weight: 600; }
-.block { margin: 0; padding: 0.9rem 1rem; background: var(--sunken); border: 1px solid var(--hairline); border-radius: var(--radius-md); font: 0.76rem/1.6 var(--mono); white-space: pre-wrap; word-break: break-all; max-height: 22rem; overflow: auto; user-select: all; -webkit-user-select: all; }
-.verdict { margin-top: 1.25rem; border-radius: var(--radius-md); padding: 1rem 1.1rem; border: 1px solid; }
+.out { margin-top: 1.2rem; }
+.out-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.55rem; }
+.out-head strong { font-size: 0.92rem; font-weight: 600; }
+.out-head .btns { display: flex; gap: 0.4rem; }
+.block { margin: 0; padding: 0.9rem 1rem; background: var(--sunken); border: 1px solid var(--hairline); border-radius: var(--radius-md); font: 0.75rem/1.6 var(--mono); white-space: pre-wrap; word-break: break-all; max-height: 20rem; overflow: auto; user-select: all; -webkit-user-select: all; }
+.verdict { margin-top: 1.2rem; border-radius: var(--radius-md); padding: 1rem 1.1rem; border: 1px solid; }
 .verdict[data-tone="good"] { background: var(--good-tint); border-color: #c9e6db; }
 .verdict[data-tone="bad"] { background: var(--danger-tint); border-color: #f0cdc5; }
 .verdict[data-tone="warn"] { background: var(--caution-tint); border-color: #eedcb5; }
-.verdict-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; letter-spacing: -0.01em; }
+.verdict-title { display: flex; align-items: center; gap: 0.55rem; font-weight: 650; font-size: 1.05rem; letter-spacing: -0.015em; }
 .verdict[data-tone="good"] .verdict-title { color: var(--good); }
 .verdict[data-tone="bad"] .verdict-title { color: var(--danger); }
 .verdict[data-tone="warn"] .verdict-title { color: var(--caution); }
-.verdict-title svg { width: 1.1rem; height: 1.1rem; flex: none; }
+.verdict-title svg { width: 1.4rem; height: 1.4rem; flex: none; }
 .verdict p { margin: 0.35rem 0 0; font-size: 0.9rem; color: var(--ink-2); }
 .kv { margin: 0.8rem 0 0; display: grid; gap: 0.55rem; }
 .kv > div { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.75rem; font-size: 0.88rem; align-items: baseline; }
@@ -167,47 +226,198 @@ button, input, textarea { font: inherit; color: inherit; }
 .ok-text { color: var(--good); font-weight: 500; }
 .mono { font-family: var(--mono); font-size: 0.77rem; letter-spacing: -0.01em; word-break: break-all; line-height: 1.55; }
 .msg { margin: 0.7rem 0 0; font-size: 0.88rem; }
-.msg[data-tone="good"] { color: var(--good); }
+.msg:empty { display: none; }
+.msg[data-tone="good"] { color: var(--good); font-weight: 500; }
 .msg[data-tone="bad"] { color: var(--danger); font-weight: 500; }
 .msg[data-tone="warn"] { color: var(--caution); }
 .msg[data-tone="info"] { color: var(--muted); }
 .notice { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--sunken); font-size: 0.86rem; color: var(--ink-2); }
 .notice strong { font-weight: 600; }
 
-/* "How this works" explainers */
-.stamp-steps { list-style: none; margin: 1.2rem 0 0; padding: 0; counter-reset: st; }
-.stamp-steps > li { position: relative; padding: 0 0 1.4rem 2.6rem; counter-increment: st; }
-.stamp-steps > li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.82rem; font-weight: 600; background: var(--surface); border: 1px solid var(--hairline-strong); color: var(--ink-2); }
-.stamp-steps > li[data-done]::before { content: "✓"; background: var(--good); border-color: var(--good); color: #fff; }
-.stamp-steps h3 { margin: 0.15rem 0 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
-.stamp-steps .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
-.stamp-steps .field:first-of-type { margin-top: 0.7rem; }
-.recipe { margin: 0.7rem 0 0; padding: 0.85rem 1rem; border-radius: var(--radius-md); background: var(--sunken); border: 1px solid var(--hairline); font-size: 0.9rem; }
+/* Success headers: a small animated picture above a result */
+.done-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.9rem; }
+.done-art { flex: none; width: 3.2rem; height: 3.2rem; border-radius: 16px; background: var(--brand-tint); display: grid; place-items: center; color: var(--brand-deep); }
+.done-art svg { width: 2rem; height: 2rem; overflow: visible; }
+.done-head h3 { margin: 0; font-size: 1.15rem; font-weight: 650; letter-spacing: -0.02em; }
+.done-head p { margin: 0.1rem 0 0; font-size: 0.88rem; color: var(--muted); }
+
+/* ---------- Received: one paste box that routes itself ---------- */
+.route-list { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1.1rem; }
+.route-list .tile { padding: 0.85rem 0.95rem; }
+.route-list .tile-icon { width: 2.5rem; height: 2.5rem; border-radius: 12px; }
+.route-list .tile-icon svg { width: 1.25rem; height: 1.25rem; }
+.or { display: flex; align-items: center; gap: 0.75rem; margin: 1.4rem 0 0; font-size: 0.82rem; color: var(--muted); }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+
+/* ---------- Postmark ---------- */
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: st; }
+.steps > li { position: relative; margin-top: 1rem; padding: 1.1rem 1.15rem 1.25rem 3.6rem; counter-increment: st; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); transition: border-color var(--t-med) var(--ease); }
+.steps > li::before { content: counter(st); position: absolute; left: 1.1rem; top: 1.1rem; width: 1.75rem; height: 1.75rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.82rem; font-weight: 650; background: var(--brand-tint); color: var(--brand-deep); transition: background var(--t-med) var(--ease), color var(--t-med) var(--ease); }
+.steps > li[data-done]::before { content: ""; background: var(--good) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.5 4 4 8-9'/%3E%3C/svg%3E") center / 0.95rem no-repeat; animation: pop var(--t-slow) var(--spring); }
+.steps h3 { margin: 0.1rem 0 0; font-size: 1.04rem; font-weight: 650; letter-spacing: -0.015em; }
+.steps .sub { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.steps .drop { margin-top: 0.8rem; }
+@media (max-width: 30rem) { .steps > li { padding: 3.2rem 1rem 1.15rem; } .steps > li::before { top: 1rem; left: 1rem; } .steps > li > h3 { position: absolute; top: 1.1rem; left: 3.3rem; right: 1rem; margin: 0; } }
+.recipe { margin: 0.8rem 0 0; padding: 0.9rem 1rem; border-radius: var(--radius-md); background: var(--sunken); border: 1px solid var(--hairline); font-size: 0.9rem; }
 .recipe ol { margin: 0; padding-left: 1.2rem; }
-.recipe li + li { margin-top: 0.45rem; }
+.recipe li + li { margin-top: 0.5rem; }
 .recipe .mono { font-size: 0.75rem; }
 .inline-copy { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.35rem; }
-.inline-copy .mono { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 6px; padding: 0.4rem 0.55rem; user-select: all; -webkit-user-select: all; }
-.disclosure-after summary { list-style: none; cursor: pointer; }
-.disclosure-after summary::-webkit-details-marker { display: none; }
+.inline-copy .mono { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 8px; padding: 0.4rem 0.55rem; user-select: all; -webkit-user-select: all; }
+.more summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; margin-top: 0.7rem; }
+.more summary::-webkit-details-marker { display: none; }
+.more[open] summary { background: var(--brand-tint); border-color: transparent; color: var(--brand-deep); }
+.more-body { animation: rise var(--t-med) var(--ease); }
+
+.pm-card { margin-top: 1rem; padding: 1.2rem 1.2rem 1.3rem; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); }
+.pm-file { display: flex; align-items: center; gap: 0.75rem; }
+.pm-file .drop-icon { background: var(--brand-tint); color: var(--brand-deep); border-color: transparent; }
+.pm-file .t { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.pm-file .t strong { font-size: 1.02rem; font-weight: 600; overflow-wrap: anywhere; }
+.pm-file .t span { font-size: 0.84rem; color: var(--muted); }
+.pm-stage { position: relative; display: flex; justify-content: center; padding: 1.1rem 0 0.6rem; }
+.pm { position: relative; width: 11.5rem; height: 11.5rem; border-radius: 50%; border: 3px solid var(--brand); color: var(--brand); display: grid; place-items: center; transform: rotate(-6deg); }
+.pm-inner { width: 10rem; height: 10rem; border-radius: 50%; border: 1.5px dashed currentColor; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center; }
+.pm .l1 { font-size: 0.64rem; font-weight: 650; letter-spacing: 0.17em; }
+.pm .l2 { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.045em; line-height: 1; margin-top: 0.15rem; }
+.pm .l3 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.pm .l4 { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.02em; margin-top: 0.2rem; max-width: 8.5rem; line-height: 1.3; }
+.pm[data-pending] { border-style: dashed; color: #8d8bf8; }
+.pm-ring { position: absolute; left: 50%; top: calc(50% + 0.25rem); width: 11.5rem; height: 11.5rem; margin: -5.75rem 0 0 -5.75rem; border-radius: 50%; border: 2px solid var(--brand); opacity: 0; pointer-events: none; }
+.pm-title { text-align: center; }
+.pm-title h3 { margin: 0.3rem 0 0; font-size: 1.5rem; font-weight: 650; letter-spacing: -0.03em; }
+.pm-title p { margin: 0.2rem 0 0; font-size: 0.92rem; color: var(--muted); }
+.rows { margin-top: 1rem; border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: 0 1rem; }
+.rows > div { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid #eef0f3; font-size: 0.9rem; }
+.rows > div:last-child { border-bottom: 0; }
+.rows dt { color: var(--muted); flex: none; }
+.rows dd { margin: 0; text-align: right; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.rows dd small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+.pm-card.pm-wait { opacity: 0; }
+.pm-note { margin: 0.9rem 0 0; font-size: 0.86rem; color: var(--muted); line-height: 1.45; }
+
+/* "How this works" explainers */
 .how { margin-top: 1.4rem; border-top: 1px solid var(--hairline); padding-top: 1rem; }
 .how summary { cursor: pointer; list-style: none; color: var(--brand-deep); font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem; }
 .how summary::-webkit-details-marker { display: none; }
-.how summary::before { content: ""; width: 0.4rem; height: 0.4rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform 0.2s var(--ease); margin-right: 0.15rem; }
+.how summary::before { content: ""; width: 0.4rem; height: 0.4rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform var(--t-med) var(--ease); margin-right: 0.15rem; }
 .how[open] summary::before { transform: rotate(45deg); }
 .how-body { font-size: 0.92rem; color: var(--ink-2); }
+.how[open] .how-body { animation: rise var(--t-med) var(--ease); }
 .how-body p { margin: 0.8rem 0 0; }
 .how-body ol, .how-body ul { margin: 0.6rem 0 0; padding-left: 1.2rem; }
 .how-body li + li { margin-top: 0.35rem; }
 .how-body code { font-family: var(--mono); font-size: 0.85em; background: var(--sunken); padding: 0.05rem 0.3rem; border-radius: 4px; overflow-wrap: anywhere; }
 
-footer { padding: 2.5rem 0 3rem; color: var(--muted); font-size: 0.83rem; text-align: center; }
+/* ---------- Wallet sheet ---------- */
+.sheet { border: 0; padding: 0; margin: auto auto 0; width: min(100%, 34rem); max-width: 100%; max-height: 92vh; background: var(--surface); border-radius: 24px 24px 0 0; box-shadow: 0 -12px 48px -12px rgba(16,19,24,.3); color: var(--ink); overflow: auto; overscroll-behavior: contain; }
+.sheet::backdrop { background: rgba(16, 19, 24, 0.38); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.sheet[open] { animation: sheetUp 420ms var(--ease); }
+.sheet[open]::backdrop { animation: fadeIn 300ms var(--ease); }
+.sheet.closing { animation: sheetDown 240ms var(--ease-in) forwards; }
+.sheet.closing::backdrop { animation: fadeOut 240ms var(--ease-in) forwards; }
+@media (min-width: 40rem) { .sheet { margin: auto; border-radius: 24px; box-shadow: 0 24px 64px -16px rgba(16,19,24,.35); } .sheet[open] { animation: modalIn 360ms var(--ease); } .sheet.closing { animation: modalOut 200ms var(--ease-in) forwards; } }
+.sheet-inner { padding: 0.7rem 1.3rem calc(1.4rem + env(safe-area-inset-bottom)); }
+.grabber { width: 2.5rem; height: 5px; border-radius: 99px; background: var(--hairline-strong); margin: 0 auto 0.7rem; }
+@media (min-width: 40rem) { .grabber { display: none; } .sheet-inner { padding-top: 1.3rem; } }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.sheet-head h2 { margin: 0; font-size: 1.3rem; font-weight: 650; letter-spacing: -0.025em; }
+.x { appearance: none; width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 0; background: var(--sunken); display: grid; place-items: center; cursor: pointer; color: var(--ink-2); transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
+.x:hover { background: var(--hairline); }
+.x:active { transform: scale(0.92); }
+.x svg { width: 1rem; height: 1rem; }
+.wallet-row { display: flex; align-items: center; gap: 0.9rem; margin-top: 1rem; padding: 0.9rem; border-radius: var(--radius-lg); background: var(--canvas); }
+.wallet-row .idc { width: 2.6rem; height: 2.6rem; }
+.wallet-text { flex: 1; min-width: 0; }
+.wallet-text strong { display: block; font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; }
+.wallet-text span { display: block; color: var(--muted); font-size: 0.86rem; }
+.wallet-text .mono { color: var(--ink-2); }
+.wallet-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.9rem; }
+.wallet-actions .btn { flex: 1 1 auto; }
+.who { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; gap: 3px; background: var(--sunken); border-radius: 12px; margin-top: 0.9rem; }
+.who button { appearance: none; border: 0; background: transparent; height: 2.4rem; border-radius: 9px; font-size: 0.92rem; font-weight: 500; color: var(--muted); cursor: pointer; transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+.who button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.06); }
+.loader { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--hairline); animation: rise var(--t-med) var(--ease); }
+.sheet-note { margin: 1rem 0 0; font-size: 0.82rem; color: var(--muted); }
+
+footer { padding: 2.5rem 0 3rem; color: var(--muted); font-size: 0.8rem; text-align: center; }
 footer p { margin: 0.25rem 0; }
 @media (max-width: 30rem) {
-  .wallet, .tabs-head { padding-left: 1.1rem; padding-right: 1.1rem; }
-  .panel { padding-left: 1.1rem; padding-right: 1.1rem; }
-  .segmented button { font-size: 0.82rem; padding: 0; }
+  .card { padding: 1rem 1rem 1.15rem; }
   .kv > div { grid-template-columns: 1fr; gap: 0.1rem; }
+  .screen-title h2 { font-size: 1.55rem; }
+}
+
+/* ---------- Motion ---------- */
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes enterFwd { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes enterBack { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes dotDrop { 0% { opacity: 0; transform: translateY(-46%) scale(0.5); } 55% { opacity: 1; transform: translateY(2%) scale(1.14, 0.9); } 72% { transform: translateY(-2%) scale(0.95, 1.05); } 100% { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes thunk { 0% { opacity: 0; transform: rotate(-16deg) scale(1.75); filter: blur(3px); } 52% { opacity: 1; transform: rotate(-5deg) scale(0.93); filter: blur(0); } 74% { transform: rotate(-6.5deg) scale(1.03); } 100% { opacity: 1; transform: rotate(-6deg) scale(1); } }
+@keyframes ripple { 0% { opacity: 0.5; transform: scale(0.92); } 100% { opacity: 0; transform: scale(1.45); } }
+@keyframes shake { 0%, 100% { transform: none; } 15% { transform: translateX(-6px); } 30% { transform: translateX(5px); } 45% { transform: translateX(-4px); } 60% { transform: translateX(3px); } 75% { transform: translateX(-1px); } }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes sheetDown { from { transform: none; } to { transform: translateY(100%); } }
+@keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes modalOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes chipFlash { 0% { box-shadow: 0 0 0 0 rgba(89, 86, 253, 0.45); border-color: var(--brand); } 100% { box-shadow: 0 0 0 10px rgba(89, 86, 253, 0); } }
+
+.screen.enter-fwd { animation: enterFwd var(--t-med) var(--ease) both; }
+.screen.enter-back { animation: enterBack var(--t-med) var(--ease) both; }
+.anim-in { animation: rise var(--t-slow) var(--ease) both; }
+.anim-shake { animation: shake 420ms var(--ease) both; }
+
+/* Logo: the box and flap draw on, then the seal drops onto the flap. */
+.dot { fill: var(--brand); transform-box: fill-box; transform-origin: 50% 100%; }
+.mini-mark { color: var(--logo-ink); }
+.play .draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.play .draw-1 { animation: draw 700ms var(--ease) 80ms forwards; }
+.play .draw-2 { animation: draw 520ms var(--ease) 520ms forwards; }
+.play .dot { animation: dotDrop 620ms var(--spring) 880ms both; }
+.anim-in .mini-mark .draw-1 { animation-duration: 520ms; animation-delay: 60ms; }
+.anim-in .mini-mark .draw-2 { animation-duration: 380ms; animation-delay: 360ms; }
+.anim-in .mini-mark .dot { animation-delay: 600ms; }
+
+/* Home intro, first load only */
+.intro .lockup .wordmark { animation: rise var(--t-slow) var(--ease) 420ms both; }
+.intro .hero h1 .w { animation: rise var(--t-slow) var(--ease) both; }
+.intro .hero h1 .w:nth-child(1) { animation-delay: 620ms; }
+.intro .hero h1 .w:nth-child(2) { animation-delay: 700ms; }
+.intro .hero h1 .w:nth-child(3) { animation-delay: 780ms; }
+.intro .hero h1 .w:nth-child(4) { animation-delay: 860ms; }
+.intro .hero h1 .w:nth-child(5) { animation-delay: 940ms; }
+.intro .hero h1 .w:nth-child(6) { animation-delay: 1020ms; }
+.intro .hero p { animation: rise var(--t-slow) var(--ease) 1080ms both; }
+.intro .tiles .tile { animation: rise var(--t-slow) var(--ease) both; }
+.intro .tiles .tile:nth-child(1) { animation-delay: 1120ms; }
+.intro .tiles .tile:nth-child(2) { animation-delay: 1190ms; }
+.intro .tiles .tile:nth-child(3) { animation-delay: 1260ms; }
+.intro .tiles .tile:nth-child(4) { animation-delay: 1330ms; }
+.intro .trust, .intro #s-home .wallet-chip { animation: rise var(--t-slow) var(--ease) 1420ms both; }
+.returning .tiles .tile { animation: rise var(--t-med) var(--ease) both; }
+.returning .tiles .tile:nth-child(2) { animation-delay: 40ms; }
+.returning .tiles .tile:nth-child(3) { animation-delay: 80ms; }
+.returning .tiles .tile:nth-child(4) { animation-delay: 120ms; }
+
+/* Result pictures */
+.anim-in .sig-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 900ms var(--ease) 150ms forwards; }
+.verdict .check-ring { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 520ms var(--ease) 60ms forwards; }
+.verdict .check-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 360ms var(--ease) 420ms forwards; }
+.pm-card.anim-in .pm { animation: thunk 640ms var(--ease) 200ms both; }
+.pm-card.anim-in .pm-ring { animation: ripple 700ms var(--ease) 520ms both; }
+.pm-card.anim-in .pm-title, .pm-card.anim-in .rows > div, .pm-card.anim-in .pm-note { animation: rise var(--t-slow) var(--ease) both; }
+.pm-card.anim-in .pm-title { animation-delay: 620ms; }
+.pm-card.anim-in .rows > div:nth-child(1) { animation-delay: 700ms; }
+.pm-card.anim-in .rows > div:nth-child(2) { animation-delay: 760ms; }
+.pm-card.anim-in .rows > div:nth-child(3) { animation-delay: 820ms; }
+.pm-card.anim-in .pm-note { animation-delay: 880ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
 }
 </style>
 </head>
@@ -215,7 +425,7 @@ footer p { margin: 0.25rem 0; }
   <header class="topbar" id="topbar">
     <div class="wrap">
       <nav class="family" aria-label="BRC tools">
-        <span class="cur" aria-current="page"><svg viewBox="/*__MARK_VIEW__*/" aria-hidden="true">/*__MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span></span>
+        <a class="cur" aria-current="page" href="#" data-go="home"><svg viewBox="/*__MARK_VIEW__*/" aria-hidden="true">/*__MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span></a>
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true">/*__VAULT_MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
@@ -226,239 +436,350 @@ footer p { margin: 0.25rem 0; }
   <main class="wrap">
     <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
 
-    <section class="hero">
-      <h1>Prove it's you. Send what only they can open.</h1>
-      <p>Sign messages with your BrowserCoin wallet, check anyone's signature, seal notes that only one address can read, and stamp files with a date on the BrowserCoin chain. <strong>Everything happens on this page. Nothing is uploaded.</strong></p>
+    <!-- ================= HOME ================= -->
+    <section class="screen" id="s-home" data-screen="home" tabindex="-1" aria-label="BRC Seal home">
+      <div class="hero">
+        <div class="lockup">
+          <svg class="big-mark" id="hero-mark" viewBox="307.6 90 1316 1316" aria-hidden="true">
+            <path class="draw draw-1" pathLength="1" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="107.8"/>
+            <path class="draw draw-2" pathLength="1" d="M544.8 430.0L965.6 790.0L1386.4 430.0" fill="none" stroke="currentColor" stroke-width="107.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle class="dot" cx="965.6" cy="820.0" r="190.0"/>
+          </svg>
+          <span class="wordmark" role="img" aria-label="BRC Seal"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span>
+        </div>
+        <h1><span class="w">Sign it.</span> <span class="w accent">Seal it.</span> <span class="w">Postmark it.</span></h1>
+        <p>Your BrowserCoin wallet is your signature, your envelope and your postmark. Everything happens on your device. Nothing is uploaded.</p>
+      </div>
+
+      <nav class="tiles" aria-label="What do you want to do?">
+        <a class="tile" href="#sign" id="go-sign">
+          <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span>
+          <span class="tile-text"><strong>Add my signature</strong><span>Prove a message is from you</span></span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </a>
+        <a class="tile" href="#seal" id="go-seal">
+          <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/><circle cx="12" cy="14" r="2.3" fill="currentColor" stroke="none"/></svg></span>
+          <span class="tile-text"><strong>Seal a letter</strong><span>Only the person you choose can open it</span></span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </a>
+        <a class="tile" href="#postmark" id="go-postmark">
+          <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="M15.5 9.5c1.5-1 3-1 4.5 0M15.5 12c1.5-1 3-1 4.5 0M15.5 14.5c1.5-1 3-1 4.5 0"/></svg></span>
+          <span class="tile-text"><strong>Postmark a file</strong><span>Prove it existed on a date. The file stays with you.</span></span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </a>
+        <a class="tile ghost" href="#received" id="go-received">
+          <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span>
+          <span class="tile-text"><strong>I received something</strong><span>Check a signature, open a letter, check a postmark</span></span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </a>
+      </nav>
+
+      <button type="button" class="wallet-chip" data-wallet aria-haspopup="dialog">
+        <span class="idc empty" data-idc aria-hidden="true"></span>
+        <span class="wc-text"><strong data-wallet-name>No wallet loaded</strong><span data-wallet-sub>Needed to sign and to open letters</span></span>
+        <span class="wc-act" data-wallet-act>Load</span>
+      </button>
+      <ul class="trust">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Works offline</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Nothing leaves this page</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Your key is never saved</li>
+      </ul>
     </section>
 
-    <!-- Which wallet this page is acting as -->
-    <section class="card wallet" id="wallet" data-state="empty" aria-labelledby="wallet-title">
-      <div class="wallet-row">
-        <div class="wallet-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M16 12.5h2M3 9.5h18M7 6V4.8A1.8 1.8 0 0 1 9.2 3l8.3 1.6"/></svg></div>
-        <div class="wallet-text">
-          <strong id="wallet-title">No wallet loaded</strong>
-          <span id="wallet-sub">You can check signatures and seal notes without one. Signing and opening need a wallet.</span>
-        </div>
-        <div class="wallet-actions" id="wallet-actions">
-          <button class="btn btn-secondary btn-small" id="btn-test" type="button">Use test wallets</button>
-          <button class="btn btn-secondary btn-small" id="btn-load" type="button">Load my wallet</button>
-          <button class="btn btn-secondary btn-small" id="btn-forget" type="button" hidden>Forget wallet</button>
-        </div>
-      </div>
-      <div class="who" id="who" role="group" aria-label="Act as test wallet" hidden>
-        <button type="button" data-who="alice" aria-pressed="true">Alice</button>
-        <button type="button" data-who="bob" aria-pressed="false">Bob</button>
-      </div>
-      <div class="loader" id="loader" hidden>
-        <label class="drop" id="drop">
-          <input type="file" id="wallet-file" accept=".json,.txt,application/json,text/plain">
-          <span class="drop-text"><strong>Choose your wallet file</strong>From browsercoin.org/app → Settings → Export key…, or a BRC Vault backup</span>
-        </label>
-        <label class="field"><span>Or paste a wallet file, private key, key code or 24 recovery words</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
-        <div id="confirm-field" hidden>
-          <p class="notice" id="confirm-ambiguous" hidden><strong>Is this a private key or an address?</strong> They look alike. If you pasted your address by mistake, press Cancel: an address can't sign or open anything.</p>
-          <label class="check"><input type="checkbox" id="confirm-mine"><span>This is my wallet's address: <span class="mono" id="confirm-address"></span></span></label>
-        </div>
-        <label class="field" id="password-field" hidden><span>This backup is password-protected. Enter its password</span><input id="wallet-password" type="password" autocomplete="off"></label>
-        <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Load wallet</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
-        <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
-        <p class="notice">Your key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page.</p>
-      </div>
-    </section>
-
-    <!-- The five actions -->
-    <section class="card">
-      <div class="tabs-head">
-        <div class="segmented" role="tablist" aria-label="What do you want to do?">
-          <button role="tab" id="tab-sign" aria-controls="p-sign" aria-selected="true">Sign</button>
-          <button role="tab" id="tab-verify" aria-controls="p-verify" aria-selected="false" tabindex="-1">Verify</button>
-          <button role="tab" id="tab-seal" aria-controls="p-seal" aria-selected="false" tabindex="-1">Seal</button>
-          <button role="tab" id="tab-open" aria-controls="p-open" aria-selected="false" tabindex="-1">Open</button>
-          <button role="tab" id="tab-stamp" aria-controls="p-stamp" aria-selected="false" tabindex="-1">Stamp</button>
-        </div>
-      </div>
-
-      <!-- SIGN -->
-      <div class="panel" role="tabpanel" id="p-sign" aria-labelledby="tab-sign">
-        <p class="panel-lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
+    <!-- ================= SIGN ================= -->
+    <section class="screen" id="p-sign" data-screen="sign" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span><h2 tabindex="-1">Add my signature</h2></div>
+      <p class="lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
+      <div class="card">
         <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
         <div class="chips" aria-label="Examples">
-          <button type="button" class="chip" data-fill="raffle">Block 100,000 raffle entry</button>
+          <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
           <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
           <button type="button" class="chip" data-fill="pool">Prove a pool payout address</button>
         </div>
-        <div class="actions"><button class="btn btn-primary" id="btn-sign" type="button">Sign with my wallet</button></div>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-sign" type="button">Sign with my wallet</button></div>
         <p class="msg" id="sign-msg" role="status" aria-live="polite"></p>
         <div class="out" id="sign-out" hidden>
-          <div class="out-head"><strong>Signed. Share this whole block.</strong><button class="btn btn-secondary btn-small" type="button" data-copy="sign-block">Copy</button></div>
+          <div class="done-head">
+            <span class="done-art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="sig-line" pathLength="1" d="M3 16c3-1 4-9 7-9s1 7 4 7 3-3 7-3"/><path d="M3 20.5h18" opacity=".35"/></svg></span>
+            <div><h3>Signed</h3><p>Share this whole block. Anyone can check it.</p></div>
+          </div>
           <pre class="block" id="sign-block"></pre>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block"><span class="lbl">Copy the signed message</span></button></div>
         </div>
-        <details class="how">
-          <summary>How signing works</summary>
-          <div class="how-body">
-            <p>Your BrowserCoin address is a public key. Your wallet's private key can make a <strong>signature</strong>: a 128-character code that only that key can produce, and that fits only this exact message.</p>
-            <ol>
-              <li>The page signs your message together with your address and a fixed label, <code>BrowserCoin Signed Message v1</code>.</li>
-              <li>Anyone who pastes the block into Verify can check the signature against the address. No wallet needed.</li>
-              <li>Change one letter of the message and the check fails.</li>
-            </ol>
-            <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
-            <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 raffle, proving a pool payout address is yours, settling "that's my address" arguments.</p>
-          </div>
-        </details>
       </div>
+      <details class="how">
+        <summary>How signing works</summary>
+        <div class="how-body">
+          <p>Your BrowserCoin address is a public key. Your wallet's private key can make a <strong>signature</strong>: a 128-character code that only that key can produce, and that fits only this exact message.</p>
+          <ol>
+            <li>The page signs your message together with your address and a fixed label, <code>BrowserCoin Signed Message v1</code>.</li>
+            <li>Anyone who pastes the block into BRC Seal → I received something can check the signature against the address. No wallet needed.</li>
+            <li>Change one letter of the message and the check fails.</li>
+          </ol>
+          <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
+          <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 giveaway, proving a pool payout address is yours, settling "that's my address" arguments.</p>
+        </div>
+      </details>
+    </section>
 
-      <!-- VERIFY -->
-      <div class="panel" role="tabpanel" id="p-verify" aria-labelledby="tab-verify" hidden>
-        <p class="panel-lede"><strong>Check a signed message.</strong> Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No wallet needed.</p>
-        <label class="field"><span>Signed message</span><textarea id="verify-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
-        <div class="actions"><button class="btn btn-primary" id="btn-verify" type="button">Check signature</button></div>
-        <p class="msg" id="verify-msg" role="status" aria-live="polite"></p>
-        <div id="verify-out"></div>
-        <details class="how">
-          <summary>What a valid signature does and doesn't prove</summary>
-          <div class="how-body">
-            <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
-            <ul>
-              <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
-              <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
-              <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
-            </ul>
-          </div>
-        </details>
-      </div>
-
-      <!-- SEAL -->
-      <div class="panel" role="tabpanel" id="p-seal" aria-labelledby="tab-seal" hidden>
-        <p class="panel-lede"><strong>Send a note only one address can read.</strong> You can post the sealed note anywhere, even a public channel. Only the wallet you seal it to can open it.</p>
+    <!-- ================= SEAL ================= -->
+    <section class="screen" id="p-seal" data-screen="seal" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/><circle cx="12" cy="14" r="2.3" fill="currentColor" stroke="none"/></svg></span><h2 tabindex="-1">Seal a letter</h2></div>
+      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the wallet you seal it to can read it.</p>
+      <div class="card">
         <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
-        <label class="field"><span>Note <span class="count" id="seal-count"></span></span><textarea id="seal-text" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
-        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. <span class="muted-note">Load a wallet to use this.</span></span></label>
-        <div class="actions"><button class="btn btn-primary" id="btn-seal" type="button">Seal note</button></div>
+        <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
+        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Load a wallet to use this.</span></label>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
         <div class="out" id="seal-out" hidden>
-          <div class="out-head"><strong id="seal-out-title">Sealed.</strong><button class="btn btn-secondary btn-small" type="button" data-copy="seal-block">Copy</button></div>
+          <div class="done-head">
+            <span class="done-art" aria-hidden="true"><svg class="mini-mark" viewBox="307.6 90 1316 1316"><path class="draw draw-1" pathLength="1" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="120"/><path class="draw draw-2" pathLength="1" d="M544.8 430.0L965.6 790.0L1386.4 430.0" fill="none" stroke="currentColor" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/><circle class="dot" cx="965.6" cy="820.0" r="190.0"/></svg></span>
+            <div><h3 id="seal-out-title">Sealed.</h3><p>Send this whole block. Only they can open it.</p></div>
+          </div>
           <pre class="block" id="seal-block"></pre>
           <p class="msg" id="seal-len" data-tone="info"></p>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="seal-block"><span class="lbl">Copy the sealed letter</span></button></div>
         </div>
-        <details class="how">
-          <summary>How sealing works, and its one limit</summary>
-          <div class="how-body">
-            <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a note with it. Only the matching wallet can unlock it.</p>
-            <ol>
-              <li>The page makes a one-time key just for this note and combines it with the recipient's address (X25519).</li>
-              <li>The note is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.</li>
-              <li>If you tick "sign it", your signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the note is anonymous.</li>
-              <li>Signed and anonymous notes are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.</li>
-            </ol>
-            <p><strong>The limit:</strong> there are no rotating keys. If the recipient's wallet key is ever stolen, every note ever sealed to that address can be read. That's fine for one-off notes, not for an ongoing private conversation. That's what BRC Post would add.</p>
-            <p><strong>Visible to everyone:</strong> who the note is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.</p>
-          </div>
-        </details>
       </div>
+      <details class="how">
+        <summary>How sealing works, and its one limit</summary>
+        <div class="how-body">
+          <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching wallet can unlock it.</p>
+          <ol>
+            <li>The page makes a one-time key just for this letter and combines it with the recipient's address (X25519).</li>
+            <li>The letter is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.</li>
+            <li>If you tick "sign it", your signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.</li>
+            <li>Signed and anonymous letters are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.</li>
+          </ol>
+          <p><strong>The limit:</strong> there are no rotating keys. If the recipient's wallet key is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.</p>
+          <p><strong>Visible to everyone:</strong> who the letter is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.</p>
+        </div>
+      </details>
+    </section>
 
-      <!-- OPEN -->
-      <div class="panel" role="tabpanel" id="p-open" aria-labelledby="tab-open" hidden>
-        <p class="panel-lede"><strong>Open a note sealed to you.</strong> Paste the whole block. Opening needs the wallet it was sealed to.</p>
-        <label class="field"><span>Sealed note</span><textarea id="open-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
-        <div class="actions"><button class="btn btn-primary" id="btn-open" type="button">Open note</button></div>
-        <p class="msg" id="open-msg" role="status" aria-live="polite"></p>
-        <div id="open-out"></div>
-        <details class="how">
-          <summary>Staying safe with notes</summary>
-          <div class="how-body">
-            <ul>
-              <li>An anonymous note could be from anyone. Treat its claims the way you'd treat an unsigned letter.</li>
-              <li>A signed note shows the sender's address, checked. It still only proves the address, not the person.</li>
-              <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a note asks. Nobody legitimate needs them.</li>
-            </ul>
-          </div>
-        </details>
-      </div>
-
-      <!-- STAMP -->
-      <div class="panel" role="tabpanel" id="p-stamp" aria-labelledby="tab-stamp" hidden>
-        <p class="panel-lede"><strong>Prove a file existed by a certain date.</strong> Your file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
-        <ol class="stamp-steps">
-          <li id="st-step1">
-            <h3>Choose the file</h3>
-            <label class="drop" id="st-drop" style="margin-top:0.7rem">
-              <input type="file" id="st-file">
-              <span class="drop-text"><strong id="st-file-title">Choose a file to stamp</strong><span id="st-file-sub">Any file: a contract, a photo, a design, a draft. It is read here and never uploaded.</span></span>
-            </label>
-          </li>
-          <li id="st-step2">
-            <h3>Make the stamp phrase</h3>
-            <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
-            <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
-            <details class="disclosure-after">
-              <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove when it was made, not just "by when" (optional)</summary>
-              <p class="field-help">On BRC Pulse → Stamps, copy the <strong>drand beacon</strong> and paste it here. The stamp will then also prove it was made after that moment, to within 3 seconds. Nobody can know a beacon before it's published, so it can't be faked in advance.</p>
+    <!-- ================= POSTMARK ================= -->
+    <section class="screen" id="p-stamp" data-screen="postmark" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="M15.5 9.5c1.5-1 3-1 4.5 0M15.5 12c1.5-1 3-1 4.5 0M15.5 14.5c1.5-1 3-1 4.5 0"/></svg></span><h2 tabindex="-1">Postmark a file</h2></div>
+      <p class="lede"><strong>Prove a file existed by a date.</strong> The file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
+      <ol class="steps">
+        <li id="st-step1">
+          <h3>Choose the file</h3>
+          <label class="drop" id="st-drop">
+            <input type="file" id="st-file">
+            <span class="drop-icon" id="st-file-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg></span>
+            <span class="drop-text"><strong id="st-file-title">Choose a file to postmark</strong><span id="st-file-sub">A contract, a photo, a design, a draft. It's read here and never uploaded.</span></span>
+            <span class="bar" aria-hidden="true"></span>
+          </label>
+        </li>
+        <li id="st-step2">
+          <h3>Post it on BrowserCoin</h3>
+          <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
+          <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+          <details class="more" id="st-more">
+            <summary class="chip">Add the exact time it was made (optional)</summary>
+            <div class="more-body">
+              <p class="field-help">On BRC Pulse → Stamps, copy the <strong>drand beacon</strong> and paste it here. The postmark will then also prove it was made after that moment, to within 3 seconds. Nobody can know a beacon before it's published, so it can't be faked in advance.</p>
               <label class="field"><span>drand beacon <span class="count" id="st-drand-status"></span></span><input id="st-drand" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Round number and signature, from BRC Pulse"></label>
               <p class="field-help" style="margin-top:0.9rem">Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse → Stamps, press <strong>Copy both</strong> next to the recent block and paste it below.</p>
               <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
               <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
-            </details>
-            <div class="actions"><button class="btn btn-primary" id="btn-st-make" type="button">Make stamp phrase</button></div>
-            <p class="msg" id="st-make-msg" role="status" aria-live="polite"></p>
-            <div id="st-recipe" hidden>
-              <div class="recipe">
-                <ol>
-                  <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
-                  <li><strong>Amount:</strong> <span class="mono" id="st-amount"></span> BRC. You can take it back later.</li>
-                  <li><strong>Recipient address:</strong> your address
-                    <div class="inline-copy"><span class="mono" id="st-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-owner-copy">Copy</button></div></li>
-                  <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
-                    <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase">Copy</button></div></li>
-                  <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
-                </ol>
-                <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="st-check-owner"></span>. If either doesn't, the phrase or the recipient address was pasted wrong.</p>
-              </div>
             </div>
-          </li>
-          <li id="st-step3">
-            <h3>Make your receipt</h3>
-            <p class="sub">Paste the Lock ID from the app. Keep the receipt with the file: you need both to prove the date.</p>
-            <label class="field"><span>Lock ID</span><input id="st-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters, shown after Lock coins"></label>
-            <div class="actions"><button class="btn btn-primary" id="btn-st-receipt" type="button">Make receipt</button></div>
-            <p class="msg" id="st-receipt-msg" role="status" aria-live="polite"></p>
-            <div class="out" id="st-receipt-out" hidden>
-              <div class="out-head"><strong>Your stamp receipt</strong><span><button class="btn btn-secondary btn-small" type="button" data-copy="st-receipt">Copy</button> <button class="btn btn-secondary btn-small" type="button" id="btn-st-save">Save as file</button></span></div>
-              <pre class="block" id="st-receipt"></pre>
-              <p class="notice">In a few minutes the lock will be in a block. Then check it on <strong>BRC Pulse → Check a stamp</strong>, which reads the chain and shows the date.</p>
+          </details>
+          <div class="actions"><button class="btn btn-primary btn-block" id="btn-st-make" type="button">Make the postmark phrase</button></div>
+          <p class="msg" id="st-make-msg" role="status" aria-live="polite"></p>
+          <div id="st-recipe" hidden>
+            <div class="recipe">
+              <ol>
+                <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
+                <li><strong>Amount:</strong> <span class="mono" id="st-amount"></span> BRC. You can take it back later.</li>
+                <li><strong>Recipient address:</strong> your address
+                  <div class="inline-copy"><span class="mono" id="st-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-owner-copy"><span class="lbl">Copy</span></button></div></li>
+                <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
+                  <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase"><span class="lbl">Copy</span></button></div></li>
+                <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
+              </ol>
+              <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="st-check-owner"></span>. If either doesn't, the phrase or the recipient address was pasted wrong.</p>
             </div>
-          </li>
-        </ol>
+          </div>
+        </li>
+        <li id="st-step3">
+          <h3>Get your receipt</h3>
+          <p class="sub">Paste the Lock ID from the app. Keep the receipt with the file: you need both to prove the date.</p>
+          <label class="field"><span>Lock ID</span><input id="st-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters, shown after Lock coins"></label>
+          <div class="actions"><button class="btn btn-primary btn-block" id="btn-st-receipt" type="button">Make my receipt</button></div>
+          <p class="msg" id="st-receipt-msg" role="status" aria-live="polite"></p>
+        </li>
+      </ol>
 
-        <details class="how" id="st-compare-wrap">
-          <summary>Check a file against a receipt</summary>
-          <div class="how-body">
-            <p>This checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on BRC Pulse, which reads the chain.</p>
-            <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
-            <label class="drop" style="margin-top:0.8rem"><input type="file" id="st-cmp-file"><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span></label>
-            <p class="msg" id="st-cmp-msg" role="status" aria-live="polite"></p>
+      <div id="st-receipt-out" hidden>
+        <div class="pm-card" id="pm-card">
+          <div class="pm-file"><span class="drop-icon" id="pm-ext" aria-hidden="true">FILE</span><span class="t"><strong id="pm-name"></strong><span id="pm-size"></span></span></div>
+          <div class="pm-stage" aria-hidden="true">
+            <span class="pm-ring"></span>
+            <div class="pm" id="pm"><div class="pm-inner"><span class="l1">BROWSERCOIN</span><span class="l2" id="pm-day"></span><span class="l3" id="pm-year"></span><span class="l4" id="pm-line"></span></div></div>
           </div>
+          <div class="pm-title"><h3 id="pm-title">Posted</h3><p id="pm-sub"></p></div>
+          <dl class="rows">
+            <div><dt>Made after</dt><dd id="pm-after"></dd></div>
+            <div><dt>Existed by</dt><dd id="pm-by"></dd></div>
+            <div><dt>Sent by</dt><dd id="pm-from"></dd></div>
+          </dl>
+          <p class="pm-note">Keep the receipt with the file, like a tracking slip. Anyone with both can check the postmark on BRC Pulse → Stamps.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" id="btn-st-save" style="flex:1 1 12rem">Save the receipt</button>
+          <button class="btn btn-secondary" type="button" id="btn-st-share" style="flex:1 1 10rem" hidden>Share the receipt</button>
+          <button class="btn btn-secondary" type="button" data-copy="st-receipt" style="flex:1 1 8rem"><span class="lbl">Copy</span></button>
+        </div>
+        <details class="how" style="margin-top:1rem">
+          <summary>Show the receipt text</summary>
+          <div class="how-body"><pre class="block" id="st-receipt" style="margin-top:0.8rem"></pre></div>
         </details>
-        <details class="how">
-          <summary>What a stamp proves, what it costs, and getting your coins back</summary>
-          <div class="how-body">
-            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a drand beacon, it also proves the stamp was made after that moment, to within 3 seconds; drand is run by the League of Entropy, a group of independent organisations. If you added a recent block, it proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it. Miners set block times, so allow about half an hour either way.</p>
-            <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
-            <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
-            <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>
-            <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same stamp phrase. The stamp stays valid after you redeem, because the lock stays in the chain's history. Redeeming reveals only a scrambled form of the phrase, so the fingerprint and salt stay private.</p>
-            <p><strong>Keep the receipt.</strong> Without it, the stamp can't be found or proven. Keep it next to the file, or email it to yourself.</p>
-          </div>
-        </details>
+      </div>
+
+      <details class="how">
+        <summary>What a postmark proves, what it costs, and getting your coins back</summary>
+        <div class="how-body">
+          <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a drand beacon, it also proves the postmark was made after that moment, to within 3 seconds; drand is run by the League of Entropy, a group of independent organisations. If you added a recent block, it proves the postmark was made after that block. The lock is signed by your wallet, so it shows which address posted it. Miners set block times: usually accurate to a few minutes, guaranteed within about half an hour.</p>
+          <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
+          <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
+          <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>
+          <p><strong>Getting the coins back:</strong> in the app, Scripts → <strong>Redeem a hash-locked payment</strong>, with the Lock ID and the same postmark phrase. The postmark stays valid after you redeem, because the lock stays in the chain's history. Redeeming reveals only a scrambled form of the phrase, so the fingerprint and salt stay private.</p>
+          <p><strong>Keep the receipt.</strong> Without it, the postmark can't be found or proven. Keep it next to the file, or email it to yourself.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ================= RECEIVED ================= -->
+    <section class="screen" id="s-received" data-screen="received" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span><h2 tabindex="-1">I received something</h2></div>
+      <p class="lede">Paste it here and BRC Seal will work out what it is.</p>
+      <div class="card">
+        <label class="field"><span>What you received</span><textarea id="rx-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="-----BEGIN BRC …"></textarea></label>
+        <p class="msg" id="rx-msg" role="status" aria-live="polite"></p>
+      </div>
+      <p class="or">or choose</p>
+      <div class="route-list">
+        <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your wallet</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#check" id="go-check"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a postmark</strong><span>Match a file to its receipt</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
+    <!-- ================= VERIFY ================= -->
+    <section class="screen" id="p-verify" data-screen="verify" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a signature</h2></div>
+      <p class="lede">Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No wallet needed.</p>
+      <div class="card">
+        <label class="field"><span>Signed message</span><textarea id="verify-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-verify" type="button">Check signature</button></div>
+        <p class="msg" id="verify-msg" role="status" aria-live="polite"></p>
+        <div id="verify-out"></div>
+      </div>
+      <details class="how">
+        <summary>What a valid signature does and doesn't prove</summary>
+        <div class="how-body">
+          <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
+          <ul>
+            <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
+            <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
+            <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- ================= OPEN ================= -->
+    <section class="screen" id="p-open" data-screen="open" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><h2 tabindex="-1">Open a letter</h2></div>
+      <p class="lede">Paste the whole block. Opening needs the wallet it was sealed to.</p>
+      <div class="card">
+        <label class="field"><span>Sealed letter</span><textarea id="open-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-open" type="button">Open the letter</button></div>
+        <p class="msg" id="open-msg" role="status" aria-live="polite"></p>
+        <div id="open-out"></div>
+      </div>
+      <details class="how">
+        <summary>Staying safe with letters</summary>
+        <div class="how-body">
+          <ul>
+            <li>An anonymous letter could be from anyone. Treat its claims the way you'd treat an unsigned letter in the post.</li>
+            <li>A signed letter shows the sender's address, checked. It still only proves the address, not the person.</li>
+            <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a letter asks. Nobody legitimate needs them.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- ================= CHECK A POSTMARK ================= -->
+    <section class="screen" id="p-check" data-screen="check" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a postmark</h2></div>
+      <p class="lede">Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on <strong>BRC Pulse → Stamps</strong>, which reads the chain.</p>
+      <div class="card">
+        <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="-----BEGIN BRC STAMP RECEIPT-----"></textarea></label>
+        <label class="drop" id="st-cmp-drop" style="margin-top:0.9rem"><input type="file" id="st-cmp-file"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span><span class="bar" aria-hidden="true"></span></label>
+        <p class="msg" id="st-cmp-msg" role="status" aria-live="polite"></p>
       </div>
     </section>
 
     <footer>
-      <p>BRC Seal 0.3, test build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing you type leaves this page.</p>
+      <p>BRC Seal 0.4, test build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing you type leaves this page.</p>
       <p>Part of the BRC family with BRC Vault and BRC Pulse. Not affiliated with BrowserCoin.</p>
     </footer>
   </main>
+
+  <!-- ================= WALLET SHEET ================= -->
+  <dialog class="sheet" id="wallet-sheet" aria-labelledby="sheet-title">
+    <div class="sheet-inner">
+      <div class="grabber" aria-hidden="true"></div>
+      <div class="sheet-head"><h2 id="sheet-title">Your wallet</h2><button type="button" class="x" id="btn-sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <section id="wallet" data-state="empty" aria-labelledby="wallet-title">
+        <div class="wallet-row">
+          <span class="idc empty" data-idc aria-hidden="true"></span>
+          <div class="wallet-text">
+            <strong id="wallet-title">No wallet loaded</strong>
+            <span id="wallet-sub">You can check signatures and seal letters without one. Signing and opening need a wallet.</span>
+          </div>
+        </div>
+        <div class="who" id="who" role="group" aria-label="Act as test wallet" hidden>
+          <button type="button" data-who="alice" aria-pressed="true">Alice</button>
+          <button type="button" data-who="bob" aria-pressed="false">Bob</button>
+        </div>
+        <div class="wallet-actions" id="wallet-actions">
+          <button class="btn btn-secondary" id="btn-test" type="button">Use test wallets</button>
+          <button class="btn btn-secondary" id="btn-load" type="button">Load my wallet</button>
+          <button class="btn btn-secondary" id="btn-forget" type="button" hidden>Forget wallet</button>
+          <button class="btn btn-primary" id="btn-sheet-done" type="button" hidden>Done</button>
+        </div>
+        <div class="loader" id="loader" hidden>
+          <label class="drop" id="drop">
+            <input type="file" id="wallet-file" accept=".json,.txt,application/json,text/plain">
+            <span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M16 12.5h2M3 9.5h18M7 6V4.8A1.8 1.8 0 0 1 9.2 3l8.3 1.6"/></svg></span>
+            <span class="drop-text"><strong>Choose your wallet file</strong>From browsercoin.org/app → Settings → Export key…, or a BRC Vault backup</span>
+          </label>
+          <label class="field"><span>Or paste a wallet file, private key, key code or 24 recovery words</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
+          <div id="confirm-field" hidden>
+            <p class="notice" id="confirm-ambiguous" hidden><strong>Is this a private key or an address?</strong> They look alike. If you pasted your address by mistake, press Cancel: an address can't sign or open anything.</p>
+            <label class="check"><input type="checkbox" id="confirm-mine"><span>This is my wallet's address: <span class="mono" id="confirm-address"></span></span></label>
+          </div>
+          <label class="field" id="password-field" hidden><span>This backup is password-protected. Enter its password</span><input id="wallet-password" type="password" autocomplete="off"></label>
+          <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Load wallet</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
+          <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
+        </div>
+        <p class="sheet-note">Your key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page.</p>
+      </section>
+    </div>
+  </dialog>
 <script>/*__APP__*/</script>
 </body>
 </html>

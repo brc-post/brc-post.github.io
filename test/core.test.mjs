@@ -162,7 +162,7 @@ t('address encryption key matches the wallet key, across 200 random wallets', ()
 t('raffle: only eligible addresses count, duplicates and wrong text dropped, same winner every time', () => {
   const H = 100000;
   const text = c.raffleEntryText(H);
-  assert.equal(text, "I'm entering the BrowserCoin block 100,000 raffle.");
+  assert.equal(text, "I'm entering the BrowserCoin block 100,000 giveaway.");
   const wallets = Array.from({ length: 7 }, () => c.walletFromPrivateKeyHex(rand()));
   const eligible = new Set(wallets.map((w) => w.address));
   const blocks = wallets.map((w) => c.signMessage(w, text).armored);

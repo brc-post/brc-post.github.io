@@ -32,7 +32,7 @@ function say(id, text, tone = 'info') {
 }
 
 const ICONS = {
-  good: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>',
+  good: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="check-ring" pathLength="1" cx="12" cy="12" r="9" transform="rotate(-90 12 12)"/><path class="check-draw" pathLength="1" d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>',
   bad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>',
   warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4M12 17h.01"/></svg>',
 };
@@ -41,7 +41,38 @@ function verdict(tone, title, ...body) {
   const head = el('div', { class: 'verdict-title' });
   head.innerHTML = ICONS[tone]; // fixed icon markup only, never user text
   head.append(el('span', { text: title }));
-  return el('div', { class: 'verdict', 'data-tone': tone, role: 'status' }, head, ...body);
+  const v = el('div', { class: 'verdict', 'data-tone': tone, role: 'status' }, head, ...body);
+  v.classList.add(tone === 'bad' ? 'anim-shake' : 'anim-in');
+  return v;
+}
+
+/** Restart an entrance animation on an element that is being shown again. */
+function play(node, ...classes) {
+  const cls = classes.length ? classes : ['anim-in'];
+  node.classList.remove(...cls);
+  void node.offsetWidth; // reflow, so the animation runs again
+  node.classList.add(...cls);
+}
+
+/** A small 3x3 picture made from an address, so different wallets look different at a glance. */
+const IDC_COLORS = ['#5956fd', '#0d7a5f', '#e0552f', '#1f8fd6', '#c2417a', '#7c5cff', '#d99a0b', '#2f9e8f'];
+function paintIdenticon(node, address) {
+  node.replaceChildren();
+  if (!address) { node.classList.add('empty'); node.style.background = ''; return; }
+  node.classList.remove('empty');
+  const b = vault.hexToBytes(address.slice(0, 16));
+  const c1 = IDC_COLORS[b[0] % 8];
+  let c2 = IDC_COLORS[b[1] % 8];
+  if (c2 === c1) c2 = IDC_COLORS[(b[1] + 3) % 8];
+  // Mirror left and right columns so it reads as a shape, not noise.
+  for (let row = 0; row < 3; row++) {
+    const left = b[2 + row] & 3, mid = b[5 + row] & 3;
+    for (const v of [left, mid, left]) {
+      const cell = document.createElement('i');
+      cell.style.background = v === 0 ? 'transparent' : v === 3 ? c2 : c1;
+      node.append(cell);
+    }
+  }
 }
 
 function kv(rows) {
@@ -90,6 +121,8 @@ function forgetEverything() {
   pendingConfirm = null;
 }
 
+const shortAddr = (a) => `${a.slice(0, 4)} ${a.slice(4, 8)} … ${a.slice(-8, -4)} ${a.slice(-4)}`;
+
 function renderWallet() {
   const card = $('#wallet');
   const title = $('#wallet-title');
@@ -98,15 +131,26 @@ function renderWallet() {
   $('#btn-forget').hidden = !wallet;
   $('#btn-test').hidden = !!testWallets;
   $('#btn-load').hidden = !!wallet && !testWallets;
+  $('#btn-sheet-done').hidden = !wallet;
   $('#who').hidden = !testWallets;
   $('#seal-quick').hidden = !testWallets;
+  const testName = testWallets ? (wallet === testWallets.alice ? 'Alice' : 'Bob') : '';
   if (!wallet) {
     title.textContent = 'No wallet loaded';
-    sub.textContent = 'You can check signatures and seal notes without one. Signing and opening need a wallet.';
+    sub.textContent = 'You can check signatures and seal letters without one. Signing and opening need a wallet.';
   } else {
-    title.textContent = testWallets ? `Acting as test wallet ${wallet === testWallets.alice ? 'Alice' : 'Bob'}` : 'Your wallet is loaded';
+    title.textContent = testWallets ? `Acting as test wallet ${testName}` : 'Your wallet is loaded';
     sub.replaceChildren(el('span', { class: 'mono', text: wallet.address }));
   }
+  // Every wallet chip on the page shows the same thing.
+  for (const node of $$('[data-idc]')) paintIdenticon(node, wallet ? wallet.address : '');
+  for (const node of $$('[data-wallet-name]')) node.textContent = !wallet ? 'No wallet loaded' : testWallets ? `Test wallet ${testName}` : 'Your wallet';
+  for (const node of $$('[data-wallet-sub]')) {
+    if (wallet) node.replaceChildren(el('span', { class: 'mono', text: shortAddr(wallet.address) }));
+    else node.textContent = 'Needed to sign and to open letters';
+  }
+  for (const node of $$('[data-wallet-act]')) node.textContent = wallet ? 'Switch' : 'Load';
+  for (const node of $$('[data-wallet-short]')) node.textContent = !wallet ? 'No wallet' : testWallets ? testName : `${wallet.address.slice(0, 4)}…${wallet.address.slice(-4)}`;
   for (const b of $$('#who button')) b.setAttribute('aria-pressed', String(!!testWallets && testWallets[b.dataset.who] === wallet));
   // Stamp's "Your address" follows the loaded wallet, unless the person typed their own.
   const ownerBox = $('#st-owner');
@@ -125,12 +169,52 @@ function renderWallet() {
     : "Sign it so they know it's from me. Load a wallet to use this.";
 }
 
+/** A quick pulse on the wallet chips, so a change of wallet is noticed. */
+function flashWallet() {
+  for (const node of $$('.wallet-chip, .wallet-mini')) play(node, 'flash');
+}
+
+// ---------------------------------------------------------------------------
+// Wallet sheet: slides up from the bottom on phones, a centred card on desktop.
+// ---------------------------------------------------------------------------
+
+const sheet = $('#wallet-sheet');
+let sheetReturn = null;
+
+function openSheet() {
+  if (sheet.open) return;
+  sheetReturn = document.activeElement;
+  sheet.classList.remove('closing');
+  sheet.showModal();
+}
+
+function closeSheet() {
+  if (!sheet.open || sheet.classList.contains('closing')) return;
+  const finish = () => {
+    sheet.classList.remove('closing');
+    sheet.close();
+    if (sheetReturn && sheetReturn.isConnected) sheetReturn.focus({ preventScroll: true });
+  };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
+  sheet.classList.add('closing');
+  sheet.addEventListener('animationend', finish, { once: true });
+  setTimeout(() => { if (sheet.classList.contains('closing')) finish(); }, 400); // in case animationend never fires
+}
+
+for (const b of $$('[data-wallet]')) b.addEventListener('click', openSheet);
+$('#btn-sheet-close').addEventListener('click', closeSheet);
+$('#btn-sheet-done').addEventListener('click', closeSheet);
+sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); });
+// A tap on the dimmed backdrop closes it. The dialog box itself is the backdrop's hit target.
+sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });
+
 $('#btn-test').addEventListener('click', () => {
   forgetEverything();
   testWallets = { alice: randomWallet(), bob: randomWallet() };
   wallet = testWallets.alice;
   $('#loader').hidden = true;
   renderWallet();
+  flashWallet();
 });
 
 for (const b of $$('#who button')) {
@@ -138,6 +222,7 @@ for (const b of $$('#who button')) {
     if (!testWallets) return;
     wallet = testWallets[b.dataset.who];
     renderWallet();
+    flashWallet();
   });
 }
 
@@ -214,6 +299,8 @@ function useWallet(w) {
   clearLoader();
   $('#loader').hidden = true;
   renderWallet();
+  flashWallet();
+  closeSheet();
 }
 
 $('#btn-load-go').addEventListener('click', async () => {
@@ -276,44 +363,108 @@ drop.addEventListener('drop', (e) => { e.preventDefault(); loadFile(e.dataTransf
 $('#wallet-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btn-load-go').click(); });
 
 // ---------------------------------------------------------------------------
-// Tabs
+// Screens. Each one has its own #address, so the phone's back gesture works.
 // ---------------------------------------------------------------------------
 
-const TABS = ['sign', 'verify', 'seal', 'open', 'stamp'];
+const SCREENS = { home: '#s-home', sign: '#p-sign', seal: '#p-seal', postmark: '#p-stamp', received: '#s-received', verify: '#p-verify', open: '#p-open', check: '#p-check' };
+const PARENT = { sign: 'home', seal: 'home', postmark: 'home', received: 'home', verify: 'received', open: 'received', check: 'received' };
+const ALIASES = { stamp: 'postmark', '': 'home' };
+const depth = (name) => (name === 'home' ? 0 : PARENT[name] === 'home' ? 1 : 2);
+let current = null;
 
-function showTab(name, focus = false) {
-  for (const t of TABS) {
-    const tab = $(`#tab-${t}`);
-    const on = t === name;
-    tab.setAttribute('aria-selected', String(on));
-    tab.tabIndex = on ? 0 : -1;
-    $(`#p-${t}`).hidden = !on;
-    if (on && focus) tab.focus();
+function show(name) {
+  if (!SCREENS[name]) name = 'home';
+  const prev = current;
+  if (prev === name) return;
+  current = name;
+  for (const [n, sel] of Object.entries(SCREENS)) $(sel).hidden = n !== name;
+  const screen = $(SCREENS[name]);
+  document.body.classList.remove('intro', 'returning');
+  if (prev === null) {
+    // First screen of the visit. On the home screen, the logo draws itself.
+    if (name === 'home') { document.body.classList.add('intro'); $('#hero-mark').classList.add('play'); }
+  } else {
+    screen.classList.remove('enter-fwd', 'enter-back');
+    void screen.offsetWidth;
+    screen.classList.add(depth(name) >= depth(prev) ? 'enter-fwd' : 'enter-back');
+    if (name === 'home') document.body.classList.add('returning');
+    window.scrollTo(0, 0);
+    // Move focus to the new screen's title, for keyboards and screen readers.
+    const h = screen.querySelector('h2') || screen;
+    h.focus({ preventScroll: true });
   }
+  document.title = name === 'home' ? 'BRC Seal' : `${screen.querySelector('h2').textContent} · BRC Seal`;
 }
 
-for (const t of TABS) $(`#tab-${t}`).addEventListener('click', () => showTab(t));
-$('.segmented').addEventListener('keydown', (e) => {
-  const i = TABS.findIndex((t) => $(`#tab-${t}`).getAttribute('aria-selected') === 'true');
-  if (e.key === 'ArrowRight') { e.preventDefault(); showTab(TABS[(i + 1) % TABS.length], true); }
-  if (e.key === 'ArrowLeft') { e.preventDefault(); showTab(TABS[(i + TABS.length - 1) % TABS.length], true); }
-});
+/** Go to a screen, adding a history entry so Back (and the phone's back gesture) return here. */
+function go(name) {
+  if (current === name) return;
+  history.pushState({ brcSeal: true }, '', '#' + name);
+  readHash();
+}
 
-// Links from BRC Pulse: #seal&to=<address> opens Seal with the address filled in.
+for (const b of $$('[data-back]')) {
+  b.addEventListener('click', () => {
+    if (history.state && history.state.brcSeal) history.back();
+    else { history.replaceState(null, '', '#' + (PARENT[current] || 'home')); readHash(); }
+  });
+}
+for (const a of $$('a[href^="#"]')) {
+  a.addEventListener('click', (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    e.preventDefault();
+    go(a.dataset.go || a.getAttribute('href').slice(1) || 'home');
+  });
+}
+
+// Routes, including links from BRC Pulse: #to=<address> opens Seal with the address filled in.
 function readHash() {
   let h = '';
-  try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch { return; }
+  try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch { show('home'); return; }
   const to = h.match(/(?:^|&)to=([0-9a-fA-F]{64})(?:&|$)/);
   if (to) {
     $('#seal-to').value = to[1].toLowerCase();
-    showTab('seal');
+    show('seal');
     say('#seal-msg', 'Address filled in from a link. Check it is the one you meant before sealing.', 'warn');
     return;
   }
-  const tab = TABS.find((t) => h === t || h.startsWith(t + '&'));
-  if (tab) showTab(tab);
+  const key = h.split('&')[0];
+  show(ALIASES[key] ?? (SCREENS[key] ? key : 'home'));
 }
 window.addEventListener('hashchange', readHash);
+window.addEventListener('popstate', readHash);
+
+// ---------------------------------------------------------------------------
+// I received something: paste it, and it goes to the right place.
+// ---------------------------------------------------------------------------
+
+function routePaste(text) {
+  const t = text || '';
+  if (!t.trim()) { say('#rx-msg', ''); return; }
+  if (/BEGIN BRC SIGNED MESSAGE/i.test(t)) {
+    $('#verify-text').value = t;
+    go('verify');
+    $('#btn-verify').click();
+  } else if (/BEGIN BRC SEALED NOTE/i.test(t)) {
+    $('#open-text').value = t;
+    go('open');
+    if (wallet) $('#btn-open').click();
+    else say('#open-msg', 'This is a sealed letter. Load the wallet it was sealed to, then press Open the letter.', 'info');
+  } else if (/BEGIN BRC STAMP RECEIPT/i.test(t)) {
+    $('#st-cmp-receipt').value = t;
+    go('check');
+    runCompare();
+    if (!cmpFp) say('#st-cmp-msg', 'This is a postmark receipt. Choose the file it belongs to, to check they match.', 'info');
+  } else {
+    say('#rx-msg', "This doesn't look like something from BRC Seal. Copy the whole block, from -----BEGIN to -----END.", 'bad');
+    return;
+  }
+  say('#rx-msg', '');
+  $('#rx-text').value = '';
+}
+$('#rx-text').addEventListener('paste', () => setTimeout(() => routePaste($('#rx-text').value), 0));
+let rxTimer = 0;
+$('#rx-text').addEventListener('input', () => { clearTimeout(rxTimer); rxTimer = setTimeout(() => routePaste($('#rx-text').value), 700); });
 
 // ---------------------------------------------------------------------------
 // Sign
@@ -321,7 +472,7 @@ window.addEventListener('hashchange', readHash);
 
 const today = () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const FILLS = {
-  raffle: () => seal.raffleEntryText(100000),
+  giveaway: () => seal.raffleEntryText(100000),
   discord: () => `I'm ____ on the BrowserCoin Discord. Signed on ${today()}.`,
   pool: () => `This is my payout address for ____ pool. Signed on ${today()}.`,
 };
@@ -343,11 +494,12 @@ $('#sign-text').addEventListener('input', updateSignCount);
 
 $('#btn-sign').addEventListener('click', () => {
   $('#sign-out').hidden = true;
-  if (!wallet) { say('#sign-msg', 'Load a wallet or use the test wallets first. Signing needs a private key.', 'bad'); return; }
+  if (!wallet) { say('#sign-msg', 'Load a wallet or use the test wallets first. Signing needs a private key.', 'bad'); openSheet(); return; }
   try {
     const s = seal.signMessage(wallet, $('#sign-text').value);
     $('#sign-block').textContent = s.armored;
     $('#sign-out').hidden = false;
+    play($('#sign-out'));
     say('#sign-msg', '');
   } catch (e) {
     say('#sign-msg', e.message, 'bad');
@@ -365,7 +517,7 @@ $('#btn-verify').addEventListener('click', () => {
   const text = $('#verify-text').value;
   if (!text.trim()) { say('#verify-msg', 'Paste a signed message first.', 'bad'); return; }
   let v;
-  try { v = seal.verifySigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); return; }
+  try { v = seal.verifySigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
   if (v.valid && v.hidden) {
     out.append(verdict('warn', 'Valid signature, but the message has hidden characters',
       el('p', { text: 'It contains invisible or direction-changing characters, so it may not read the way it looks. Ask the signer for a plain version.' }),
@@ -409,18 +561,20 @@ $('#btn-seal').addEventListener('click', () => {
     $('#seal-to').value = n.to;
     $('#seal-block').textContent = n.armored;
     const who = nameFor(n.to);
-    $('#seal-out-title').textContent = `Sealed to ${n.to.slice(0, 10)}…${n.to.slice(-4)}${who ? ` (${who})` : ''}${n.signed ? ', signed by you' : ', anonymous'}.`;
+    $('#seal-out-title').textContent = `Sealed to ${who ? who.replace('test wallet ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}${n.signed ? ', signed by you' : ', anonymous'}`;
     const len = $('#seal-len');
     if (n.length > seal.DISCORD_LIMIT) {
       len.dataset.tone = 'warn';
-      len.textContent = `${n.length.toLocaleString('en-US')} characters: too long for one Discord message (limit 2,000). Shorten the note, or send the block as a .txt file.`;
+      len.textContent = `${n.length.toLocaleString('en-US')} characters: too long for one Discord message (limit 2,000). Shorten the letter, or send the block as a .txt file.`;
     } else {
       len.dataset.tone = 'info';
       len.textContent = `${n.length.toLocaleString('en-US')} characters. Fits in one Discord message.`;
     }
     $('#seal-out').hidden = false;
+    play($('#seal-out'), 'anim-in', 'play');
   } catch (e) {
     say('#seal-msg', e.message, 'bad');
+    play($('#seal-msg'), 'anim-shake');
   }
 });
 
@@ -433,8 +587,8 @@ $('#btn-open').addEventListener('click', () => {
   out.replaceChildren();
   say('#open-msg', '');
   const text = $('#open-text').value;
-  if (!text.trim()) { say('#open-msg', 'Paste a sealed note first.', 'bad'); return; }
-  if (!wallet) { say('#open-msg', 'Load the wallet this note was sealed to. Opening needs its private key.', 'bad'); return; }
+  if (!text.trim()) { say('#open-msg', 'Paste a sealed letter first.', 'bad'); return; }
+  if (!wallet) { say('#open-msg', 'Load the wallet this letter was sealed to. Opening needs its private key.', 'bad'); openSheet(); return; }
   let o;
   try {
     o = seal.openNote(text, wallet);
@@ -443,15 +597,16 @@ $('#btn-open').addEventListener('click', () => {
     try {
       const { to } = seal.parseSealed(text);
       const name = nameFor(to);
-      if (testWallets && name) hint = ` It's for ${name.replace('test wallet ', '')}: switch to ${name.replace('test wallet ', '')} above.`;
+      if (testWallets && name) hint = ` It's for ${name.replace('test wallet ', '')}: switch to ${name.replace('test wallet ', '')} in your wallet (top right).`;
     } catch { /* the original error says enough */ }
     say('#open-msg', e.message + hint, 'bad');
+    play($('#open-msg'), 'anim-shake');
     return;
   }
   let fromRow;
   let tone = 'good';
   let title = 'Opened';
-  let lede = 'Only your wallet could open this note.';
+  let lede = 'Only your wallet could open this letter.';
   if (!o.signed) {
     fromRow = el('span', { text: "Anonymous. The sender didn't sign it, so it could be from anyone." });
   } else if (o.signatureValid) {
@@ -459,15 +614,15 @@ $('#btn-open').addEventListener('click', () => {
   } else {
     tone = 'warn';
     title = "Opened, but the sender's signature is wrong";
-    lede = "Don't trust who this note claims to be from.";
+    lede = "Don't trust who this letter claims to be from.";
     fromRow = addressNode(o.from);
   }
   if (o.hidden && tone === 'good') {
     tone = 'warn';
-    lede = 'Opened, but the note contains invisible or direction-changing characters, so it may not read the way it looks.';
+    lede = 'Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.';
   }
   out.append(verdict(tone, title, el('p', { text: lede }),
-    kv([['From', fromRow], ['Note', el('div', { class: 'message-box', text: o.message })]])));
+    kv([['From', fromRow], ['Letter', el('div', { class: 'message-box', text: o.message })]])));
 });
 
 // ---------------------------------------------------------------------------
@@ -484,9 +639,12 @@ for (const b of $$('[data-copy]')) {
       const s = getSelection(); s.removeAllRanges(); s.addRange(r);
       ok = document.execCommand && document.execCommand('copy');
     }
-    const was = b.textContent;
-    b.textContent = ok ? 'Copied' : 'Select and copy';
-    setTimeout(() => { b.textContent = was; }, 1600);
+    const lbl = b.querySelector('.lbl') || b;
+    if (!b.dataset.label) b.dataset.label = lbl.textContent;
+    clearTimeout(b._copyTimer);
+    lbl.textContent = ok ? 'Copied' : 'Select and copy';
+    if (ok) b.dataset.copied = ''; else delete b.dataset.copied;
+    b._copyTimer = setTimeout(() => { lbl.textContent = b.dataset.label; delete b.dataset.copied; }, 1600);
   });
 }
 
@@ -511,43 +669,64 @@ async function hashFile(file, onProgress) {
   return vault.bytesToHex(h.digest());
 }
 
-const fmtBytes = (n) => n < 1024 ? `${n} bytes` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+const fmtBytes = (n) => n === 1 ? '1 byte' : n < 1024 ? `${n} bytes` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+const extOf = (name) => { const m = /\.([A-Za-z0-9]{1,5})$/.exec(name || ''); return m ? m[1].toUpperCase() : 'FILE'; };
+
+/** Show reading progress along the bottom of a drop zone. */
+function dropState(drop, state, p = 0) {
+  if (state) drop.dataset.state = state; else delete drop.dataset.state;
+  drop.style.setProperty('--p', String(p));
+}
 
 function resetStampFrom(step) {
   if (step <= 2) { stStamp = null; $('#st-recipe').hidden = true; delete $('#st-step2').dataset.done; say('#st-make-msg', ''); }
   if (step <= 3) { $('#st-receipt-out').hidden = true; delete $('#st-step3').dataset.done; say('#st-receipt-msg', ''); }
 }
 
+let stReadGen = 0;
 $('#st-file').addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
+  const gen = ++stReadGen;
   resetStampFrom(2);
   stFile = null;
   delete $('#st-step1').dataset.done;
-  if (!file) return;
+  const drop = $('#st-drop');
+  if (!file) { dropState(drop, ''); return; }
+  if (file.size > 2 * 1024 ** 3) { dropState(drop, ''); $('#st-file-title').textContent = file.name; $('#st-file-sub').textContent = 'Files over 2 GB are too large to postmark here.'; return; }
   $('#st-file-title').textContent = file.name;
   $('#st-file-sub').textContent = 'Reading…';
+  dropState(drop, 'reading', 0);
   try {
-    const fp = await hashFile(file, (f) => { $('#st-file-sub').textContent = `Reading… ${Math.round(f * 100)}%`; });
+    const fp = await hashFile(file, (f) => { if (gen === stReadGen) { $('#st-file-sub').textContent = `Reading… ${Math.round(f * 100)}%`; dropState(drop, 'reading', f); } });
+    if (gen !== stReadGen) return; // another file was chosen meanwhile
     stFile = { name: file.name, size: file.size, fingerprint: fp };
     $('#st-file-sub').textContent = `${fmtBytes(file.size)} · fingerprint ${fp.slice(0, 16)}…`;
+    $('#st-file-icon').textContent = extOf(file.name);
+    dropState(drop, 'done', 1);
     $('#st-step1').dataset.done = '';
   } catch {
+    if (gen !== stReadGen) return;
+    dropState(drop, '');
     $('#st-file-sub').textContent = 'This file could not be read. Try again.';
   }
 });
 
 for (const id of ['#st-owner', '#st-after-height', '#st-after-hash', '#st-drand']) $(id).addEventListener('input', () => resetStampFrom(2));
 const utcTime = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'medium' }) + ' UTC';
+const localTime = (ts) => new Date(ts * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+const localDate = (ts) => new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 // Check a pasted drand beacon right away, offline, so a bad paste is caught before stamping.
 $('#st-drand').addEventListener('input', () => {
   const v = $('#st-drand').value.trim(), out = $('#st-drand-status');
   delete out.dataset.over;
+  delete out.dataset.good;
   if (!v) { out.textContent = ''; return; }
   try {
     const b = drand.parseDrand(v), age = Date.now() / 1000 - drand.drandRoundTime(b.round);
-    out.textContent = `✓ round ${b.round.toLocaleString('en-US')}, ${utcTime(drand.drandRoundTime(b.round))}`;
+    out.textContent = `checked: round ${b.round.toLocaleString('en-US')}, ${utcTime(drand.drandRoundTime(b.round))}`;
+    out.dataset.good = '';
     // An old beacon still works, but only proves "after" that older moment.
-    if (age > 15 * 60) { out.textContent += `: ${Math.round(age / 60).toLocaleString('en-US')} minutes old, copy a fresh one for a tighter proof`; out.dataset.over = ''; }
+    if (age > 15 * 60) { out.textContent += `: ${Math.round(age / 60).toLocaleString('en-US')} minutes old, copy a fresh one for a tighter proof`; out.dataset.over = ''; delete out.dataset.good; }
   }
   catch { out.textContent = 'not a valid beacon'; out.dataset.over = ''; }
 });
@@ -560,7 +739,7 @@ $('#st-lockid').addEventListener('input', () => resetStampFrom(3));
 
 $('#btn-st-make').addEventListener('click', () => {
   resetStampFrom(2);
-  if (!stFile) { say('#st-make-msg', 'Choose a file first.', 'bad'); return; }
+  if (!stFile) { say('#st-make-msg', 'Choose a file first.', 'bad'); play($('#st-make-msg'), 'anim-shake'); return; }
   try {
     const h = $('#st-after-height').value.trim();
     const x = $('#st-after-hash').value.trim();
@@ -576,37 +755,97 @@ $('#btn-st-make').addEventListener('click', () => {
     $('#st-check').textContent = `PUSH(32) ${scriptHex.slice(4, 24)}…`;
     $('#st-check-owner').textContent = `PUSH(32) ${stStamp.owner.slice(0, 20)}…`;
     $('#st-recipe').hidden = false;
+    play($('#st-recipe'));
     $('#st-step2').dataset.done = '';
   } catch (e) {
     say('#st-make-msg', e.message, 'bad');
+    play($('#st-make-msg'), 'anim-shake');
   }
 });
+
+/** The postmark card: what the receipt proves now, and what BRC Pulse will add once the lock is in a block. */
+function renderPostmark(st, file) {
+  $('#pm-ext').textContent = extOf(file.name);
+  $('#pm-name').textContent = file.name;
+  $('#pm-size').textContent = `${fmtBytes(file.size)} · stayed on your device`;
+  const t = stamp.stampDrandTime(st);
+  const pm = $('#pm');
+  if (t) {
+    // A drand beacon is a checked lower bound: the postmark was made after this moment.
+    const d = new Date(t * 1000);
+    delete pm.dataset.pending;
+    $('#pm-day').textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+    $('#pm-year').textContent = String(d.getFullYear());
+    $('#pm-line').textContent = `AFTER ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+    $('#pm-after').replaceChildren(document.createTextNode(localTime(t)), el('small', { text: `${localDate(t)}, to the second (drand)` }));
+  } else {
+    // Without a beacon, the date comes only from the block, which BRC Pulse reads.
+    const now = new Date();
+    pm.dataset.pending = '';
+    $('#pm-day').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+    $('#pm-year').textContent = String(now.getFullYear());
+    $('#pm-line').textContent = 'AWAITING BLOCK';
+    $('#pm-after').replaceChildren(st.after
+      ? document.createTextNode(`Block ${Number(st.after.height).toLocaleString('en-US')}`)
+      : el('span', { text: 'Not recorded' }), el('small', { text: st.after ? 'checked on BRC Pulse' : 'add a drand beacon to record this' }));
+  }
+  $('#pm-title').textContent = 'Posted';
+  $('#pm-sub').textContent = 'Your receipt is ready. The date is set by the block your lock lands in.';
+  $('#pm-by').replaceChildren(document.createTextNode('The lock’s block'), el('small', { text: 'shown on BRC Pulse, usually within minutes' }));
+  const who = nameFor(st.owner);
+  $('#pm-from').replaceChildren(document.createTextNode(wallet && wallet.address === st.owner ? 'You' : who || 'This address'),
+    el('small', { class: 'mono', text: `${st.owner.slice(0, 6)}…${st.owner.slice(-4)}` }));
+}
+
+/** Bring the card into view first, then stamp it, so the postmark lands where it can be seen. */
+function revealPostmark() {
+  const card = $('#pm-card');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.classList.remove('anim-in');
+  card.classList.add('pm-wait');
+  $('#st-receipt-out').scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
+  setTimeout(() => { card.classList.remove('pm-wait'); play(card); }, calm ? 0 : 420);
+}
 
 let stReceipt = '';
 $('#btn-st-receipt').addEventListener('click', () => {
   resetStampFrom(3);
-  if (!stStamp) { say('#st-receipt-msg', 'Make the stamp phrase first (step 2).', 'bad'); return; }
+  if (!stStamp) { say('#st-receipt-msg', 'Make the postmark phrase first (step 2).', 'bad'); play($('#st-receipt-msg'), 'anim-shake'); return; }
   try {
     stReceipt = stamp.receiptText(stStamp, { lockId: $('#st-lockid').value, fileName: stFile.name, fileSize: stFile.size });
     $('#st-receipt').textContent = stReceipt;
     $('#st-receipt-out').hidden = false;
     $('#st-step3').dataset.done = '';
+    renderPostmark(stStamp, stFile);
+    revealPostmark();
   } catch (e) {
     say('#st-receipt-msg', e.message, 'bad');
+    play($('#st-receipt-msg'), 'anim-shake');
   }
 });
+
+// Named after the file, so the receipt sorts next to it: contract.pdf -> contract-brc-postmark-receipt.txt
+const receiptName = () => `${(stFile ? stFile.name : 'file').replace(/\.[^.]{1,8}$/, '').replace(/[^\w.-]+/g, '_').slice(0, 60) || 'file'}-brc-postmark-receipt.txt`;
 
 $('#btn-st-save').addEventListener('click', () => {
   if (!stReceipt) return;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([stReceipt + '\n'], { type: 'text/plain' }));
-  // Named after the file, so the receipt sorts next to it: contract.pdf -> contract-brc-stamp-receipt.txt
-  const base = (stFile ? stFile.name : 'file').replace(/\.[^.]{1,8}$/, '').replace(/[^\w.-]+/g, '_').slice(0, 60) || 'file';
-  a.download = `${base}-brc-stamp-receipt.txt`;
+  a.download = receiptName();
   document.body.append(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+// On phones, hand the receipt to the share sheet (Messages, Mail, Files…). Nothing is sent by this page.
+const canShareFiles = (() => {
+  try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.txt', { type: 'text/plain' })] })); } catch { return false; }
+})();
+$('#btn-st-share').hidden = !canShareFiles;
+$('#btn-st-share').addEventListener('click', async () => {
+  if (!stReceipt) return;
+  try { await navigator.share({ files: [new File([stReceipt + '\n'], receiptName(), { type: 'text/plain' })], title: 'BRC Seal postmark receipt' }); } catch { /* closed the share sheet */ }
 });
 
 // Offline comparison of a file with a receipt.
@@ -616,23 +855,35 @@ async function runCompare() {
   if (!text.trim() || !cmpFp) { say('#st-cmp-msg', ''); return; }
   try {
     const r = stamp.parseReceipt(text);
-    if (r.stamp.fingerprint === cmpFp) say('#st-cmp-msg', 'This file matches the receipt exactly. Check the receipt on BRC Pulse to see the date.', 'good');
-    else say('#st-cmp-msg', "This file doesn't match the receipt. It is a different file, or it was changed after it was stamped.", 'bad');
+    if (r.stamp.fingerprint === cmpFp) say('#st-cmp-msg', 'This file matches the receipt exactly. Check the receipt on BRC Pulse → Stamps to see the date.', 'good');
+    else { say('#st-cmp-msg', "This file doesn't match the receipt. It is a different file, or it was changed after it was postmarked.", 'bad'); play($('#st-cmp-msg'), 'anim-shake'); }
   } catch (e) {
     say('#st-cmp-msg', e.message, 'bad');
   }
 }
 $('#st-cmp-receipt').addEventListener('input', runCompare);
+let cmpGen = 0;
 $('#st-cmp-file').addEventListener('change', async (e) => {
   const file = e.target.files && e.target.files[0];
+  const gen = ++cmpGen;
+  const drop = $('#st-cmp-drop');
   cmpFp = null;
-  if (!file) { runCompare(); return; }
+  if (!file) { dropState(drop, ''); runCompare(); return; }
   $('#st-cmp-file-title').textContent = `${file.name}: reading…`;
-  cmpFp = await hashFile(file);
-  $('#st-cmp-file-title').textContent = file.name;
+  dropState(drop, 'reading', 0);
+  try {
+    const fp = await hashFile(file, (f) => { if (gen === cmpGen) dropState(drop, 'reading', f); });
+    if (gen !== cmpGen) return;
+    cmpFp = fp;
+    $('#st-cmp-file-title').textContent = file.name;
+    dropState(drop, 'done', 1);
+  } catch {
+    if (gen !== cmpGen) return;
+    dropState(drop, '');
+    $('#st-cmp-file-title').textContent = 'This file could not be read. Try again.';
+  }
   runCompare();
 });
-
 
 renderWallet();
 readHash();

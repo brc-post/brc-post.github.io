@@ -1,6 +1,6 @@
 {
   "name": "brc-seal",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Sign, verify and seal messages with BrowserCoin addresses. Offline.",
   "scripts": {
     "build": "node build.mjs",
