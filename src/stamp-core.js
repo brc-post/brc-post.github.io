@@ -4,7 +4,8 @@
 //
 //   1. The file never leaves the device. Its SHA-256 fingerprint is computed locally.
 //   2. A "stamp phrase" is made from the fingerprint, a random salt, and optionally a
-//      recent block ("after"):  BRCSTAMP1_<fingerprint>_<salt>[_A<height>_<block hash>]
+//      recent block ("after") and/or a recent drand beacon:
+//      BRCSTAMP1_<fingerprint>_<salt>[_A<height>_<block hash>][_D<drand round>_<drand signature>]
 //   3. The owner pastes that phrase into the official app: Scripts → "Create a hash-locked
 //      payment", recipient = their own address. The app builds exactly this script
 //      (src/ui/scripts.ts scriptFor + src/chain/scriptBuild.ts hashlockSigScript):
@@ -15,7 +16,8 @@
 //      find the lock tx by its ID in the block named on the receipt and compare.
 //
 // What a stamp proves: the file existed no later than that block. With "after", the
-// stamp was also made no earlier than the "after" block. The lock is signed by the
+// stamp was also made no earlier than the "after" block. With a drand beacon, it was
+// made after that beacon's moment, to within 3 seconds (drand-core.js). The lock is signed by the
 // wallet that made it, so it also shows which address stamped it.
 // The salt keeps the fingerprint private: nobody can test guesses of the file's
 // contents against the chain without the receipt.
@@ -26,6 +28,7 @@
 import { sha256 } from '@noble/hashes/sha2';
 import { bytesToHex, hexToBytes } from './vault-core.js';
 import { parseAddress, isCleanAddress } from './seal-core.js';
+import { verifyDrand, drandRoundTime } from './drand-core.js';
 
 const enc = new TextEncoder();
 const HEX64 = /^[0-9a-f]{64}$/;
@@ -77,7 +80,7 @@ export function fingerprint(bytes) {
  * coins back (normally your own). `after` is optional: { height, hash } of a recent
  * block, which proves the stamp was made after that block.
  */
-export function newStamp({ fingerprint: fp, owner, after = null, salt = null }) {
+export function newStamp({ fingerprint: fp, owner, after = null, drand = null, salt = null }) {
   const f = cleanHex(fp, 'The fingerprint');
   const o = parseAddress(owner);
   if (!isCleanAddress(o)) throw new Error("The owner address isn't one a real wallet could have. Check it for a typo.");
@@ -87,6 +90,13 @@ export function newStamp({ fingerprint: fp, owner, after = null, salt = null }) 
     if (!Number.isSafeInteger(height) || height < 1) throw new Error('The "after" block number should be a whole number, like 92510.');
     a = { height, hash: cleanHex(after.hash, 'The "after" block ID') };
   }
+  let d = null;
+  if (drand) {
+    const round = Number(drand.round);
+    const sig = String(drand.signature || '').replace(/\s+/g, '').toLowerCase();
+    if (!verifyDrand(round, sig)) throw new Error("The drand beacon's signature doesn't check out. Copy it again from BRC Pulse → Stamps.");
+    d = { round, signature: sig };
+  }
   let s = salt;
   if (s == null) {
     const b = new Uint8Array(16);
@@ -94,12 +104,12 @@ export function newStamp({ fingerprint: fp, owner, after = null, salt = null }) 
     s = bytesToHex(b);
   }
   s = cleanHex(s, 'The salt', 32);
-  return { fingerprint: f, salt: s, owner: o, after: a };
+  return { fingerprint: f, salt: s, owner: o, after: a, drand: d };
 }
 
 /** The phrase to paste into the official app's "Secret phrase" box. One unbroken word, so a double-click selects all of it. */
 export function stampPhrase(st) {
-  return `${STAMP_PREFIX}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ''}`;
+  return `${STAMP_PREFIX}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ''}${st.drand ? `_D${st.drand.round}_${st.drand.signature}` : ''}`;
 }
 
 /** The exact redeem script the official app builds for this phrase and owner. */
@@ -135,6 +145,7 @@ export function receiptText(st, { lockId, block = null, fileName = '', fileSize 
   lines.push(`Fingerprint: ${st.fingerprint}`);
   lines.push(`Salt: ${st.salt}`);
   if (st.after) lines.push(`After: ${st.after.height} ${st.after.hash}`);
+  if (st.drand) lines.push(`Drand: ${st.drand.round} ${st.drand.signature}`);
   lines.push(`Owner: ${st.owner}`);
   lines.push(`Lock ID: ${cleanHex(lockId, 'The Lock ID')}`);
   if (block != null) lines.push(`Block: ${block}`);
@@ -166,7 +177,14 @@ export function parseReceipt(text) {
     if (!m) throw new Error('The receipt\'s "After:" line should be a block number and a block ID.');
     after = { height: m[1], hash: m[2] };
   }
-  const st = newStamp({ fingerprint: need('Fingerprint'), owner: need('Owner'), salt: need('Salt'), after });
+  let drand = null;
+  const drandLine = field('Drand');
+  if (drandLine) {
+    const m = drandLine.match(/^(\d+)\s+([0-9a-fA-F]{96})$/);
+    if (!m) throw new Error('The receipt\'s "Drand:" line should be a round number and a 96-character signature.');
+    drand = { round: Number(m[1]), signature: m[2] };
+  }
+  const st = newStamp({ fingerprint: need('Fingerprint'), owner: need('Owner'), salt: need('Salt'), after, drand });
   const lockId = cleanHex(need('Lock ID'), 'The Lock ID');
   const blockLine = field('Block');
   let block = null;
@@ -250,6 +268,11 @@ export function checkStampInBlock(receipt, block) {
     return { ok: false, reason: 'A lock with this ID exists, but it does not hold this stamp. The fingerprint, salt or owner on the receipt is different from what was stamped.' };
   }
   return { ok: true, height: blk.height, timestamp: blk.timestamp, blockHash: blk.hash, from: lock.from, amount: lock.amount };
+}
+
+/** When the receipt's drand beacon was published (seconds), or null. */
+export function stampDrandTime(st) {
+  return st.drand ? drandRoundTime(st.drand.round) : null;
 }
 
 /** Does this file match the receipt? */

@@ -152,9 +152,62 @@ t('owner must be a real wallet address', () => {
   throwsMsg(() => c.newStamp({ fingerprint: 'xyz', owner: me.address }), /fingerprint should be 64/);
 });
 
-console.log(`\n${passed} stamp tests passed`);
 
 // Fixture for the independent Python check of the stamp script math.
 import { writeFileSync } from 'node:fs';
 const fx = c.newStamp({ fingerprint: fp, owner: me.address, after: { height: 92500, hash: 'cd'.repeat(32) } });
 writeFileSync('build/stamp-fixture.json', JSON.stringify({ phrase: c.stampPhrase(fx), owner: me.address, scriptHash: c.stampScriptHash(fx), fileHex: c.bytesToHex(file), fingerprint: fp }));
+
+// ---------- drand "made after" ----------
+const vec = JSON.parse(readFileSync('test/drand-vectors.json', 'utf8')).beacons;
+
+t('real drand quicknet beacons verify offline; tampered ones do not', () => {
+  for (const b of vec) {
+    assert.equal(c.verifyDrand(b.round, b.signature), true, `round ${b.round}`);
+    assert.equal(c.fingerprint(c.hexToBytes(b.signature)), b.randomness); // drand's randomness is SHA-256 of the signature
+  }
+  const b = vec.at(-1);
+  assert.equal(c.verifyDrand(b.round + 1, b.signature), false);
+  assert.equal(c.verifyDrand(b.round, vec[0].signature), false);
+  assert.equal(c.drandRoundTime(1), 1692803367);
+  assert.equal(new Date(c.drandRoundTime(b.round) * 1000).toISOString(), '2026-10-30T14:35:33.000Z');
+});
+
+t('drand beacons are read from Pulse copy or relay JSON, and fakes are refused', () => {
+  const b = vec.at(-1);
+  assert.deepEqual(c.parseDrand(`${b.round} ${b.signature}`), { round: b.round, signature: b.signature });
+  assert.deepEqual(c.parseDrand(JSON.stringify(b)), { round: b.round, signature: b.signature });
+  throwsMsg(() => c.parseDrand(`${b.round} ${b.signature.slice(0, 90)}`), /96 characters/);
+  throwsMsg(() => c.parseDrand(`${b.round + 5} ${b.signature}`), /doesn't check out/);
+  throwsMsg(() => c.parseDrand('hello'), /round number and a signature/);
+});
+
+t('a stamp with a drand beacon: phrase, receipt, chain check, and tampering', () => {
+  const b = vec.at(-1);
+  const st = c.newStamp({ fingerprint: fp, owner: me.address, drand: { round: b.round, signature: b.signature } });
+  assert.match(c.stampPhrase(st), new RegExp(`^BRCSTAMP1_${fp}_[0-9a-f]{32}_D${b.round}_${b.signature}$`));
+  const lock = lockTx(me, c.stampScriptHash(st));
+  const r = c.parseReceipt(c.receiptText(st, { lockId: c.fingerprint(lock) }));
+  assert.equal(r.stamp.drand.round, b.round);
+  assert.equal(c.stampDrandTime(r.stamp), c.drandRoundTime(b.round));
+  assert.equal(c.checkStampInBlock(r, block(92510, [lock])).ok, true);
+  // Swap in a different (also genuine) beacon: the stamp no longer matches.
+  const other = vec[1];
+  const swapped = c.receiptText(st, { lockId: c.fingerprint(lock) }).replace(`Drand: ${b.round} ${b.signature}`, `Drand: ${other.round} ${other.signature}`);
+  assert.equal(c.checkStampInBlock(c.parseReceipt(swapped), block(92510, [lock])).ok, false);
+  // A forged beacon is refused outright.
+  const forged = c.receiptText(st, { lockId: c.fingerprint(lock) }).replace(`Drand: ${b.round}`, `Drand: ${b.round + 1}`);
+  throwsMsg(() => c.parseReceipt(forged), /doesn't check out/);
+  throwsMsg(() => c.newStamp({ fingerprint: fp, owner: me.address, drand: { round: b.round, signature: 'ab'.repeat(48) } }), /doesn't check out/);
+});
+
+t('block "after" and drand together', () => {
+  const b = vec.at(-1);
+  const st = c.newStamp({ fingerprint: fp, owner: me.address, after: { height: 92500, hash: 'cd'.repeat(32) }, drand: b });
+  assert.match(c.stampPhrase(st), /_A92500_(cd){32}_D\d+_[0-9a-f]{96}$/);
+  const r = c.parseReceipt(c.receiptText(st, { lockId: 'ef'.repeat(32) }));
+  assert.equal(r.stamp.after.height, 92500);
+  assert.equal(r.stamp.drand.round, b.round);
+});
+
+console.log(`${passed} stamp tests passed (with drand)`);

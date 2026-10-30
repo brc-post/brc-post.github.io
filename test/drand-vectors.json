@@ -1,0 +1,20 @@
+{
+ "note": "Real drand quicknet beacons fetched Oct 30, 2026 from api.drand.sh and drand.cloudflare.com",
+ "beacons": [
+  {
+   "round": 1,
+   "randomness": "1466a6cd24e327188770752f6134001c64d6efcc590ccc26b721611ad96f165a",
+   "signature": "b55e7cb2d5c613ee0b2e28d6750aabbb78c39dcc96bd9d38c2c2e12198df95571de8e8e402a0cc48871c7089a2b3af4b"
+  },
+  {
+   "round": 33521523,
+   "signature": "a8496dbe695ad235281250a166ad0be6c56497ea0bab748c85ac1b90cbc84f690ef39a2081aa104dc1b86e328425f1d0",
+   "randomness": "eb3aae65824997449da3ca9383b896e5b1805c648b1dd0b430cdeeb5ac656b15"
+  },
+  {
+   "round": 33522523,
+   "randomness": "4cd0266312606e93ffb13a0d99d9dfe1e0406fd6f3e9be277e96052a35241b6b",
+   "signature": "a6aeb7e1c636ab98b01448d485cde0bbd6fa77d7ccc6551dfef3f53147cb0647609c60e298c8ea502e6474dedd4681c3"
+  }
+ ]
+}

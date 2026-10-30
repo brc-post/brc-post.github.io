@@ -193,9 +193,16 @@ with sync_playwright() as pw:
     page.fill('#st-after-height', '92510 ' + 'ab' * 32)  # pasted from Pulse's "Copy both"
     expect(page.locator('#st-after-height')).to_have_value('92510')
     expect(page.locator('#st-after-hash')).to_have_value('ab' * 32)
+    beacon = json.load(open('test/drand-vectors.json'))['beacons'][-1]
+    page.fill('#st-drand', f"{beacon['round']} {beacon['signature'][:-2]}00")
+    expect(page.locator('#st-drand-status')).to_have_text('not a valid beacon')
+    page.click('#btn-st-make')
+    expect(page.locator('#st-make-msg')).to_contain_text("doesn't check out")
+    page.fill('#st-drand', f"{beacon['round']} {beacon['signature']}")
+    expect(page.locator('#st-drand-status')).to_contain_text('Oct 30, 2026, 2:35:33')
     page.click('#btn-st-make')
     phrase = page.locator('#st-phrase').inner_text()
-    assert re.fullmatch(r'BRCSTAMP1_' + hashlib.sha256(doc).hexdigest() + r'_[0-9a-f]{32}_A92510_' + 'ab' * 32, phrase), phrase
+    assert re.fullmatch(r'BRCSTAMP1_' + hashlib.sha256(doc).hexdigest() + r'_[0-9a-f]{32}_A92510_' + 'ab' * 32 + f"_D{beacon['round']}_{beacon['signature']}", phrase), phrase
     owner = page.locator('#st-owner-copy').inner_text()
     pre = hashlib.sha256(phrase.encode()).digest()
     script = b'\xa8\x20' + hashlib.sha256(pre).digest() + b'\x88\x20' + bytes.fromhex(owner) + b'\xac'
@@ -209,6 +216,7 @@ with sync_playwright() as pw:
     page.fill('#st-lockid', 'cd' * 32)
     page.click('#btn-st-receipt')
     receipt = page.locator('#st-receipt').inner_text()
+    assert f"Drand: {beacon['round']} {beacon['signature']}" in receipt, receipt
     assert 'File: lease-v3.txt (36 bytes)' in receipt and 'Lock ID: ' + 'cd' * 32 in receipt and 'After: 92510 ' + 'ab' * 32 in receipt, receipt
     with page.expect_download() as dl:
         page.click('#btn-st-save')

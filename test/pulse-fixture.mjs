@@ -14,7 +14,9 @@ function merkle(leaves) {
   return layer[0];
 }
 const miners = [rand(), rand(), rand()];
-const T0 = Math.floor(Date.now() / 1000) - 232 * 150;
+// Real drand beacon; block 92,510 (the stamp) is 5 minutes after it, as in real life.
+const beacon = JSON.parse((await import('node:fs')).readFileSync('test/drand-vectors.json', 'utf8')).beacons.at(-1);
+const T0 = c.drandRoundTime(beacon.round) + 300 - 210 * 150;
 function block(h, txs) {
   const header = cat(be32(h), c.hexToBytes(rand()), merkle(txs), c.hexToBytes(rand()), be64(T0 + (h - 92300) * 150), be32(0x1d0a0000), be32(h * 7), c.hexToBytes(miners.at(h % 3)));
   return c.bytesToHex(cat(header, be32(txs.length), ...txs));
@@ -24,7 +26,9 @@ const file = new TextEncoder().encode('Farm lease, signed copy. Version 3.\n');
 const blocks = {};
 for (let h = 92300; h <= 92530; h++) if (h !== 92510) blocks[h] = block(h, h % 5 ? [] : [cat(be32(0xc01dfeed), c.hexToBytes(rand(148)))]);
 const afterHash = c.readBlock(blocks[92500]).hash;
-const st = c.newStamp({ fingerprint: c.fingerprint(file), owner: me.address, after: { height: 92500, hash: afterHash } });
+const st = c.newStamp({ fingerprint: c.fingerprint(file), owner: me.address, after: { height: 92500, hash: afterHash }, drand: beacon });
+// A receipt whose drand beacon was tampered with.
+const st0 = st;
 const pre = cat(be32(0x4c4f434b), be32(0xc01dfeed), c.hexToBytes(me.address), be64(100000n), be64(1000n), be32(3), c.hexToBytes(c.stampScriptHash(st)));
 const lock = cat(pre, c.ed25519.sign(pre, me.privateKey));
 blocks[92510] = block(92510, [cat(be32(0xc01dfeed), c.hexToBytes(rand(148))), lock]);
@@ -42,5 +46,6 @@ const fakeReceiptNoBlock = c.receiptText(st2, { lockId: c.fingerprint(lock2) });
 // The receipt's Owner line differs from the address the app actually locked to.
 const other = c.walletFromPrivateKeyHex(rand());
 const wrongOwner = receipt.replace(`Owner: ${me.address}`, `Owner: ${other.address}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+const badDrand = c.receiptText(st0, { lockId: c.fingerprint(lock) }).replace(`Drand: ${beacon.round}`, `Drand: ${beacon.round + 1}`);
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');

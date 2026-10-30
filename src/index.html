@@ -393,8 +393,10 @@ footer p { margin: 0.25rem 0; }
             <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
             <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
             <details class="disclosure-after">
-              <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove it was made after a recent block (optional)</summary>
-              <p class="field-help">On BRC Pulse → Stamps, press <strong>Copy both</strong> next to the recent block and paste it here. The stamp will then prove it was made after that block, not just before its own.</p>
+              <summary class="chip" style="display:inline-flex;align-items:center;margin-top:0.6rem">Also prove when it was made, not just "by when" (optional)</summary>
+              <p class="field-help">On BRC Pulse → Stamps, copy the <strong>drand beacon</strong> and paste it here. The stamp will then also prove it was made after that moment, to within 3 seconds. Nobody can know a beacon before it's published, so it can't be faked in advance.</p>
+              <label class="field"><span>drand beacon <span class="count" id="st-drand-status"></span></span><input id="st-drand" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Round number and signature, from BRC Pulse"></label>
+              <p class="field-help" style="margin-top:0.9rem">Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse → Stamps, press <strong>Copy both</strong> next to the recent block and paste it below.</p>
               <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
               <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
             </details>
@@ -441,7 +443,7 @@ footer p { margin: 0.25rem 0; }
         <details class="how">
           <summary>What a stamp proves, what it costs, and getting your coins back</summary>
           <div class="how-body">
-            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a recent block, it also proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it. Miners set block times, so allow about half an hour either way.</p>
+            <p><strong>Proves:</strong> this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a drand beacon, it also proves the stamp was made after that moment, to within 3 seconds; drand is run by the League of Entropy, a group of independent organisations. If you added a recent block, it proves the stamp was made after that block. The lock is signed by your wallet, so it shows which address stamped it. Miners set block times, so allow about half an hour either way.</p>
             <p><strong>Doesn't prove:</strong> who wrote the file, or what it means. It is not a notarization.</p>
             <p><strong>Private:</strong> only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.</p>
             <p><strong>Cost:</strong> the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.</p>

@@ -4,6 +4,7 @@
 import * as vault from './vault-core.js';
 import * as seal from './seal-core.js';
 import * as stamp from './stamp-core.js';
+import * as drand from './drand-core.js';
 import { sha256 } from '@noble/hashes/sha2';
 
 const $ = (sel) => document.querySelector(sel);
@@ -535,7 +536,16 @@ $('#st-file').addEventListener('change', async (e) => {
   }
 });
 
-for (const id of ['#st-owner', '#st-after-height', '#st-after-hash']) $(id).addEventListener('input', () => resetStampFrom(2));
+for (const id of ['#st-owner', '#st-after-height', '#st-after-hash', '#st-drand']) $(id).addEventListener('input', () => resetStampFrom(2));
+const utcTime = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'medium' }) + ' UTC';
+// Check a pasted drand beacon right away, offline, so a bad paste is caught before stamping.
+$('#st-drand').addEventListener('input', () => {
+  const v = $('#st-drand').value.trim(), out = $('#st-drand-status');
+  delete out.dataset.over;
+  if (!v) { out.textContent = ''; return; }
+  try { const b = drand.parseDrand(v); out.textContent = `✓ round ${b.round.toLocaleString('en-US')}, ${utcTime(drand.drandRoundTime(b.round))}`; }
+  catch { out.textContent = 'not a valid beacon'; out.dataset.over = ''; }
+});
 // BRC Pulse's "Copy both" gives "92510 <block id>": split it into the two boxes.
 $('#st-after-height').addEventListener('input', () => {
   const m = $('#st-after-height').value.trim().match(/^(\d[\d,]*)\s+([0-9a-fA-F]{64})$/);
@@ -550,7 +560,8 @@ $('#btn-st-make').addEventListener('click', () => {
     const h = $('#st-after-height').value.trim();
     const x = $('#st-after-hash').value.trim();
     if (!!h !== !!x) throw new Error('For "after a recent block", fill in both the block number and its ID, or leave both empty.');
-    stStamp = stamp.newStamp({ fingerprint: stFile.fingerprint, owner: $('#st-owner').value, after: h ? { height: h, hash: x } : null });
+    const dv = $('#st-drand').value.trim();
+    stStamp = stamp.newStamp({ fingerprint: stFile.fingerprint, owner: $('#st-owner').value, after: h ? { height: h, hash: x } : null, drand: dv ? drand.parseDrand(dv) : null });
     $('#st-owner').value = stStamp.owner;
     $('#st-amount').textContent = stamp.SUGGESTED_AMOUNT;
     $('#st-owner-copy').textContent = stStamp.owner;
