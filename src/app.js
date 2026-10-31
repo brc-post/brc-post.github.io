@@ -644,6 +644,7 @@ renderSignMode();
 
 $('#btn-sign').addEventListener('click', () => {
   $('#sign-out').hidden = true;
+  $('#sign-pulse').hidden = true;
   if (signAs === 'chain') { makeChainPhrase(); return; }
   if (!wallet) { say('#sign-msg', 'Open your mailbox key, or use the test keys, first. Or sign as your coin address, on the chain.', 'bad'); openSheet(); return; }
   try {
@@ -710,6 +711,7 @@ $('#btn-sc-done').addEventListener('click', () => {
       ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Stamps once the lock is in a block.'
       : 'Share this whole block. Anyone can check it on BRC Pulse → Stamps once the lock is in a block, usually within a few minutes.';
     $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = linking ? 'Copy the mailbox link' : 'Copy the signed message';
+    $('#sign-pulse').hidden = false;
     $('#sign-out').hidden = false;
     play($('#sign-out'));
     $('#sign-out').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -722,7 +724,7 @@ $('#btn-sc-done').addEventListener('click', () => {
 // Verify
 // ---------------------------------------------------------------------------
 
-const PULSE_STAMPS = 'https://pb-hash.github.io/brc-pulse/#stamps';
+const PULSE_STAMPS = 'https://pb-hash.github.io/brc-pulse/#stamp';
 
 /** A chain-signed message: everything that can be checked offline, and where to check the rest. */
 function showChainSigned(text, out) {

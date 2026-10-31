@@ -100,6 +100,8 @@ with sync_playwright() as pw:
     chain_block = page.locator('#sign-block').inner_text()
     assert chain_block.startswith('-----BEGIN BRC CHAIN SIGNED MESSAGE-----') and fx['coinAddress'] in chain_block and 'Lock ID: ' + 'ef' * 32 in chain_block, chain_block
     expect(page.locator('#sign-out-title')).to_have_text('Signed on the chain')
+    expect(page.locator('#sign-pulse')).to_be_visible()
+    assert page.locator('#sign-pulse').get_attribute('href').endswith('/brc-pulse/#stamp')
     got = json.loads(node(f"const p = c.parseChainSigned({json.dumps(chain_block)}); process.stdout.write(JSON.stringify({{ m: p.message, a: p.address, h: c.chainScriptHash(p) }}))"))
     assert got['m'] == msg and got['a'] == fx['coinAddress'] and got['h'] == hashlib.sha256(script).hexdigest(), got
     # Editing the message afterwards drops the phrase, so a stale one can't be used.

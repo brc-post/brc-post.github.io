@@ -582,7 +582,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
             <div><h3 id="sign-out-title">Signed</h3><p id="sign-out-sub">Share this whole block. Anyone can check it.</p></div>
           </div>
           <pre class="block" id="sign-block"></pre>
-          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button></div>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button><a class="btn btn-secondary" id="sign-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" hidden>Check it on BRC Pulse</a></div>
         </div>
       </div>
       <details class="how">
@@ -838,7 +838,8 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <footer>
       <p>BRC Seal <span id="app-version">/*__VERSION__*/</span>, build <span class="mono">/*__BUILD__*/</span>. Works offline. This page sends nothing anywhere.</p>
-      <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault</a> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse</a> · <span aria-current="page">Seal</span></p>
+      <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Seal proves it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
+      <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
     </footer>
   </main>
