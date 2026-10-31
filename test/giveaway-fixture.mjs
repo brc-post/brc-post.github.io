@@ -23,10 +23,11 @@ const drawn = { ...base, opensAt: iso(Date.parse(drawAt) - 9 * 86400e3), closesA
 const expected = c.drawWinner(entries, entriesFile.fingerprint, beacon);
 // Giveaway messages signed on the chain by the release address: the launch (rules and draw round),
 // then the list commitment. Small chains of their own, timed around the draw round:
-//   92600-92620 run from three days before the draw, 92621-92640 from an hour before it.
-//   good:   launch locks in 92602, the list commitment in 92605 (settled days ahead).
-//   double: the same, plus a second lock by the release address in 92610.
-//   late:   launch in 92602, the list commitment only in 92622 (settles after the draw).
+//   92600-92615 from three days before the draw (open launch 92601, drawn launch 92602),
+//   92616-92632 from one day before (entries closed two days before; the list goes in 92618),
+//   92633-92650 from an hour before (the first block after the round is 92640).
+//   good: the list in 92618. double: plus another lock by the release address in 92622.
+//   late: the list only in 92634 (settles after the draw).
 const ch = makeChain(c);
 const rel = c.walletFromPrivateKeyHex(rand());
 const roundT = c.drandRoundTime(beacon.round);
@@ -36,21 +37,21 @@ const commitText = c.listCommitMessage({ count: entries.length, fingerprint: ent
 const goodCs = c.newChainSignature({ address: rel.address, text: commitText });
 const lateCs = c.newChainSignature({ address: rel.address, text: commitText });
 const L = { openLaunch: ch.lock(rel, c.chainScriptHash(openLaunch)), drawnLaunch: ch.lock(rel, c.chainScriptHash(drawnLaunch)), good: ch.lock(rel, c.chainScriptHash(goodCs)), late: ch.lock(rel, c.chainScriptHash(lateCs)), extra: ch.lock(rel, c.chainScriptHash(c.newChainSignature({ address: rel.address, text: 'Another list, just in case.' }))) };
-const ts = (h) => (h <= 92620 ? roundT - 3 * 86400 + (h - 92600) * 600 : roundT - 3600 + (h - 92621) * 600);
+const ts = (h) => (h <= 92615 ? roundT - 3 * 86400 + (h - 92600) * 600 : h <= 92632 ? roundT - 86400 + (h - 92616) * 600 : roundT - 3600 + (h - 92633) * 600);
 function chainWith(extra) {
   const blocks = {};
-  for (let h = 92600; h <= 92640; h++) blocks[h] = ch.block(h, h === 92602 ? [L.openLaunch, L.drawnLaunch] : extra[h] || [], ts(h));
-  return { tip: 92640, blocks };
+  for (let h = 92600; h <= 92650; h++) blocks[h] = ch.block(h, h === 92601 ? [L.openLaunch] : h === 92602 ? [L.drawnLaunch] : extra[h] || [], ts(h));
+  return { tip: 92650, blocks };
 }
 writeFileSync('build/giveaway-chain.json', JSON.stringify({
-  good: chainWith({ 92605: [L.good] }),
-  double: chainWith({ 92605: [L.good], 92610: [L.extra] }),
-  late: chainWith({ 92622: [L.late] }),
+  good: chainWith({ 92618: [L.good] }),
+  double: chainWith({ 92618: [L.good], 92622: [L.extra] }),
+  late: chainWith({ 92634: [L.late] }),
 }));
 writeFileSync('build/giveaway-official.json', JSON.stringify([{ address: rel.address, name: 'BRC Works release address', role: 'release' }]));
 const signed = (cs, lock, block) => c.chainSignedText(cs, { lockId: c.fingerprint(lock), block });
-const launchOpen = signed(openLaunch, L.openLaunch, 92602), launchDrawn = signed(drawnLaunch, L.drawnLaunch, 92602);
-const commitment = signed(goodCs, L.good, 92605), lateCommitment = signed(lateCs, L.late, 92622);
+const launchOpen = signed(openLaunch, L.openLaunch, 92601), launchDrawn = signed(drawnLaunch, L.drawnLaunch, 92602);
+const commitment = signed(goodCs, L.good, 92618), lateCommitment = signed(lateCs, L.late, 92634);
 writeFileSync('build/giveaway-open.json', JSON.stringify({ ...open, launch: launchOpen }));
 writeFileSync('build/giveaway-open-nolaunch.json', JSON.stringify(open));
 writeFileSync('build/giveaway-drawn.json', JSON.stringify({ ...drawn, launch: launchDrawn, commitment }));
