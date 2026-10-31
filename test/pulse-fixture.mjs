@@ -55,12 +55,14 @@ const mailbox = c.walletFromPrivateKeyHex(rand());
 const lcs = c.newChainSignature({ address: me.address, text: c.linkMessage(mailbox, me.address) });
 blocks[92520] = block(92520, [mk(me, c.chainScriptHash(cs), 10), mk(me, c.chainScriptHash(lcs), 11)]);
 const copyCs = c.newChainSignature({ address: me.address, text: 'I owe the bearer 1,000 BRC.' });
-blocks[92521] = block(92521, [mk(other, c.chainScriptHash(copyCs), 12)]);
+const copyLock = mk(other, c.chainScriptHash(copyCs), 12);
+blocks[92521] = block(92521, [copyLock]);
 const chainSigned = c.chainSignedText(cs);
 const chainEdited = chainSigned.replace('Discord', 'Discord server');
 const chainLink = c.chainSignedText(lcs);
 const chainBadLink = chainLink.replace(`Mailbox: ${mailbox.address}`, `Mailbox: ${other.address}`);
 const chainCopy = c.chainSignedText(copyCs);
+const chainCopyWithId = c.chainSignedText(copyCs, { lockId: c.fingerprint(copyLock) });
 // Release postmarks: a genuine one from the release address, and a fake one signed by someone else.
 const rel = c.walletFromPrivateKeyHex(rand());
 const relFile = new TextEncoder().encode('<!doctype html><title>BRC Vault</title>genuine 1.1.0');
@@ -68,12 +70,15 @@ const fakeFile = new TextEncoder().encode('<!doctype html><title>BRC Vault</titl
 const sha256hex = (b) => c.fingerprint(b);
 const relCs = c.newChainSignature({ address: rel.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '1.1.0', file: 'brc-vault.html', sha256: sha256hex(relFile) }) });
 const fakeCs = c.newChainSignature({ address: other.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '1.1.1', file: 'brc-vault.html', sha256: sha256hex(fakeFile) }) });
-blocks[92522] = block(92522, [mk(rel, c.chainScriptHash(relCs), 13)]);
-blocks[92523] = block(92523, [mk(other, c.chainScriptHash(fakeCs), 14)]);
+const relLock = mk(rel, c.chainScriptHash(relCs), 13), fakeLock = mk(other, c.chainScriptHash(fakeCs), 14);
+blocks[92522] = block(92522, [relLock]);
+blocks[92523] = block(92523, [fakeLock]);
+// A griefer copies the genuine release's script into a newer lock of their own: it must not hide the release.
+blocks[92524] = block(92524, [mk(other, c.chainScriptHash(relCs), 15)]);
 mkdirSync('build/pulse-releases', { recursive: true });
-writeFileSync('build/pulse-releases/brc-vault-1.1.0.txt', c.chainSignedText(relCs));
-writeFileSync('build/pulse-releases/brc-vault-1.1.1.txt', c.chainSignedText(fakeCs));
+writeFileSync('build/pulse-releases/brc-vault-1.1.0.txt', c.chainSignedText(relCs, { lockId: c.fingerprint(relLock), block: 92522 }));
+writeFileSync('build/pulse-releases/brc-vault-1.1.1.txt', c.chainSignedText(fakeCs, { lockId: c.fingerprint(fakeLock), block: 92523 }));
 writeFileSync('build/pulse-official.json', JSON.stringify([{ address: rel.address, name: 'BRC Works release address', role: 'release' }]));
 const badDrand = c.receiptText(st0, { lockId: c.fingerprint(lock) }).replace(`Drand: ${beacon.round}`, `Drand: ${beacon.round + 1}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, chainSigned, chainEdited, chainLink, chainBadLink, chainCopy, chainMessage: cs.message, linkMailbox: mailbox.address, relFileHex: c.bytesToHex(relFile), fakeFileHex: c.bytesToHex(fakeFile), relAddress: rel.address, lookalike: rel.address.slice(0, 6) + rand().slice(6), lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, chainSigned, chainEdited, chainLink, chainBadLink, chainCopy, chainCopyWithId, chainMessage: cs.message, linkMailbox: mailbox.address, relFileHex: c.bytesToHex(relFile), fakeFileHex: c.bytesToHex(fakeFile), relAddress: rel.address, lookalike: rel.address.slice(0, 6) + rand().slice(6), lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');
