@@ -89,6 +89,9 @@ html = html.replace('/*__BUILD__*/', () => buildId);
 const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
 if (!/^\d+\.\d+\.\d+(-test\.\d+)?$/.test(version)) throw new Error(`package.json version ${version} is not like 1.2.3 or 1.2.3-test.4`);
 html = html.replace('/*__VERSION__*/', () => version);
+// Test builds ask search engines to stay away: the site is live for testing but unlisted until a release.
+const isTest = version.includes('-test');
+if (isTest) html = html.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">');
 if ((html.match(/<script/g) || []).length !== 1) throw new Error('Expected exactly one script tag');
 
 if (process.env.BRC_OFFICIAL) {
@@ -106,4 +109,5 @@ mkdirSync('docs', { recursive: true });
 writeFileSync('docs/index.html', html);
 writeFileSync('docs/brc-post.html', html);
 writeFileSync('docs/.nojekyll', '');
+writeFileSync('docs/robots.txt', isTest ? 'User-agent: *\nDisallow: /\n' : 'User-agent: *\nAllow: /\n');
 console.log(`dist/brc-post.html ${(html.length / 1024).toFixed(1)} KB  sha256 ${sha}`);

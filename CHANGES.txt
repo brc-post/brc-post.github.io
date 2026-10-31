@@ -5,6 +5,8 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.2: published for testing at https://brc-post.github.io (its own origin);
+    test builds ask search engines not to index it (robots tag and robots.txt).
   - test.1: BRC Seal is now BRC Post (Patrick, Oct 31): the name grows into the
     BrowserCoin mail service. Same envelope-and-seal mark with a BRC POST
     wordmark; the BRC Works line reads "Vault keeps it · Post sends it ·
