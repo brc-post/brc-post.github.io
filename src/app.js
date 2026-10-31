@@ -281,7 +281,8 @@ async function readWalletText(text) {
   // Look at the text before parsing anything: only something that names itself a mailbox key
   // gets parsed. A pasted coin key is refused here, without ever being turned into a key.
   const flat = String(text).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD\s]/g, '').toUpperCase();
-  if (!/BRC-VAULT-MAILBOX-KEY/.test(flat) && !flat.startsWith('BRCMBOX1')) {
+  const named = /["\u201C\u201D]TYPE["\u201C\u201D]:["\u201C\u201D]BRC-VAULT-MAILBOX-KEY["\u201C\u201D]/.test(flat);
+  if (!named && !flat.startsWith('BRCMBOX1')) {
     $('#wallet-paste').value = '';
     if (/BRC-VAULT-BACKUP|^BRCVAULT1/.test(flat)) throw new Error(COIN_BACKUP);
     if (/BROWSERCOIN-WALLET|PRIVATEKEY|^BRCKEY1|^(0X)?[0-9A-F]{64}$/.test(flat) || /^\s*([a-z]+\s+){11,}[a-z]+\s*$/i.test(String(text))) throw new Error(COIN_KEY);

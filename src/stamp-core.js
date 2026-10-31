@@ -293,7 +293,8 @@ export function verifyLockBytes(raw) {
  */
 export function checkStampInBlock(receipt, block) {
   const blk = readBlock(block);
-  const locks = blk.txs.filter((t) => t.kind === 'lock');
+  // A lock "from" an address no real wallet could have proves nothing about who made it.
+  const locks = blk.txs.filter((t) => t.kind === 'lock' && isCleanAddress(t.from));
   // Without a Lock ID, the lock is the one holding this stamp's script (for the Owner line, or the wallet that signed it).
   const lock = receipt.lockId
     ? locks.find((t) => t.id === receipt.lockId)
