@@ -5,6 +5,8 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Seal is not live.
 
 0.5.0 (in progress)
+  - test.2: the check view on BRC Pulse is now called "Check it"; every
+    pointer to it says so.
   - Fixes from the Fable 5.1 security review (Oct 31): every purpose has
     its own phrase prefix (files, messages, links, releases, giveaway lists);
     only the signer's own lock counts; locks with wrong signatures are

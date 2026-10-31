@@ -736,8 +736,8 @@ $('#btn-sc-done').addEventListener('click', () => {
     $('#sign-block').textContent = text;
     $('#sign-out-title').textContent = linking ? 'Mailbox link signed on the chain' : committing ? 'Giveaway list signed on the chain' : 'Signed on the chain';
     $('#sign-out-sub').textContent = linking
-      ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Stamps once the lock is in a block.'
-      : 'Share this whole block. Anyone can check it on BRC Pulse → Stamps once the lock is in a block, usually within a few minutes.';
+      ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Check it once the lock is in a block.'
+      : 'Share this whole block. Anyone can check it on BRC Pulse → Check it once the lock is in a block, usually within a few minutes.';
     $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = linking ? 'Copy the mailbox link' : 'Copy the signed message';
     $('#sign-pulse').hidden = false;
     $('#sign-out').hidden = false;
@@ -759,7 +759,7 @@ function showChainSigned(text, out) {
   let p;
   try { p = chain.parseChainSigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
   const where = el('p', {}, 'BRC Seal works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
-    el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Stamps' }), ', which finds the lock and checks your address made it.');
+    el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Check it' }), ', which finds the lock and checks your address made it.');
   const rows = [['Claims to be signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
   if (p.lockId) rows.push(['Lock ID', el('span', { class: 'mono', text: `${p.lockId.slice(0, 16)}…` })]);
   if (p.link && !p.link.valid) {
@@ -838,7 +838,7 @@ function readSealTo() {
   const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
   if (fake) throw new Error(fake);
   $('#seal-link-ok-wrap').hidden = false;
-  say('#seal-to-note', `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse → Stamps first: anyone can write a link that names someone else's coin address.`, 'warn');
+  say('#seal-to-note', `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse → Check it first: anyone can write a link that names someone else's coin address.`, 'warn');
   return p.link.mailbox;
 }
 $('#seal-to').addEventListener('input', () => { $('#seal-link-ok').checked = false; try { readSealTo(); } catch (e) { $('#seal-link-ok-wrap').hidden = true; say('#seal-to-note', e.message, 'bad'); } });
@@ -849,7 +849,7 @@ $('#btn-seal').addEventListener('click', () => {
   try {
     const signIt = $('#seal-sign').checked && !!wallet;
     const to = readSealTo();
-    if (chain.looksChainSigned($('#seal-to').value) && !$('#seal-link-ok').checked) throw new Error('Check the mailbox link on BRC Pulse → Stamps first, then tick the box. An unchecked link could send this letter to someone pretending to be them.');
+    if (chain.looksChainSigned($('#seal-to').value) && !$('#seal-link-ok').checked) throw new Error('Check the mailbox link on BRC Pulse → Check it first, then tick the box. An unchecked link could send this letter to someone pretending to be them.');
     const n = seal.sealNote(to, $('#seal-text').value, signIt ? wallet : null);
     if (!chain.looksChainSigned($('#seal-to').value)) $('#seal-to').value = n.to;
     $('#seal-block').textContent = n.armored;
@@ -941,7 +941,7 @@ $('#btn-open').addEventListener('click', () => {
     }
   }
   if (chain.looksChainSigned(o.message)) {
-    rows.push(['Careful', el('span', { class: 'bad-text', text: 'This letter contains a block "signed on the chain". It is not checked here: paste that block into BRC Pulse → Stamps before trusting it.' })]);
+    rows.push(['Careful', el('span', { class: 'bad-text', text: 'This letter contains a block "signed on the chain". It is not checked here: paste that block into BRC Pulse → Check it before trusting it.' })]);
     if (tone === 'good') tone = 'warn';
   }
   out.append(verdict(tone, title, el('p', { text: lede }), kv(rows)));
@@ -1204,7 +1204,7 @@ async function runCompare() {
   if (!text.trim() || !cmpFp) { say('#st-cmp-msg', ''); return; }
   try {
     const r = stamp.parseReceipt(text);
-    if (r.stamp.fingerprint === cmpFp) say('#st-cmp-msg', 'This file matches the receipt exactly. Check the receipt on BRC Pulse → Stamps to see the date.', 'good');
+    if (r.stamp.fingerprint === cmpFp) say('#st-cmp-msg', 'This file matches the receipt exactly. Check the receipt on BRC Pulse → Check it to see the date.', 'good');
     else { say('#st-cmp-msg', "This file doesn't match the receipt. It is a different file, or it was changed after it was postmarked.", 'bad'); play($('#st-cmp-msg'), 'anim-shake'); }
   } catch (e) {
     say('#st-cmp-msg', e.message, 'bad');

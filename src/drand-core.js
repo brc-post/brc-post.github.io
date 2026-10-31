@@ -59,7 +59,7 @@ export function parseDrand(text) {
   } else {
     // Collapse whitespace first, so the pattern below can't backtrack on long runs of spaces.
     const m = t.replace(/,/g, '').replace(/\s+/g, ' ').match(/^(\d+)(?: ?: ?| )([0-9a-fA-F ]+)$/);
-    if (!m) throw new Error('A drand beacon is a round number and a signature, like "33522523 a6aeb7…". Copy it from BRC Pulse → Stamps.');
+    if (!m) throw new Error('A drand beacon is a round number and a signature, like "33522523 a6aeb7…". Copy it from BRC Pulse → Check it.');
     round = Number(m[1]); sig = m[2];
   }
   sig = sig.replace(/\s+/g, '').toLowerCase();

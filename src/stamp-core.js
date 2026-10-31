@@ -103,7 +103,7 @@ export function newStamp({ fingerprint: fp, owner, after = null, drand = null, s
   if (drand) {
     const round = Number(drand.round);
     const sig = String(drand.signature || '').replace(/\s+/g, '').toLowerCase();
-    if (!verifyDrand(round, sig)) throw new Error("The drand beacon's signature doesn't check out. Copy it again from BRC Pulse → Stamps.");
+    if (!verifyDrand(round, sig)) throw new Error("The drand beacon's signature doesn't check out. Copy it again from BRC Pulse → Check it.");
     d = { round, signature: sig };
   }
   let s = salt;

@@ -595,7 +595,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <p><strong>On the chain, for your coin address.</strong> BRC Seal never sees your coin key. It turns your message and your address into a phrase. You lock a tiny amount with that phrase in the official app, which signs the lock with your key, the way it signs any payment. Only your key could have made that lock, so the chain itself is the signature.</p>
           <ol>
             <li>The phrase is a fingerprint of <code>BrowserCoin Chain-Signed Message v1</code>, your address and your message, plus a random salt.</li>
-            <li>Anyone with the signed message can rebuild the phrase and find the lock on <strong>BRC Pulse → Stamps</strong>, which checks it was made by your address. Change one letter and it no longer matches.</li>
+            <li>Anyone with the signed message can rebuild the phrase and find the lock on <strong>BRC Pulse → Check it</strong>, which checks it was made by your address. Change one letter and it no longer matches.</li>
             <li>It costs the app's small fee plus the amount you lock, which you can take back later with Redeem.</li>
           </ol>
           <p><strong>With your mailbox, instantly.</strong> A mailbox key is a separate key made in BRC Vault for letters and signing. It never holds coins, so loading it here risks nothing you own. Link it to your coin address once, on the chain, and everything it signs shows as your mailbox.</p>
@@ -613,7 +613,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <div class="card">
         <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Their mailbox address, or paste their mailbox link"></textarea></label>
         <p class="msg" id="seal-to-note" role="status" aria-live="polite"></p>
-        <label class="check" id="seal-link-ok-wrap" hidden><input type="checkbox" id="seal-link-ok"><span>I checked this link on <strong>BRC Pulse → Stamps</strong>, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)</span></label>
+        <label class="check" id="seal-link-ok-wrap" hidden><input type="checkbox" id="seal-link-ok"><span>I checked this link on <strong>BRC Pulse → Check it</strong>, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)</span></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
         <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
         <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Open your mailbox key to use this.</span></label>
@@ -668,9 +668,9 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <details class="more" id="st-more">
             <summary class="chip">Add the exact time it was made (optional)</summary>
             <div class="more-body">
-              <p class="field-help">On BRC Pulse → Stamps, copy the <strong>drand beacon</strong> and paste it here. The postmark will then also prove it was made after that moment, to within 3 seconds. Nobody can know a beacon before it's published, so it can't be faked in advance.</p>
+              <p class="field-help">On BRC Pulse → Check it, copy the <strong>drand beacon</strong> and paste it here. The postmark will then also prove it was made after that moment, to within 3 seconds. Nobody can know a beacon before it's published, so it can't be faked in advance.</p>
               <label class="field"><span>drand beacon <span class="count" id="st-drand-status"></span></span><input id="st-drand" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Round number and signature, from BRC Pulse"></label>
-              <p class="field-help" style="margin-top:0.9rem">Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse → Stamps, press <strong>Copy both</strong> next to the recent block and paste it below.</p>
+              <p class="field-help" style="margin-top:0.9rem">Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse → Check it, press <strong>Copy both</strong> next to the recent block and paste it below.</p>
               <label class="field"><span>Recent block number</span><input id="st-after-height" class="mono-input" inputmode="numeric" placeholder="92510"></label>
               <label class="field"><span>That block's ID</span><input id="st-after-hash" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64 characters"></label>
             </div>
@@ -718,7 +718,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
             <div><dt>Existed by</dt><dd id="pm-by"></dd></div>
             <div><dt>Sent by</dt><dd id="pm-from"></dd></div>
           </dl>
-          <p class="pm-note">Keep the receipt with the file, like a tracking slip. Anyone with both can check the postmark on BRC Pulse → Stamps.</p>
+          <p class="pm-note">Keep the receipt with the file, like a tracking slip. Anyone with both can check the postmark on BRC Pulse → Check it.</p>
         </div>
         <div class="actions">
           <button class="btn btn-primary" type="button" id="btn-st-save" style="flex:1 1 12rem">Save the receipt</button>
@@ -778,7 +778,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <div class="how-body">
           <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
           <ul>
-            <li>A message signed on the chain is checked in full on <strong>BRC Pulse → Stamps</strong>, which reads the chain. Here, offline, BRC Seal can only check it is complete and well-formed.</li>
+            <li>A message signed on the chain is checked in full on <strong>BRC Pulse → Check it</strong>, which reads the chain. Here, offline, BRC Seal can only check it is complete and well-formed.</li>
             <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
             <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
             <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
@@ -814,7 +814,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     <section class="screen" id="p-check" data-screen="check" hidden>
       <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a postmark</h2></div>
-      <p class="lede">Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on <strong>BRC Pulse → Stamps</strong>, which reads the chain.</p>
+      <p class="lede">Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on <strong>BRC Pulse → Check it</strong>, which reads the chain.</p>
       <div class="card">
         <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="-----BEGIN BRC STAMP RECEIPT-----"></textarea></label>
         <label class="drop" id="st-cmp-drop" style="margin-top:0.9rem"><input type="file" id="st-cmp-file"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span><span class="bar" aria-hidden="true"></span></label>
