@@ -1,4 +1,4 @@
-// BRC Seal core: signed messages and sealed notes for BrowserCoin addresses.
+// BRC Post core: signed messages and sealed notes for BrowserCoin addresses.
 // Runs entirely locally. No network access is needed or used.
 //
 // A BrowserCoin address IS an Ed25519 public key (64 hex characters), so:
@@ -167,7 +167,7 @@ function signedBytes(address, message) {
 export function checkMessageText(message) {
   if (!message) throw new Error('Write a message to sign.');
   if (message.length > MAX_SIGNED_CHARS) throw new Error(`Keep a signed message under ${MAX_SIGNED_CHARS.toLocaleString('en-US')} characters. This one has ${message.length.toLocaleString('en-US')}.`);
-  if (/(BEGIN|END)\s*BRC/i.test(message)) throw new Error('A signed message cannot contain BRC Seal markers such as "BEGIN BRC".');
+  if (/(BEGIN|END)\s*BRC/i.test(message)) throw new Error('A signed message cannot contain BRC Post markers such as "BEGIN BRC".');
   if (/^\s*(>|```)/m.test(message)) throw new Error('Lines cannot start with > or ```. Chat apps change those lines, which would break the signature.');
   if (hasHiddenCharacters(message)) throw new Error('This message contains hidden or direction-changing characters. Remove them so the message reads exactly as it looks.');
 }
@@ -262,7 +262,7 @@ export function verifySigned(text) {
 // not for ongoing private conversation.
 
 const SEAL_VERSION = 1;
-const SEAL_INFO = enc.encode('BRC Seal v1');
+const SEAL_INFO = enc.encode('BRC Post v1');
 const SEAL_AAD = enc.encode('BRCSEAL1');
 const SEAL_SIG_DOMAIN = enc.encode('BrowserCoin Sealed Note v1\n');
 const SEALED_BEGIN = '-----BEGIN BRC SEALED NOTE-----';
@@ -343,7 +343,7 @@ export function parseSealed(text) {
   const to = parseAddress(hex);
   const payload = fromBase64(inner.slice(i));
   if (payload.length < 1 + 32 + 2 * PAD + 16) throw new Error('The sealed note is too short. Part of it was lost when it was copied.');
-  if (payload[0] !== SEAL_VERSION) throw new Error('This sealed note was made by a newer version of BRC Seal.');
+  if (payload[0] !== SEAL_VERSION) throw new Error('This sealed note was made by a newer version of BRC Post.');
   if ((payload.length - 1 - 32 - 16) % PAD !== 0) throw new Error('The sealed note is damaged: part of it is missing or extra text crept in.');
   return { to, payload };
 }
@@ -370,7 +370,7 @@ export function openNote(text, wallet) {
   } finally {
     wipe(myX, shared, key, nonce, okm);
   }
-  if (body[0] !== SEAL_VERSION) throw new Error('This sealed note was made by a newer version of BRC Seal.');
+  if (body[0] !== SEAL_VERSION) throw new Error('This sealed note was made by a newer version of BRC Post.');
   const signed = (body[1] & FLAG_SIGNED) !== 0;
   if (body[1] & ~FLAG_SIGNED) throw new Error('This sealed note uses features this version does not understand.');
   const len = (body[2] << 8) | body[3];

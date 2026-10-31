@@ -1,4 +1,4 @@
-// Core tests for BRC Seal. Run with: npm test
+// Core tests for BRC Post. Run with: npm test
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
 import { writeFileSync, mkdirSync } from 'node:fs';

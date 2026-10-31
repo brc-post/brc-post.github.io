@@ -1,4 +1,4 @@
-// BRC Seal page logic. All work happens here, in the browser; the page has no
+// BRC Post page logic. All work happens here, in the browser; the page has no
 // network access (see the Content-Security-Policy in index.html).
 
 import * as vault from './vault-core.js';
@@ -82,7 +82,7 @@ function addressNode(address) {
 }
 
 // ---------------------------------------------------------------------------
-// Mailbox key state. BRC Seal holds only a mailbox key: a key made in BRC Vault
+// Mailbox key state. BRC Post holds only a mailbox key: a key made in BRC Vault
 // for letters and signing, which never holds coins. Coin keys are refused
 // outright (see readWalletText). The key lives only in memory and is wiped on forget.
 // (The code calls it `wallet` because it is the same kind of Ed25519 key.)
@@ -101,7 +101,7 @@ function randomWallet() {
   return w;
 }
 
-// Addresses BRC Seal recognises by name come from src/official.js (shared with BRC Pulse).
+// Addresses BRC Post recognises by name come from src/official.js (shared with BRC Pulse).
 // An address that imitates one of them is refused for sealing and flagged everywhere else.
 function lookalikeNote(address) {
   const o = known.lookalikeOf(address);
@@ -270,14 +270,14 @@ function clearSecretsFromPage() {
   say('#sign-msg', ''); say('#open-msg', '');
 }
 
-const NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Seal opens only mailbox keys made in BRC Vault: a brc-mailbox-key-….json file, or its BRCMBOX1 paper code.";
-const COIN_KEY = "That's a key that can hold coins. BRC Seal never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature → My coin address. To open letters, use a mailbox key from BRC Vault.";
-const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, open New wallet and choose Mailbox key for BRC Seal.";
+const NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Post opens only mailbox keys made in BRC Vault: a brc-mailbox-key-….json file, or its BRCMBOX1 paper code.";
+const COIN_KEY = "That's a key that can hold coins. BRC Post never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature → My coin address. To open letters, use a mailbox key from BRC Vault.";
+const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Post never opens keys that can hold coins. Use a mailbox key: in BRC Vault, open New wallet and choose Mailbox key for BRC Post.";
 
 /** Only a locked mailbox key gets through. Anything that can hold coins is refused and wiped. */
 async function readWalletText(text) {
   say('#load-msg', '');
-  if (EMBEDDED) throw new Error('BRC Seal is open inside another page, so real keys are turned off. Open it in its own tab.');
+  if (EMBEDDED) throw new Error('BRC Post is open inside another page, so real keys are turned off. Open it in its own tab.');
   // Look at the text before parsing anything: only something that names itself a mailbox key
   // gets parsed. A pasted coin key is refused here, without ever being turned into a key.
   const flat = String(text).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD\s]/g, '').toUpperCase();
@@ -400,11 +400,11 @@ function show(name) {
     const h = screen.querySelector('h2') || screen;
     h.focus({ preventScroll: true });
   }
-  document.title = name === 'home' ? 'BRC Seal' : `${screen.querySelector('h2').textContent} · BRC Seal`;
+  document.title = name === 'home' ? 'BRC Post' : `${screen.querySelector('h2').textContent} · BRC Post`;
 }
 
 // Inside an embedded viewer (for example a preview frame) the page may not be allowed to change its
-// own address. Then Seal keeps its own back history instead of the browser's.
+// own address. Then Post keeps its own back history instead of the browser's.
 let canUseHistory = true;
 const memoryBack = [];
 
@@ -412,14 +412,14 @@ const memoryBack = [];
 function go(name) {
   if (current === name) return;
   if (canUseHistory) {
-    try { history.pushState({ brcSeal: true }, '', '#' + name); readHash(); return; } catch { canUseHistory = false; }
+    try { history.pushState({ brcPost: true }, '', '#' + name); readHash(); return; } catch { canUseHistory = false; }
   }
   memoryBack.push(current);
   show(name);
 }
 
 function goBack() {
-  if (canUseHistory && history.state && history.state.brcSeal) { history.back(); return; }
+  if (canUseHistory && history.state && history.state.brcPost) { history.back(); return; }
   if (memoryBack.length) { show(memoryBack.pop()); return; }
   const parent = PARENT[current] || 'home';
   if (canUseHistory) {
@@ -437,8 +437,8 @@ for (const a of $$('a[href^="#"]')) {
   });
 }
 
-// Routes, including links from BRC Pulse: #to=<address> opens Seal with the address filled in.
-// A link like #to=<address> (from BRC Pulse) fills in the Seal address, but only when the page
+// Routes, including links from BRC Pulse: #to=<address> opens Post with the address filled in.
+// A link like #to=<address> (from BRC Pulse) fills in the Post address, but only when the page
 // first opens, only into an empty box, and never inside another page. Later changes to the
 // address bar are ignored, so another window can't quietly swap the address while you write.
 let firstRoute = true;
@@ -452,7 +452,7 @@ function readHash() {
     if (!initial) return;
     show('seal');
     try { history.replaceState(null, '', '#seal'); } catch { /* inside a viewer that can't change the address */ }
-    if (EMBEDDED) { say('#seal-msg', 'A link tried to fill in the address, but BRC Seal is open inside another page, so it was ignored. Paste the address yourself.', 'warn'); return; }
+    if (EMBEDDED) { say('#seal-msg', 'A link tried to fill in the address, but BRC Post is open inside another page, so it was ignored. Paste the address yourself.', 'warn'); return; }
     if (!$('#seal-to').value.trim()) $('#seal-to').value = to[1].toLowerCase();
     say('#seal-msg', 'Address filled in from a link. Check it is the one you meant before sealing.', 'warn');
     return;
@@ -485,7 +485,7 @@ function routePaste(text) {
     runCompare();
     if (!cmpFp) say('#st-cmp-msg', 'This is a postmark receipt. Choose the file it belongs to, to check they match.', 'info');
   } else {
-    say('#rx-msg', "This doesn't look like something from BRC Seal. Copy the whole block, from -----BEGIN to -----END.", 'bad');
+    say('#rx-msg', "This doesn't look like something from BRC Post. Copy the whole block, from -----BEGIN to -----END.", 'bad');
     return;
   }
   say('#rx-msg', '');
@@ -736,7 +736,7 @@ $('#btn-sc-done').addEventListener('click', () => {
     $('#sign-block').textContent = text;
     $('#sign-out-title').textContent = linking ? 'Mailbox link signed on the chain' : committing ? 'Giveaway list signed on the chain' : 'Signed on the chain';
     $('#sign-out-sub').textContent = linking
-      ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Check it once the lock is in a block.'
+      ? 'Share this link with anyone who should write to you: BRC Post seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Check it once the lock is in a block.'
       : 'Share this whole block. Anyone can check it on BRC Pulse → Check it once the lock is in a block, usually within a few minutes.';
     $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = linking ? 'Copy the mailbox link' : 'Copy the signed message';
     $('#sign-pulse').hidden = false;
@@ -758,7 +758,7 @@ const PULSE_STAMPS = 'https://pb-hash.github.io/brc-pulse/#stamp';
 function showChainSigned(text, out) {
   let p;
   try { p = chain.parseChainSigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
-  const where = el('p', {}, 'BRC Seal works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
+  const where = el('p', {}, 'BRC Post works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
     el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Check it' }), ', which finds the lock and checks your address made it.');
   const rows = [['Claims to be signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
   if (p.lockId) rows.push(['Lock ID', el('span', { class: 'mono', text: `${p.lockId.slice(0, 16)}…` })]);
@@ -1194,7 +1194,7 @@ const canShareFiles = (() => {
 $('#btn-st-share').hidden = !canShareFiles;
 $('#btn-st-share').addEventListener('click', async () => {
   if (!stReceipt) return;
-  try { await navigator.share({ files: [new File([stReceipt + '\n'], receiptName(), { type: 'text/plain' })], title: 'BRC Seal postmark receipt' }); } catch { /* closed the share sheet */ }
+  try { await navigator.share({ files: [new File([stReceipt + '\n'], receiptName(), { type: 'text/plain' })], title: 'BRC Post postmark receipt' }); } catch { /* closed the share sheet */ }
 });
 
 // Offline comparison of a file with a receipt.

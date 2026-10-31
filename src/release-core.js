@@ -4,7 +4,7 @@
 // file you have, finds its release, and checks the release address signed it.
 
 const HEAD = 'BRC Works release v1';
-const TOOLS = ['BRC Vault', 'BRC Pulse', 'BRC Seal', 'BRC Mailbox'];
+const TOOLS = ['BRC Vault', 'BRC Pulse', 'BRC Post', 'BRC Mailbox'];
 
 /** The exact message to sign for a release. */
 export function releaseMessage({ tool, version, file, sha256 }) {

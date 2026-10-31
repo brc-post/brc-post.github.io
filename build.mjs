@@ -1,4 +1,4 @@
-// Builds dist/brc-seal.html: one self-contained file with all code inlined.
+// Builds dist/brc-post.html: one self-contained file with all code inlined.
 // Same approach as BRC Vault: readable code, embedded fonts, a single script
 // locked by hash, no network access, and a reproducible build label.
 import { build } from 'esbuild';
@@ -54,7 +54,7 @@ const notices = [
  *   SOFTWARE.`;
 
 const header = `/*!
- * BRC Seal — sign, verify and seal messages with BrowserCoin addresses. MIT License.
+ * BRC Post — sign, verify and seal messages with BrowserCoin addresses. MIT License.
  * Wallet loading is shared with BRC Vault (vault-core.js).
  * Includes these open-source libraries:
 ${notices}
@@ -70,9 +70,9 @@ const fonts = [
 ].join('\n');
 
 const markInner = readFileSync('brand/mark-inner.txt', 'utf8').trim();
-const markView = readFileSync('brand/brc-seal-mark.svg', 'utf8').match(/viewBox="([^"]+)"/)[1];
+const markView = readFileSync('brand/brc-post-mark.svg', 'utf8').match(/viewBox="([^"]+)"/)[1];
 const vaultMark = readFileSync('brand/vault-mark-ref.svg', 'utf8').match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1].replace(/#353535/g, 'currentColor');
-const favicon = 'data:image/svg+xml,' + encodeURIComponent(readFileSync('brand/brc-seal-mark.svg', 'utf8').trim());
+const favicon = 'data:image/svg+xml,' + encodeURIComponent(readFileSync('brand/brc-post-mark.svg', 'utf8').trim());
 
 let html = readFileSync('src/index.html', 'utf8')
   .replaceAll('/*__MARK__*/', () => markInner)
@@ -93,12 +93,17 @@ if ((html.match(/<script/g) || []).length !== 1) throw new Error('Expected exact
 
 if (process.env.BRC_OFFICIAL) {
   // A test build never replaces the real one.
-  writeFileSync('build/brc-seal-official-test.html', html);
-  console.log('build/brc-seal-official-test.html (test official list)');
+  writeFileSync('build/brc-post-official-test.html', html);
+  console.log('build/brc-post-official-test.html (test official list)');
   process.exit(0);
 }
 mkdirSync('dist', { recursive: true });
-writeFileSync('dist/brc-seal.html', html);
+writeFileSync('dist/brc-post.html', html);
 const sha = createHash('sha256').update(html).digest('hex');
-writeFileSync('dist/SHA256.txt', `${sha}  brc-seal.html\n`);
-console.log(`dist/brc-seal.html ${(html.length / 1024).toFixed(1)} KB  sha256 ${sha}`);
+writeFileSync('dist/SHA256.txt', `${sha}  brc-post.html\n`);
+// The same file is served by GitHub Pages from docs/ (https://brc-post.github.io/).
+mkdirSync('docs', { recursive: true });
+writeFileSync('docs/index.html', html);
+writeFileSync('docs/brc-post.html', html);
+writeFileSync('docs/.nojekyll', '');
+console.log(`dist/brc-post.html ${(html.length / 1024).toFixed(1)} KB  sha256 ${sha}`);

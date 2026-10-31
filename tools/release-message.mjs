@@ -1,5 +1,5 @@
 // Prints the release message for a BRC Works file, to sign on the chain with the
-// BRC Works release address (BRC Seal → Add my signature → My coin address).
+// BRC Works release address (BRC Post → Add my signature → My coin address).
 // The signed block then goes in BRC Pulse's releases/ folder, so "Is this file
 // genuine?" knows it.
 //

@@ -1,4 +1,4 @@
-"""Headless-browser checks for dist/brc-seal.html.
+"""Headless-browser checks for dist/brc-post.html.
 
 Usage: python3 test/page_test.py <output-dir-for-screenshots>
 """
@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright, expect
 
 out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'build/page-test')
 out.mkdir(parents=True, exist_ok=True)
-page_url = (pathlib.Path('dist/brc-seal.html').resolve()).as_uri()
+page_url = (pathlib.Path('dist/brc-post.html').resolve()).as_uri()
 fx = json.load(open('build/page-fixture.json'))
 passed = []
 def ok(msg): passed.append(msg); print('ok -', msg)
@@ -541,7 +541,7 @@ with sync_playwright() as pw:
     # --- Official addresses by name, and look-alikes refused (test build with a stand-in list) ---
     off = browser.new_context(viewport={'width': 1100, 'height': 900}).new_page()
     off.on('pageerror', lambda e: errors.append('official: ' + str(e)))
-    off.goto(pathlib.Path('build/brc-seal-official-test.html').resolve().as_uri() + '#seal')
+    off.goto(pathlib.Path('build/brc-post-official-test.html').resolve().as_uri() + '#seal')
     off.fill('#seal-to', fx['officialAddress'])
     expect(off.locator('#seal-to-note')).to_contain_text('Sealing to the BRC Works test mailbox')
     off.fill('#seal-text', 'Hello.')
@@ -592,7 +592,7 @@ with sync_playwright() as pw:
     ok('fits a 390px phone screen without sideways scrolling')
 
     # --- Inside an embedded viewer that can't change its address (like a preview frame) ---
-    html = pathlib.Path('dist/brc-seal.html').read_text()
+    html = pathlib.Path('dist/brc-post.html').read_text()
     framed = browser.new_context(viewport={'width': 390, 'height': 844}).new_page()
     framed.on('pageerror', lambda e: errors.append('framed: ' + str(e)))
     framed.set_content('<iframe id="f" sandbox="allow-scripts allow-modals" style="width:390px;height:800px;border:0"></iframe>')

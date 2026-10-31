@@ -1,4 +1,4 @@
-// Addresses that belong to BRC Works, by name. One list for every tool: BRC Seal and
+// Addresses that belong to BRC Works, by name. One list for every tool: BRC Post and
 // BRC Pulse (through the kit) show these names, and flag addresses that look like them.
 //
 // Each wallet is added here once it exists, in a release that is itself postmarked.

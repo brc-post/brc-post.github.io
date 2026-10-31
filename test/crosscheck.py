@@ -1,4 +1,4 @@
-"""Independent cross-check of BRC Seal, written from the format description only.
+"""Independent cross-check of BRC Post, written from the format description only.
 
 Uses Python's `cryptography` library (OpenSSL), not the noble libraries the page
 uses, to verify a signed message and open sealed notes made by the page.
@@ -64,7 +64,7 @@ def open_note(block, priv_hex):
     my = X25519PrivateKey.from_private_bytes(ed_to_x_priv(seed))
     assert my.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw) == rec_x, 'key conversion mismatch'
     shared = my.exchange(X25519PublicKey.from_public_bytes(eph))
-    okm = HKDF(algorithm=hashes.SHA256(), length=56, salt=eph + rec_x, info=b'BRC Seal v1').derive(shared)
+    okm = HKDF(algorithm=hashes.SHA256(), length=56, salt=eph + rec_x, info=b'BRC Post v1').derive(shared)
     body = xchacha_decrypt(okm[:32], okm[32:], b'BRCSEAL1' + to, ct)
     signed = body[1] & 1
     n = (body[2] << 8) | body[3]

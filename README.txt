@@ -1,12 +1,12 @@
-BRC Seal (test build, not published)
+BRC Post (test build, not published)
 ====================================
 
 Sign, verify and seal messages with BrowserCoin (BRC) addresses.
-One offline web page: dist/brc-seal.html. Open it in Chrome or Safari.
+One offline web page: dist/brc-post.html. Open it in Chrome or Safari.
 It has no network access at all, and the page sends nothing anywhere.
 
 BRC Works: Vault (backups, https://pb-hash.github.io/brc-vault/) · Pulse (the live
-BrowserCoin network dashboard, https://pb-hash.github.io/brc-pulse/) · Seal.
+BrowserCoin network dashboard, https://pb-hash.github.io/brc-pulse/) · Post.
 Independent tools by pb-hash. Not part of the official BrowserCoin project.
 
 What it does
@@ -45,7 +45,7 @@ are refused, so no address can "sign" without a real private key.
 
 Sealed note: recipient Ed25519 key -> X25519; one-time X25519 key per note;
 HKDF-SHA256(shared, salt = one-time key || recipient X25519 key,
-info "BRC Seal v1") -> 32-byte key + 24-byte nonce; XChaCha20-Poly1305 with
+info "BRC Post v1") -> 32-byte key + 24-byte nonce; XChaCha20-Poly1305 with
 associated data "BRCSEAL1" || recipient address.
 Body: version, flags, text length (2 bytes), a 96-byte sender slot (sender
 address + signature, all zeros when anonymous, so signed and anonymous notes
@@ -69,7 +69,7 @@ Build and test
   npm install
   npm test        core tests, independent Python/OpenSSL cross-check,
                   build, headless-browser page checks
-  npm run build   writes dist/brc-seal.html and dist/SHA256.txt
+  npm run build   writes dist/brc-post.html and dist/SHA256.txt
 
 Builds are reproducible: the build label comes from the code, not the clock.
 

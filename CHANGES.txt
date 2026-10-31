@@ -1,8 +1,16 @@
-BRC Seal changes
+BRC Post changes
 ================
 Version numbers: last number for fixes and wording, middle number for new
 features, first number for changes to file formats or the security model.
-Test builds carry "-test.N" and are never published. BRC Seal is not live.
+Test builds carry "-test.N" and are never published. BRC Post is not live.
+
+0.6.0 (in progress)
+  - test.1: BRC Seal is now BRC Post (Patrick, Oct 31): the name grows into the
+    BrowserCoin mail service. Same envelope-and-seal mark with a BRC POST
+    wordmark; the BRC Works line reads "Vault keeps it · Post sends it ·
+    Pulse checks it". Only names changed: the letter, postmark and signature
+    formats are untouched, so everything made under the old name still opens
+    and checks. Earlier entries below use the new name.
 
 0.5.0 (in progress)
   - test.4: the BRC Works addresses are filled in: release address 7ccb496c…caa00,
@@ -19,7 +27,7 @@ Test builds carry "-test.N" and are never published. BRC Seal is not live.
     warnings against locking someone else's phrase; coin material refused
     before it is parsed; address picture from SHA-256; more look-alikes.
   - Giveaway: sign the entry list and draw round on the chain before the draw.
-  - No coin keys: BRC Seal stops taking wallet files and private keys.
+  - No coin keys: BRC Post stops taking wallet files and private keys.
     Mailbox keys (from BRC Vault or made here) open letters and sign.
   - Sign on the chain: prove a coin address with the official app's
     hash-locked payment, no key pasted anywhere.

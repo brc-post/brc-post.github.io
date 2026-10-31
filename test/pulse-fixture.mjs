@@ -47,7 +47,7 @@ const fakeReceiptNoBlock = c.receiptText(st2, { lockId: c.fingerprint(lock2) });
 // The receipt's Owner line differs from the address the app actually locked to.
 const other = c.walletFromPrivateKeyHex(rand());
 const wrongOwner = receipt.replace(`Owner: ${me.address}`, `Owner: ${other.address}`);
-// Chain-signed messages (BRC Seal 0.5): one signed by `me`, a mailbox link, and a copy someone
+// Chain-signed messages (BRC Post 0.5): one signed by `me`, a mailbox link, and a copy someone
 // else locked to the same script, which must not count as `me` signing.
 const mk = (w, sh, n) => { const p = cat(be32(0x4c4f434b), be32(0xc01dfeed), c.hexToBytes(w.address), be64(100000n), be64(1000n), be32(n), c.hexToBytes(sh)); return cat(p, c.ed25519.sign(p, w.privateKey)); };
 const cs = c.newChainSignature({ address: me.address, text: "I'm pb-hash on the BrowserCoin Discord. Oct 31, 2026." });

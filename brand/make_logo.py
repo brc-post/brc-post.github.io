@@ -1,4 +1,4 @@
-"""Build the BRC Seal logo as clean vector artwork.
+"""Build the BRC Post logo as clean vector artwork.
 
 The mark shares BRC Vault's rounded box. Inside: an envelope flap (a chevron)
 closed by a round indigo wax seal at its point. The wordmark is set in Geist
@@ -98,16 +98,16 @@ CAP_BOTTOM = CAP_TOP + CAP
 
 def measure(tracking, x0=0.0):
     l1, r1, x = ink_bounds(light, "BRC", x0, scale, tracking)
-    l2, r2, _ = ink_bounds(bold, "SEAL", x, scale, tracking)
+    l2, r2, _ = ink_bounds(bold, "POST", x, scale, tracking)
     return l1, r2
 
 def wordmark_d(tracking, x0):
     d1, x = set_word(light, "BRC", x0, scale, tracking, CAP_BOTTOM)
-    d2, _ = set_word(bold, "SEAL", x, scale, tracking, CAP_BOTTOM)
+    d2, _ = set_word(bold, "POST", x, scale, tracking, CAP_BOTTOM)
     return d1 + " " + d2
 
 # Same letter size and spacing as BRC Vault's wordmark (its fitted tracking is
-# -18.1), so the family matches. "SEAL" is shorter than "VAULT", so instead of
+# -18.1), so the family matches. "POST" is shorter than "VAULT", so instead of
 # stretching it to the box width, the word is centred under the box.
 tracking = -18.1
 l, r = measure(tracking)
@@ -115,7 +115,7 @@ x0 = CX - (l + r) / 2
 word_d = wordmark_d(tracking, x0)
 l, r = measure(tracking, x0)
 print(f"wordmark ink {l:.2f} to {r:.2f} (box {LEFT:.2f} to {RIGHT:.2f}), cap height {CAP:.1f}")
-print(f"wordmark: BRC wght {light_w}, SEAL wght {bold_w}, tracking {tracking:.1f}")
+print(f"wordmark: BRC wght {light_w}, POST wght {bold_w}, tracking {tracking:.1f}")
 
 def svg(view, body):
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{view}">{body}</svg>\n'
@@ -129,10 +129,10 @@ lockup_view = f"{BOX_X - 80:.1f} {BOX_Y - 80:.1f} {BOX_W + 160:.1f} {CAP_BOTTOM 
 word = f'<path fill="{{ink}}" d="{word_d}"/>'
 
 files = {
-    "brc-seal-mark.svg": svg(mark_view, colored([box, v, dot])),
-    "brc-seal-mark-white.svg": svg(mark_view, colored([f'<rect x="{BOX_X}" y="{BOX_Y}" width="{BOX_W}" height="{BOX_W}" rx="{R_OUT}" fill="#fff"/>', box, v, dot])),
-    "brc-seal-logo.svg": svg(lockup_view, colored([box, v, dot, word])),
-    "brc-seal-logo-mono.svg": svg(lockup_view, colored([box, v, dot, word], ink="#000", dot="#000")),
+    "brc-post-mark.svg": svg(mark_view, colored([box, v, dot])),
+    "brc-post-mark-white.svg": svg(mark_view, colored([f'<rect x="{BOX_X}" y="{BOX_Y}" width="{BOX_W}" height="{BOX_W}" rx="{R_OUT}" fill="#fff"/>', box, v, dot])),
+    "brc-post-logo.svg": svg(lockup_view, colored([box, v, dot, word])),
+    "brc-post-logo-mono.svg": svg(lockup_view, colored([box, v, dot, word], ink="#000", dot="#000")),
 }
 for name, text in files.items():
     (OUT / name).write_text(text)
