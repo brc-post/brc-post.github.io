@@ -78,6 +78,25 @@ export function readEntries(letters, mailboxWallet, eligible) {
 }
 
 /** The first drand quicknet round published at or after this Unix time (seconds). */
+// The list commitment: before the draw, the BRC Works release address signs this on the
+// chain (a chain-signed message, chain-core.js). BRC Pulse shows a winner only if that
+// lock is in a block well before the drand round, so the list and the round were fixed
+// before anyone could know the beacon (security review, Oct 31).
+const COMMIT_HEAD = 'BRC Works giveaway list v1';
+export function listCommitMessage({ count, fingerprint, round }) {
+  if (!Number.isSafeInteger(count) || count < 0) throw new Error('The entry count is not a whole number.');
+  if (!/^[0-9a-f]{64}$/.test(String(fingerprint))) throw new Error('The list fingerprint should be 64 characters, 0–9 and a–f.');
+  if (!Number.isSafeInteger(round) || round < 1) throw new Error('The draw round should be a drand round number.');
+  return `${COMMIT_HEAD}\nGiveaway: block 100,000\nEntries: ${count}\nFingerprint: ${fingerprint}\nDraw round: ${round}`;
+}
+/** Read a list commitment back, or null. Only the exact form counts. */
+export function readListCommit(message) {
+  const m = /^BRC Works giveaway list v1\nGiveaway: block 100,000\nEntries: (\d{1,9})\nFingerprint: ([0-9a-f]{64})\nDraw round: (\d{1,12})$/.exec(String(message));
+  if (!m) return null;
+  const r = { count: Number(m[1]), fingerprint: m[2], round: Number(m[3]) };
+  try { return listCommitMessage(r) === message ? r : null; } catch { return null; }
+}
+
 export function roundAt(unixTime) {
   const t = Number(unixTime);
   if (!Number.isFinite(t) || t < QUICKNET.genesis) throw new Error('That time is before drand quicknet started.');

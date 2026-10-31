@@ -58,24 +58,15 @@ function play(node, ...classes) {
   node.classList.add(...cls);
 }
 
-/** A small 3x3 picture made from an address, so different wallets look different at a glance. */
-const IDC_COLORS = ['#5956fd', '#0d7a5f', '#e0552f', '#1f8fd6', '#c2417a', '#7c5cff', '#d99a0b', '#2f9e8f'];
+/** The small 3x3 address picture, the same in every BRC Works tool (known-core.js addressPicture). */
 function paintIdenticon(node, address) {
   node.replaceChildren();
   if (!address) { node.classList.add('empty'); node.style.background = ''; return; }
   node.classList.remove('empty');
-  const b = vault.hexToBytes(address.slice(0, 16));
-  const c1 = IDC_COLORS[b[0] % 8];
-  let c2 = IDC_COLORS[b[1] % 8];
-  if (c2 === c1) c2 = IDC_COLORS[(b[1] + 3) % 8];
-  // Mirror left and right columns so it reads as a shape, not noise.
-  for (let row = 0; row < 3; row++) {
-    const left = b[2 + row] & 3, mid = b[5 + row] & 3;
-    for (const v of [left, mid, left]) {
-      const cell = document.createElement('i');
-      cell.style.background = v === 0 ? 'transparent' : v === 3 ? c2 : c1;
-      node.append(cell);
-    }
+  for (const colour of known.addressPicture(address).colors) {
+    const cell = document.createElement('i');
+    cell.style.background = colour;
+    node.append(cell);
   }
 }
 
@@ -287,6 +278,15 @@ const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never 
 async function readWalletText(text) {
   say('#load-msg', '');
   if (EMBEDDED) throw new Error('BRC Seal is open inside another page, so real keys are turned off. Open it in its own tab.');
+  // Look at the text before parsing anything: only something that names itself a mailbox key
+  // gets parsed. A pasted coin key is refused here, without ever being turned into a key.
+  const flat = String(text).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD\s]/g, '').toUpperCase();
+  if (!/BRC-VAULT-MAILBOX-KEY/.test(flat) && !flat.startsWith('BRCMBOX1')) {
+    $('#wallet-paste').value = '';
+    if (/BRC-VAULT-BACKUP|^BRCVAULT1/.test(flat)) throw new Error(COIN_BACKUP);
+    if (/BROWSERCOIN-WALLET|PRIVATEKEY|^BRCKEY1|^(0X)?[0-9A-F]{64}$/.test(flat) || /^\s*([a-z]+\s+){11,}[a-z]+\s*$/i.test(String(text))) throw new Error(COIN_KEY);
+    throw new Error(NOT_A_MAILBOX_KEY);
+  }
   let id;
   try { id = vault.identifyInput(text); } catch { throw new Error(NOT_A_MAILBOX_KEY); }
   if (id.kind === 'vault-backup' && id.backup.type === vault.MAILBOX_TYPE) {
@@ -574,7 +574,7 @@ function resetChainSig() {
 function setSignAs(as) {
   if (signAs === as) return;
   signAs = as;
-  if (as !== 'chain') stopLinking();
+  if (as !== 'chain') { stopLinking(); stopCommit(); }
   $('#sign-out').hidden = true;
   say('#sign-msg', '');
   renderSignAs();
@@ -604,6 +604,7 @@ $('#sc-lockid').addEventListener('input', () => { tidyScLockId(); $('#sign-out')
 // Linking a mailbox: the message is fixed, already signed by the mailbox key.
 function startLinking() {
   if (!wallet) return;
+  stopCommit();
   linking = { mailbox: wallet.address };
   closeSheet();
   go('sign');
@@ -639,6 +640,32 @@ function stopLinking() {
 $('#sc-address').addEventListener('input', updateLinkText);
 $('#btn-sc-unlink').addEventListener('click', () => { stopLinking(); resetChainSig(); $('#sign-text').focus(); });
 $('#btn-link').addEventListener('click', startLinking);
+
+// Fixing the giveaway list before the draw: the message is fixed and read-only.
+let committing = null;
+function startCommit(message) {
+  stopLinking();
+  committing = message;
+  go('sign');
+  signAs = 'chain';
+  renderSignAs();
+  $('#sc-commit-note').hidden = false;
+  $('#sign-text').value = message;
+  $('#sign-text').readOnly = true;
+  $('#sign-fills').hidden = true;
+  updateSignCount();
+  $('#sc-address').focus();
+}
+function stopCommit() {
+  if (!committing) return;
+  committing = null;
+  $('#sc-commit-note').hidden = true;
+  $('#sign-text').readOnly = false;
+  $('#sign-text').value = '';
+  $('#sign-fills').hidden = false;
+  updateSignCount();
+}
+$('#btn-sc-uncommit').addEventListener('click', () => { stopCommit(); resetChainSig(); $('#sign-text').focus(); });
 
 renderSignMode();
 
@@ -706,7 +733,7 @@ $('#btn-sc-done').addEventListener('click', () => {
   try {
     const text = chain.chainSignedText(scSig, { lockId: $('#sc-lockid').value.trim() || null });
     $('#sign-block').textContent = text;
-    $('#sign-out-title').textContent = linking ? 'Mailbox link signed on the chain' : 'Signed on the chain';
+    $('#sign-out-title').textContent = linking ? 'Mailbox link signed on the chain' : committing ? 'Giveaway list signed on the chain' : 'Signed on the chain';
     $('#sign-out-sub').textContent = linking
       ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Stamps once the lock is in a block.'
       : 'Share this whole block. Anyone can check it on BRC Pulse → Stamps once the lock is in a block, usually within a few minutes.';
@@ -732,19 +759,20 @@ function showChainSigned(text, out) {
   try { p = chain.parseChainSigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
   const where = el('p', {}, 'BRC Seal works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
     el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Stamps' }), ', which finds the lock and checks your address made it.');
-  const rows = [['Signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
+  const rows = [['Claims to be signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
   if (p.lockId) rows.push(['Lock ID', el('span', { class: 'mono', text: `${p.lockId.slice(0, 16)}…` })]);
   if (p.link && !p.link.valid) {
     out.append(verdict('bad', 'Not a valid mailbox link', el('p', { text: p.link.reason }), kv([['Claims to be', addressNode(p.address)]])));
     return;
   }
   if (p.link) {
-    out.append(verdict('info', 'A mailbox link, signed by both sides', el('p', { text: 'The mailbox key\'s own signature checks out here. The coin address\'s side is on the chain.' }), where,
+    out.append(verdict('warn', "A mailbox link: only the mailbox's side is checked here", el('p', { text: 'The mailbox key\'s own signature checks out. Whether the coin address really made this link is not checked yet: anyone can write this block for any coin address. Until BRC Pulse finds the coin address\'s own lock, treat it as a claim.' }), where,
       kv([['Coin address', addressNode(p.link.coin)], ['Mailbox', addressNode(p.link.mailbox)]])));
     return;
   }
-  out.append(verdict(p.hidden ? 'warn' : 'info', p.hidden ? 'Signed on the chain, but the message has hidden characters' : 'Signed on the chain: complete and well-formed',
-    p.hidden ? el('p', { text: 'It contains invisible or direction-changing characters, so it may not read the way it looks.' }) : null, where, kv(rows)));
+  out.append(verdict('warn', 'Not checked yet: it needs BRC Pulse',
+    el('p', { text: 'Anyone can write a block like this for any address. It only counts once BRC Pulse finds the lock and confirms that address made it.' }),
+    p.hidden ? el('p', { text: 'It also contains invisible or direction-changing characters, so it may not read the way it looks.' }) : null, where, kv(rows)));
 }
 
 $('#btn-verify').addEventListener('click', () => {
@@ -799,7 +827,8 @@ function readSealTo() {
     const fake = a ? lookalikeNote(a) : '';
     if (fake) throw new Error(fake);
     const o = a ? known.officialFor(a) : null;
-    say('#seal-to-note', o ? `Sealing to the ${o.name}.` : '', 'info');
+    $('#seal-link-ok-wrap').hidden = true;
+    say('#seal-to-note', o ? `Sealing to the ${o.name}.` : a ? "Is this their mailbox? A coin address's key stays in the official app, which can't open letters. If you have their mailbox link, paste that instead." : '', 'info');
     return raw;
   }
   const p = chain.parseChainSigned(raw);
@@ -807,10 +836,11 @@ function readSealTo() {
   if (!p.link.valid) throw new Error(`That mailbox link isn't valid. ${p.link.reason}`);
   const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
   if (fake) throw new Error(fake);
-  say('#seal-to-note', `Sealing to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. The mailbox agreed to this link; check the coin address's side on BRC Pulse → Stamps if you haven't already.`, 'info');
+  $('#seal-link-ok-wrap').hidden = false;
+  say('#seal-to-note', `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse → Stamps first: anyone can write a link that names someone else's coin address.`, 'warn');
   return p.link.mailbox;
 }
-$('#seal-to').addEventListener('input', () => { try { readSealTo(); } catch (e) { say('#seal-to-note', e.message, 'bad'); } });
+$('#seal-to').addEventListener('input', () => { $('#seal-link-ok').checked = false; try { readSealTo(); } catch (e) { $('#seal-link-ok-wrap').hidden = true; say('#seal-to-note', e.message, 'bad'); } });
 
 $('#btn-seal').addEventListener('click', () => {
   $('#seal-out').hidden = true;
@@ -818,6 +848,7 @@ $('#btn-seal').addEventListener('click', () => {
   try {
     const signIt = $('#seal-sign').checked && !!wallet;
     const to = readSealTo();
+    if (chain.looksChainSigned($('#seal-to').value) && !$('#seal-link-ok').checked) throw new Error('Check the mailbox link on BRC Pulse → Stamps first, then tick the box. An unchecked link could send this letter to someone pretending to be them.');
     const n = seal.sealNote(to, $('#seal-text').value, signIt ? wallet : null);
     if (!chain.looksChainSigned($('#seal-to').value)) $('#seal-to').value = n.to;
     $('#seal-block').textContent = n.armored;
@@ -907,6 +938,10 @@ $('#btn-open').addEventListener('click', () => {
       title = 'Opened, but part of it is not signed';
       lede = 'Only the signed text below is vouched for. The words in the red box were added by whoever sealed the letter, and could be from anyone.';
     }
+  }
+  if (chain.looksChainSigned(o.message)) {
+    rows.push(['Careful', el('span', { class: 'bad-text', text: 'This letter contains a block "signed on the chain". It is not checked here: paste that block into BRC Pulse → Stamps before trusting it.' })]);
+    if (tone === 'good') tone = 'warn';
   }
   out.append(verdict(tone, title, el('p', { text: lede }), kv(rows)));
 });
@@ -1219,7 +1254,7 @@ $('#ib-file').addEventListener('change', async (e) => {
   try {
     const d = await readJsonFile(f);
     if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === 'string')) throw new Error("This isn't a letters file from the BRC Mailbox.");
-    ibExport = { mailbox: String(d.mailbox || ''), letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
+    ibExport = { mailbox: String(d.mailbox || ''), round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
     $('#ib-file-title').textContent = f.name;
     $('#ib-file-sub').textContent = `${ibExport.letters.length.toLocaleString('en-US')} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}…${ibExport.mailbox.slice(-4)}` : 'an unnamed mailbox'}`;
     dropState($('#ib-drop'), 'done', 1);
@@ -1260,11 +1295,17 @@ $('#btn-ib-open').addEventListener('click', () => {
     aside.append(el('p', { class: 'pm-note', text: 'Set aside: ' + [...counts].map(([k, n]) => `${n} × ${k.replace(/\.$/, '')}`).join('; ') + '.' }));
   }
   $('#btn-ib-save').disabled = !r.entries.length;
+  $('#btn-ib-commit').hidden = !r.entries.length;
   $('#ib-out').hidden = false; play($('#ib-out'));
+});
+$('#btn-ib-commit').addEventListener('click', () => {
+  if (!ibResult || !ibResult.entries.length) return;
+  if (!ibExport.round) { say('#ib-msg', "This letters file doesn't say which drand round the draw uses. Download it again from BRC Pulse → Giveaway.", 'bad'); return; }
+  try { startCommit(giveaway.listCommitMessage({ count: ibResult.entries.length, fingerprint: ibResult.fingerprint, round: ibExport.round })); } catch (e) { say('#ib-msg', e.message, 'bad'); }
 });
 $('#btn-ib-save').addEventListener('click', () => {
   if (!ibResult || !ibResult.entries.length) return;
-  const body = { v: 1, mailbox: wallet ? wallet.address : null, letters: ibResult.letters, count: ibResult.entries.length, fingerprint: ibResult.fingerprint,
+  const body = { v: 1, mailbox: wallet ? wallet.address : null, round: ibExport ? ibExport.round : null, letters: ibResult.letters, count: ibResult.entries.length, fingerprint: ibResult.fingerprint,
     eligibleFingerprint: ibEligible ? ibEligible.fingerprint : null, addresses: ibResult.entries, setAside: ibResult.setAside };
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1) + '\n'], { type: 'application/json' }));

@@ -54,7 +54,7 @@ if (files.length) {
   t('an altered real block is refused', () => {
     const hex = JSON.parse(readFileSync(`${CHAIN}/${files[0]}`, 'utf8')).blocks.find((h) => parseInt(h.slice(296, 304), 16) > 0);
     const flipped = hex.slice(0, 400) + (hex[400] === '0' ? '1' : '0') + hex.slice(401);
-    throwsMsg(() => c.readBlock(flipped), /don't match its header|unexpected|know|cut short/);
+    throwsMsg(() => c.readBlock(flipped), /don't match its header|unexpected|know|cut short|signature is wrong/);
   });
 } else {
   console.log('(skipping real-chain tests: ../chain not downloaded)');

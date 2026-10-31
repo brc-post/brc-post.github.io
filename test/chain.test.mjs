@@ -20,7 +20,7 @@ t('a chain signature binds the message to the address, and the phrase is a postm
   assert.equal(cs.stamp.owner, coin.address);
   assert.equal(cs.stamp.fingerprint, c.chainFingerprint(coin.address, cs.message));
   assert.notEqual(c.chainFingerprint(thief.address, cs.message), cs.stamp.fingerprint);
-  assert.match(c.chainPhrase(cs), /^BRCSTAMP1_[0-9a-f]{64}_[0-9a-f]{32}$/);
+  assert.match(c.chainPhrase(cs), /^BRCSIGN1_[0-9a-f]{64}_[0-9a-f]{32}$/);
   assert.ok(c.chainScriptHex(cs).includes(coin.address));
 });
 
@@ -60,7 +60,7 @@ t('a changed word, a changed address or a changed salt no longer matches the loc
     assert.equal(r.ok, false);
   }
   const noId = c.parseChainSigned(c.chainSignedText(cs).replace('Discord', 'Discord!'));
-  assert.match(c.checkChainSignedInBlock(noId, blk).reason, /No lock holding this message/);
+  assert.match(c.checkChainSignedInBlock(noId, blk).reason, /No lock by/);
 });
 
 t("someone else locking coins to the same script doesn't make it their signature, or the owner's", () => {
@@ -114,6 +114,46 @@ t('a link signed by the wrong coin address, pointing at someone else\'s mailbox,
   assert.equal(c.readLink(msg.replace(`Mailbox: ${mailbox.address}`, `Mailbox: ${other.address}`), coin.address).valid, false);
   assert.equal(c.readLink('Hello', coin.address), null);
   throwsMsg(() => c.linkMessage(mailbox, mailbox.address), /mailbox itself/);
+});
+
+t('every purpose has its own phrase prefix, and a file postmark of the signing preimage is not a signature (review finding)', () => {
+  assert.match(c.chainPhrase(cs), /^BRCSIGN1_/);
+  const l = c.newChainSignature({ address: coin.address, text: c.linkMessage(mailbox, coin.address) });
+  assert.match(c.chainPhrase(l), /^BRCLINK1_/);
+  const rel = c.newChainSignature({ address: coin.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '1.1.0', file: 'brc-vault.html', sha256: 'cd'.repeat(32) }) });
+  assert.match(c.chainPhrase(rel), /^BRCREL1_/);
+  const list = c.newChainSignature({ address: coin.address, text: c.listCommitMessage({ count: 3, fingerprint: 'ef'.repeat(32), round: 123 }) });
+  assert.match(c.chainPhrase(list), /^BRCLIST1_/);
+  // The attack: hand someone a "document" whose bytes are the chain preimage and ask for a postmark.
+  const msg = 'I owe the bearer 1,000 BRC.';
+  const preimage = new TextEncoder().encode(`BrowserCoin Chain-Signed Message v1\nAddress: ${coin.address}\nMessage:\n${msg}`);
+  const st = c.newStamp({ fingerprint: c.fingerprint(preimage), owner: coin.address });
+  assert.match(c.stampPhrase(st), /^BRCSTAMP1_/);
+  const pm = ch.lock(coin, c.stampScriptHash(st));
+  const forged = c.parseChainSigned(c.chainSignedText({ address: coin.address, message: msg, stamp: { ...st, kind: 'sign' } }).replace(/Lock ID:.*\n/, ''));
+  assert.equal(c.checkChainSignedInBlock(forged, ch.block(95010, [pm])).ok, false);
+});
+
+t('a copy locked by someone else in another block is never taken for the signature, even without a Lock ID', () => {
+  const copyOnly = ch.block(95011, [ch.lock(thief, c.chainScriptHash(cs))]);
+  const r = c.checkChainSignedInBlock(c.parseChainSigned(c.chainSignedText(cs)), copyOnly);
+  assert.equal(r.ok, false);
+  assert.match(r.reason, /No lock by/);
+});
+
+t('a block holding a lock with a wrong signature is refused as not real', () => {
+  const l = ch.lock(coin, c.chainScriptHash(cs));
+  l[100] ^= 1;
+  throwsMsg(() => c.readBlock(ch.block(95012, [l])), /signature is wrong/);
+  assert.equal(c.verifyLockBytes(ch.lock(coin, c.chainScriptHash(cs))), true);
+});
+
+t('the giveaway list commitment reads back only in its exact form', () => {
+  const m = c.listCommitMessage({ count: 25, fingerprint: 'ab'.repeat(32), round: 33522523 });
+  assert.deepEqual(c.readListCommit(m), { count: 25, fingerprint: 'ab'.repeat(32), round: 33522523 });
+  assert.equal(c.readListCommit(m + ' '), null);
+  assert.equal(c.readListCommit(m.replace('25', '025')), null);
+  assert.throws(() => c.listCommitMessage({ count: 1, fingerprint: 'x', round: 1 }), /fingerprint/);
 });
 
 console.log(`\n${passed} chain signature tests passed`);

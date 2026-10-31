@@ -88,7 +88,8 @@ with sync_playwright() as pw:
     phrase = page.locator('#sc-phrase').inner_text()
     msg = page.locator('#sign-text').input_value()
     fp = node(f"process.stdout.write(c.chainFingerprint({json.dumps(fx['coinAddress'])}, {json.dumps(msg)}))")
-    assert re.fullmatch(r'BRCSTAMP1_' + fp + r'_[0-9a-f]{32}', phrase), (phrase, fp)
+    assert re.fullmatch(r'BRCSIGN1_' + fp + r'_[0-9a-f]{32}', phrase), (phrase, fp)
+    expect(page.locator('#sc-recipe .phrase-warn')).to_contain_text('Only lock a phrase this page just made')
     pre = hashlib.sha256(phrase.encode()).digest()
     script = b'\xa8\x20' + hashlib.sha256(pre).digest() + b'\x88\x20' + bytes.fromhex(fx['coinAddress']) + b'\xac'
     expect(page.locator('#sc-check')).to_have_text('PUSH(32) ' + script.hex()[4:24] + '\u2026')
@@ -113,8 +114,11 @@ with sync_playwright() as pw:
     goto(page, 'received')
     page.fill('#rx-text', chain_block)
     expect(page.locator('#p-verify')).to_be_visible()
-    expect(page.locator('#verify-out .verdict')).to_have_attribute('data-tone', 'info')
+    expect(page.locator('#verify-out .verdict')).to_have_attribute('data-tone', 'warn')
+    expect(page.locator('#verify-out')).to_contain_text('Not checked yet')
+    expect(page.locator('#verify-out')).to_contain_text('Claims to be signed by')
     expect(page.locator('#verify-out')).to_contain_text('BRC Pulse')
+    assert re.fullmatch(r'BRCSIGN1_[0-9a-f]{64}_[0-9a-f]{32}', phrase), phrase
     expect(page.locator('#verify-out')).to_contain_text(msg)
     ok('a chain-signed message is recognised, read offline, and sent to BRC Pulse for the chain check')
 
@@ -364,7 +368,8 @@ with sync_playwright() as pw:
     goto(page, 'verify')
     page.fill('#verify-text', link_block)
     page.click('#btn-verify')
-    expect(page.locator('#verify-out')).to_contain_text('A mailbox link, signed by both sides')
+    expect(page.locator('#verify-out')).to_contain_text("only the mailbox's side is checked here")
+    expect(page.locator('#verify-out .verdict')).to_have_attribute('data-tone', 'warn')
     page.fill('#verify-text', link_block.replace('Mailbox: ' + fx['address'], 'Mailbox: ' + 'ab' * 32))
     page.click('#btn-verify')
     expect(page.locator('#verify-out .verdict')).to_have_attribute('data-tone', 'bad')
@@ -372,7 +377,12 @@ with sync_playwright() as pw:
     goto(page, 'seal')
     page.fill('#seal-to', link_block)
     expect(page.locator('#seal-to-note')).to_contain_text('mailbox of coin address')
+    expect(page.locator('#seal-link-ok-wrap')).to_be_visible()
     page.fill('#seal-text', 'Hello, mailbox owner.')
+    page.click('#btn-seal')
+    expect(page.locator('#seal-msg')).to_contain_text('Check the mailbox link on BRC Pulse')
+    expect(page.locator('#seal-out')).to_be_hidden()
+    page.check('#seal-link-ok')
     page.click('#btn-seal')
     linked_letter = page.locator('#seal-block').inner_text()
     assert ('To: ' + fx['address']) in linked_letter, linked_letter[:120]
@@ -383,7 +393,7 @@ with sync_playwright() as pw:
     page.click('#btn-sc-unlink')
     expect(page.locator('#sc-link-note')).to_be_hidden()
     expect(page.locator('#sign-text')).to_have_value('')
-    ok('pasting a mailbox link into Seal to: seals to the linked mailbox')
+    ok('a pasted mailbox link seals to the linked mailbox only after confirming it was checked on BRC Pulse')
 
     # --- Stamp ---
     doc = b'Farm lease, signed copy. Version 3.\n'
@@ -501,6 +511,21 @@ with sync_playwright() as pw:
     page.locator('#ib-elig').set_input_files({'name': 'eligible.json', 'mimeType': 'application/json', 'buffer': json.dumps(bad_elig).encode()})
     expect(page.locator('#ib-msg')).to_contain_text("doesn't match its own fingerprint")
     ok('an eligible list edited after it was made is refused')
+    page.locator('#ib-elig').set_input_files({'name': 'eligible.json', 'mimeType': 'application/json', 'buffer': fx['eligible'].encode()})
+    page.click('#btn-ib-open')
+    page.click('#btn-ib-commit')
+    expect(page.locator('#p-sign')).to_be_visible()
+    expect(page.locator('#sc-commit-note')).to_be_visible()
+    commit_text = page.locator('#sign-text').input_value()
+    assert commit_text == f"BRC Works giveaway list v1\nGiveaway: block 100,000\nEntries: 3\nFingerprint: {fx['expectedFingerprint']}\nDraw round: 33522523", commit_text
+    page.fill('#sc-address', fx['coinAddress'])
+    page.click('#btn-sign')
+    assert page.locator('#sc-phrase').inner_text().startswith('BRCLIST1_')
+    page.click('#btn-sc-done')
+    expect(page.locator('#sign-out-title')).to_have_text('Giveaway list signed on the chain')
+    page.click('#btn-sc-uncommit')
+    expect(page.locator('#sign-text')).to_have_value('')
+    ok('the organiser signs the entry list and draw round on the chain before the draw, under its own phrase prefix')
 
     # --- Link from BRC Pulse ---
     page.goto(page_url + '#to=' + fx['address'])

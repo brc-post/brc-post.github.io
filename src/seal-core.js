@@ -78,7 +78,7 @@ export function normalizeMessage(text) {
   return String(text)
     .normalize('NFC')
     .replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '')
-    .replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
     .replace(/\r\n?|[\u2028\u2029]/g, '\n')
     .split('\n').map((line) => line.replace(/[ \t]+$/, '')).join('\n')
     .replace(/^\n+|\n+$/g, '');

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as c from '../build/seal-core.mjs';
 
 let passed = 0;
+const PICTURE_VECTOR = ["transparent", "#c2417a", "transparent", "#7c5cff", "transparent", "#7c5cff", "transparent", "transparent", "transparent"]; // also checked independently in Python
 const t = (name, fn) => { fn(); passed++; console.log('ok -', name); };
 const rand = () => { const b = new Uint8Array(32); crypto.getRandomValues(b); return c.bytesToHex(b); };
 const real = c.walletFromPrivateKeyHex(rand()).address;
@@ -36,6 +37,17 @@ t('a release message is exact, and only an exact one reads back', () => {
   // A release message can be signed on the chain as is.
   const cs = c.newChainSignature({ address: real, text: m });
   assert.equal(cs.message, m);
+});
+
+t('first 4 and last 4 matching is a look-alike too; the address picture comes from SHA-256, so look-alikes look unrelated', () => {
+  const fl = real.slice(0, 4) + rand().slice(4, 60) + real.slice(-4);
+  assert.equal(c.lookalikeOf(fl, list).name, 'BRC Works release address');
+  // A fixed vector, shared with BRC Vault and BRC Pulse tests: same address, same picture everywhere.
+  const v = '9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60';
+  assert.deepEqual(c.addressPicture(v).colors, PICTURE_VECTOR);
+  let same = 0;
+  for (let i = 0; i < 50; i++) { const x = real.slice(0, 16) + rand().slice(16); if (JSON.stringify(c.addressPicture(x)) === JSON.stringify(c.addressPicture(real))) same++; }
+  assert.ok(same < 3, `look-alikes share the picture too often (${same}/50)`);
 });
 
 console.log(`\n${passed} official-address and release tests passed`);

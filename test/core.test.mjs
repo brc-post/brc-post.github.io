@@ -284,7 +284,7 @@ const sealed = [
   c.sealEntry(pageWallet.address, people[0]), c.sealEntry(pageWallet.address, people[1]), c.sealEntry(pageWallet.address, people[1]),
   c.sealEntry(pageWallet.address, people[5]), c.sealNote(pageWallet.address, 'Good luck everyone!', null), c.sealEntry(pageWallet.address, people[2]),
 ].map((n) => n.armored);
-const mailboxExport = { mailbox: pageWallet.address, count: sealed.length, letters: sealed.map((letter, i) => ({ seq: i + 1, id: String(i), at: '2026-11-05T12:00:00.000Z', letter })) };
+const mailboxExport = { mailbox: pageWallet.address, round: 33522523, count: sealed.length, letters: sealed.map((letter, i) => ({ seq: i + 1, id: String(i), at: '2026-11-05T12:00:00.000Z', letter })) };
 const expected = c.readEntries(sealed, pageWallet, new Set(eligibleFile.addresses));
 writeFileSync('build/page-fixture.json', JSON.stringify({
   walletFile: JSON.stringify({ type: 'browsercoin-wallet', version: 1, address: pageWallet.address, privateKeyHex: c.bytesToHex(pageWallet.privateKey), warning: 'Anyone with the private key controls the wallet. Keep this safe.' }, null, 2),

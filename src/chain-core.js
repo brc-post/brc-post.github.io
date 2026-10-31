@@ -23,7 +23,20 @@ import * as ed from '@noble/ed25519';
 import { sha256 } from '@noble/hashes/sha2';
 import { bytesToHex, hexToBytes } from './vault-core.js';
 import { normalizeMessage, cleanPaste, checkMessageText, parseAddress, isCleanAddress, strictVerify, hasHiddenCharacters } from './seal-core.js';
-import { newStamp, stampPhrase, stampScriptHash, stampScriptHex, readBlock } from './stamp-core.js';
+import { newStamp, stampPhrase, stampScriptHash, stampScriptHex, readBlock, verifyLockBytes } from './stamp-core.js';
+import { readRelease } from './release-core.js';
+import { readListCommit } from './giveaway-core.js';
+
+export { verifyLockBytes };
+
+/** Which phrase prefix a message is signed under: a link, a release and a giveaway list each have their own. */
+export function kindFor(message) {
+  const first = String(message).split('\n', 1)[0];
+  if (first === LINK_HEAD) return 'link';
+  if (readRelease(message)) return 'release';
+  if (readListCommit(message)) return 'list';
+  return 'sign';
+}
 
 const enc = new TextEncoder();
 const CHAIN_DOMAIN = 'BrowserCoin Chain-Signed Message v1\n';
@@ -45,7 +58,7 @@ export function newChainSignature({ address, text, after = null, drand = null, s
   if (!isCleanAddress(a)) throw new Error("This address isn't one a real wallet could have. Check it for a typo.");
   const message = normalizeMessage(text);
   checkMessageText(message);
-  const stamp = newStamp({ fingerprint: chainFingerprint(a, message), owner: a, after, drand, salt });
+  const stamp = newStamp({ fingerprint: chainFingerprint(a, message), owner: a, after, drand, salt, kind: kindFor(message) });
   return { address: a, message, stamp };
 }
 
@@ -110,7 +123,7 @@ export function parseChainSigned(text) {
     drand = { round: Number(m[1]), signature: m[2] };
   }
   const address = parseAddress(need('Address'));
-  const cs = { address, message, stamp: newStamp({ fingerprint: chainFingerprint(address, message), owner: address, salt: need('Salt'), after, drand }) };
+  const cs = { address, message, stamp: newStamp({ fingerprint: chainFingerprint(address, message), owner: address, salt: need('Salt'), after, drand, kind: kindFor(message) }) };
   const lockLine = field('Lock ID');
   let lockId = null;
   if (lockLine) {
@@ -139,10 +152,9 @@ export function checkChainSignedInBlock(cs, block) {
   const want = stampScriptHash(cs.stamp);
   const locks = blk.txs.filter((t) => t.kind === 'lock');
   // Anyone can copy a shared message's script and lock coins to it, so without a Lock ID
-  // the signer's own lock is the one that counts.
-  const lock = cs.lockId ? locks.find((t) => t.id === cs.lockId)
-    : locks.find((t) => t.scriptHash === want && t.from === cs.address) || locks.find((t) => t.scriptHash === want);
-  if (!lock) return { ok: false, reason: cs.lockId ? `Lock ${cs.lockId.slice(0, 10)}… is not in block ${blk.height}.` : `No lock holding this message is in block ${blk.height}.` };
+  // only the signer's own lock counts; a copy is never taken for it, or allowed to hide it.
+  const lock = cs.lockId ? locks.find((t) => t.id === cs.lockId) : locks.find((t) => t.scriptHash === want && t.from === cs.address);
+  if (!lock) return { ok: false, reason: cs.lockId ? `Lock ${cs.lockId.slice(0, 10)}… is not in block ${blk.height}.` : `No lock by ${cs.address.slice(0, 10)}… holding this message is in block ${blk.height}.` };
   if (lock.scriptHash !== want) return { ok: false, reason: 'A lock with this ID exists, but it holds something else. The message, address or salt was changed after it was signed.' };
   if (lock.from !== cs.address) return { ok: false, reason: `The lock holding this message was made by a different address (${lock.from.slice(0, 10)}…), so it doesn't show that ${cs.address.slice(0, 10)}… signed it.` };
   return { ok: true, height: blk.height, timestamp: blk.timestamp, blockHash: blk.hash, lockId: lock.id, from: lock.from };

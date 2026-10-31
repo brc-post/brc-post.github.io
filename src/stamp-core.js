@@ -25,7 +25,8 @@
 // official app). Redeeming reveals only SHA256(phrase) (the app's preimage), never
 // the phrase itself, so the fingerprint and salt stay private.
 
-import { sha256 } from '@noble/hashes/sha2';
+import * as ed from '@noble/ed25519';
+import { sha256, sha512 } from '@noble/hashes/sha2';
 import { bytesToHex, hexToBytes } from './vault-core.js';
 import { parseAddress, isCleanAddress } from './seal-core.js';
 import { verifyDrand, drandRoundTime } from './drand-core.js';
@@ -34,6 +35,13 @@ const enc = new TextEncoder();
 const HEX64 = /^[0-9a-f]{64}$/;
 
 export const STAMP_PREFIX = 'BRCSTAMP1';
+/**
+ * Every purpose has its own phrase prefix, so a phrase for one thing can never be
+ * the phrase for another (security review, Oct 31): a file postmark is never a
+ * signed message, a signed message is never a mailbox link or a release, and so on.
+ * The prefix also shows, in the official app, what kind of thing is being locked.
+ */
+export const PHRASE_PREFIX = Object.freeze({ file: STAMP_PREFIX, sign: 'BRCSIGN1', link: 'BRCLINK1', release: 'BRCREL1', list: 'BRCLIST1' });
 /** Suggested amount to lock, in BRC. The owner can redeem it later. */
 export const SUGGESTED_AMOUNT = '0.001';
 
@@ -80,7 +88,8 @@ export function fingerprint(bytes) {
  * coins back (normally your own). `after` is optional: { height, hash } of a recent
  * block, which proves the stamp was made after that block.
  */
-export function newStamp({ fingerprint: fp, owner, after = null, drand = null, salt = null }) {
+export function newStamp({ fingerprint: fp, owner, after = null, drand = null, salt = null, kind = 'file' }) {
+  if (!PHRASE_PREFIX[kind]) throw new Error('Unknown kind of stamp.');
   const f = cleanHex(fp, 'The fingerprint');
   const o = parseAddress(owner);
   if (!isCleanAddress(o)) throw new Error("The owner address isn't one a real wallet could have. Check it for a typo.");
@@ -104,12 +113,12 @@ export function newStamp({ fingerprint: fp, owner, after = null, drand = null, s
     s = bytesToHex(b);
   }
   s = cleanHex(s, 'The salt', 32);
-  return { fingerprint: f, salt: s, owner: o, after: a, drand: d };
+  return { fingerprint: f, salt: s, owner: o, after: a, drand: d, kind };
 }
 
 /** The phrase to paste into the official app's "Secret phrase" box. One unbroken word, so a double-click selects all of it. */
 export function stampPhrase(st) {
-  return `${STAMP_PREFIX}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ''}${st.drand ? `_D${st.drand.round}_${st.drand.signature}` : ''}`;
+  return `${PHRASE_PREFIX[st.kind || 'file']}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ''}${st.drand ? `_D${st.drand.round}_${st.drand.signature}` : ''}`;
 }
 
 /** The exact redeem script the official app builds for this phrase and owner. */
@@ -245,6 +254,10 @@ export function readBlock(block) {
       raw = b.slice(p, p + LOCK_LEN);
       if (raw.length !== LOCK_LEN) throw new Error('A lock in this block is cut short.');
       p += LOCK_LEN;
+      // The chain only accepts a lock signed by its `from` key over its first 92 bytes
+      // (official src/chain/transaction.ts lockPreimage). A block holding a lock that
+      // isn't is not a real block, whatever its txRoot says.
+      if (!verifyLockBytes(raw)) throw new Error('This block holds a lock whose signature is wrong, so it is not a real block.');
       txs.push({ kind: 'lock', raw, id: bytesToHex(sha256(raw)), from: bytesToHex(raw.slice(8, 40)), amount: u64(raw, 40), fee: u64(raw, 48), scriptHash: bytesToHex(raw.slice(60, 92)) });
       continue;
     }
@@ -263,6 +276,13 @@ export function readBlock(block) {
   const root = merkleRoot(txs.map((t) => t.raw));
   if (bytesToHex(root) !== bytesToHex(txRoot)) throw new Error("This block's contents don't match its header. The server sent a damaged or altered block.");
   return { height, timestamp, hash: bytesToHex(sha256(b.slice(0, HEADER_LEN))), txs };
+}
+
+ed.etc.sha512Sync = ed.etc.sha512Sync || ((...m) => sha512(ed.etc.concatBytes(...m)));
+/** Is this 156-byte lock signed by the address in its `from` field, as the chain requires? */
+export function verifyLockBytes(raw) {
+  if (!(raw instanceof Uint8Array) || raw.length !== LOCK_LEN) return false;
+  try { return ed.verify(raw.subarray(92, 156), raw.subarray(0, 92), raw.subarray(8, 40)); } catch { return false; }
 }
 
 /**

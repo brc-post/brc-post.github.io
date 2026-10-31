@@ -255,6 +255,7 @@ a { color: var(--brand-deep); }
 .msg[data-tone="info"] { color: var(--muted); }
 .notice { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--sunken); font-size: 0.86rem; color: var(--ink-2); }
 .notice strong { font-weight: 600; }
+.phrase-warn { margin: 0.8rem 0 0; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); background: var(--danger-tint); color: var(--ink-2); font-size: 0.84rem; }
 .privacy[data-mode="chain"] { background: var(--sunken); color: var(--ink-2); }
 .privacy[data-mode="mailbox"] { background: var(--brand-tint); color: #2c2a8f; }
 textarea.to-box { min-height: 3rem; height: 3rem; resize: vertical; }
@@ -550,6 +551,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         </div>
         </div>
         <p class="notice" id="sc-link-note" hidden><strong>Linking your mailbox.</strong> This message says your mailbox <span class="mono" id="sc-link-mailbox"></span> belongs to the coin address above, and your mailbox key has already signed it. Sign it on the chain to finish. <button type="button" class="link-btn" id="btn-sc-unlink">Write my own message instead</button></p>
+        <p class="notice" id="sc-commit-note" hidden><strong>Fixing the giveaway list before the draw.</strong> This message records the entry list's fingerprint and the drand round of the draw. Sign it on the chain with the BRC Works release address, and add the result to the giveaway settings. BRC Pulse shows a winner only if this lock is in a block well before that round. <button type="button" class="link-btn" id="btn-sc-uncommit">Write my own message instead</button></p>
         <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 31, 2026."></textarea></label>
         <div class="chips" aria-label="Examples" id="sign-fills">
           <button type="button" class="chip" data-fill="mine">This address is mine</button>
@@ -569,10 +571,12 @@ footer b { font-weight: 600; color: var(--ink-2); }
                 <div class="inline-copy"><span class="mono" id="sc-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="sc-phrase"><span class="lbl">Copy</span></button></div></li>
               <li>Leave the fee as it is and press <strong>Lock coins</strong>. Your key signs the lock inside the official app, where it already lives.</li>
             </ol>
+            <p class="phrase-warn"><strong>Only lock a phrase this page just made from words you can read above.</strong> A phrase someone sends you is a message you can't read, and locking it signs it in your name.</p>
             <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="sc-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="sc-check-owner"></span>.</p>
           </div>
-          <label class="field"><span>Lock ID <span class="count" id="sc-lockid-status">optional</span></span>
+          <label class="field"><span>Lock ID <span class="count" id="sc-lockid-status">recommended</span></span>
             <input id="sc-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste it from the app, or leave empty"></label>
+          <p class="field-help">With the Lock ID, BRC Pulse checks your exact lock straight away. Without it, Pulse searches for it, and anyone who copies your phrase into a lock of their own can slow that down.</p>
           <div class="actions"><button class="btn btn-primary btn-block" id="btn-sc-done" type="button">I've locked it: make my signed message</button></div>
           <p class="msg" id="sc-msg" role="status" aria-live="polite"></p>
         </div>
@@ -609,6 +613,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <div class="card">
         <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Their mailbox address, or paste their mailbox link"></textarea></label>
         <p class="msg" id="seal-to-note" role="status" aria-live="polite"></p>
+        <label class="check" id="seal-link-ok-wrap" hidden><input type="checkbox" id="seal-link-ok"><span>I checked this link on <strong>BRC Pulse → Stamps</strong>, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)</span></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
         <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
         <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Open your mailbox key to use this.</span></label>
@@ -683,6 +688,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
                   <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase"><span class="lbl">Copy</span></button></div></li>
                 <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
               </ol>
+              <p class="phrase-warn"><strong>Only postmark files you made or checked yourself, and only lock a phrase this page just made.</strong> A phrase someone sends you could sign something in your name.</p>
               <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="st-check-owner"></span>. If either doesn't, the phrase or the recipient address was pasted wrong.</p>
             </div>
           </div>
@@ -830,7 +836,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <div id="ib-out" hidden>
           <dl class="rows" id="ib-rows"></dl>
           <div id="ib-aside"></div>
-          <div class="actions"><button class="btn btn-primary" type="button" id="btn-ib-save" style="flex:1 1 12rem">Save the entry list</button><button class="btn btn-secondary" type="button" data-copy="ib-fp" style="flex:1 1 10rem"><span class="lbl">Copy fingerprint</span></button></div>
+          <div class="actions"><button class="btn btn-secondary" type="button" id="btn-ib-commit" style="flex:1 1 100%" hidden>Sign this list on the chain, before the draw</button><button class="btn btn-primary" type="button" id="btn-ib-save" style="flex:1 1 12rem">Save the entry list</button><button class="btn btn-secondary" type="button" data-copy="ib-fp" style="flex:1 1 10rem"><span class="lbl">Copy fingerprint</span></button></div>
           <span class="mono" id="ib-fp" hidden></span>
         </div>
       </div>
