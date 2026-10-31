@@ -25,7 +25,7 @@ import { bytesToHex, hexToBytes } from './vault-core.js';
 import { normalizeMessage, cleanPaste, checkMessageText, parseAddress, isCleanAddress, strictVerify, hasHiddenCharacters } from './seal-core.js';
 import { newStamp, stampPhrase, stampScriptHash, stampScriptHex, readBlock, verifyLockBytes } from './stamp-core.js';
 import { readRelease } from './release-core.js';
-import { readListCommit } from './giveaway-core.js';
+import { readListCommit, readLaunch } from './giveaway-core.js';
 
 export { verifyLockBytes };
 
@@ -35,6 +35,7 @@ export function kindFor(message) {
   if (first === LINK_HEAD) return 'link';
   if (readRelease(message)) return 'release';
   if (readListCommit(message)) return 'list';
+  if (readLaunch(message)) return 'launch';
   return 'sign';
 }
 

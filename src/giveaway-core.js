@@ -59,8 +59,9 @@ export const eligibleFingerprint = (addresses) => fingerprintOf('BRC Works givea
  * entry text, an eligible address, one entry per address. `letters` is a list of
  * armored sealed letters; `eligible` a Set of addresses (or null to skip).
  */
-export function readEntries(letters, mailboxWallet, eligible) {
+export function readEntries(letters, mailboxWallet, eligible, exclude = []) {
   const seen = new Set();
+  const own = new Set([mailboxWallet.address, ...exclude].filter(Boolean));
   const rejected = [];
   letters.forEach((letter, i) => {
     let address;
@@ -69,6 +70,7 @@ export function readEntries(letters, mailboxWallet, eligible) {
       if (to !== mailboxWallet.address) throw new Error('Sealed to a different address, not this mailbox.');
       address = parseEntryText(openNote(letter, mailboxWallet).message);
     } catch (e) { rejected.push({ index: i, reason: e.message }); return; }
+    if (own.has(address)) { rejected.push({ index: i, address, reason: "This is one of the giveaway's own addresses, which can't enter." }); return; }
     if (eligible && !eligible.has(address)) { rejected.push({ index: i, address, reason: 'This address is not on the eligible list.' }); return; }
     if (seen.has(address)) { rejected.push({ index: i, address, reason: 'This address already entered.' }); return; }
     seen.add(address);
@@ -77,7 +79,24 @@ export function readEntries(letters, mailboxWallet, eligible) {
   return { entries, rejected, fingerprint: entries.length ? listFingerprint(entries) : null };
 }
 
-/** The first drand quicknet round published at or after this Unix time (seconds). */
+// The launch: when the giveaway is announced, the BRC Works release address signs its rules on
+// the chain: the mailbox, the prize pool, the eligible list, when entries close and the drand
+// round of the draw. The round can then never be moved to a "better" beacon (review, Oct 31).
+const LAUNCH_HEAD = 'BRC Works giveaway v1';
+const HEX64 = /^[0-9a-f]{64}$/;
+export function launchMessage({ mailbox, pool, eligible, closesAt, round }) {
+  for (const [k, v] of [['mailbox', mailbox], ['prize pool', pool], ['eligible list fingerprint', eligible]]) if (!HEX64.test(String(v))) throw new Error(`The ${k} should be 64 characters, 0–9 and a–f.`);
+  if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d{3})?Z$/.test(String(closesAt))) throw new Error('Entries close should be an exact UTC time, like 2026-11-11T23:59:00Z.');
+  if (!Number.isSafeInteger(round) || round < 1) throw new Error('The draw round should be a drand round number.');
+  return `${LAUNCH_HEAD}\nGiveaway: block 100,000\nMailbox: ${mailbox}\nPrize pool: ${pool}\nEligible: ${eligible}\nEntries close: ${closesAt}\nDraw round: ${round}`;
+}
+export function readLaunch(message) {
+  const m = /^BRC Works giveaway v1\nGiveaway: block 100,000\nMailbox: ([0-9a-f]{64})\nPrize pool: ([0-9a-f]{64})\nEligible: ([0-9a-f]{64})\nEntries close: (\S{20,24})\nDraw round: (\d{1,12})$/.exec(String(message));
+  if (!m) return null;
+  const r = { mailbox: m[1], pool: m[2], eligible: m[3], closesAt: m[4], round: Number(m[5]) };
+  try { return launchMessage(r) === message ? r : null; } catch { return null; }
+}
+
 // The list commitment: before the draw, the BRC Works release address signs this on the
 // chain (a chain-signed message, chain-core.js). BRC Pulse shows a winner only if that
 // lock is in a block well before the drand round, so the list and the round were fixed

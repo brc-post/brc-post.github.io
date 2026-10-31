@@ -41,7 +41,7 @@ export const STAMP_PREFIX = 'BRCSTAMP1';
  * signed message, a signed message is never a mailbox link or a release, and so on.
  * The prefix also shows, in the official app, what kind of thing is being locked.
  */
-export const PHRASE_PREFIX = Object.freeze({ file: STAMP_PREFIX, sign: 'BRCSIGN1', link: 'BRCLINK1', release: 'BRCREL1', list: 'BRCLIST1' });
+export const PHRASE_PREFIX = Object.freeze({ file: STAMP_PREFIX, sign: 'BRCSIGN1', link: 'BRCLINK1', release: 'BRCREL1', list: 'BRCLIST1', launch: 'BRCGIVE1' });
 /** Suggested amount to lock, in BRC. The owner can redeem it later. */
 export const SUGGESTED_AMOUNT = '0.001';
 

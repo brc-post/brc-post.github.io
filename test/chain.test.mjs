@@ -156,4 +156,21 @@ t('the giveaway list commitment reads back only in its exact form', () => {
   assert.throws(() => c.listCommitMessage({ count: 1, fingerprint: 'x', round: 1 }), /fingerprint/);
 });
 
+t('the giveaway launch message fixes the rules and the draw round, under its own prefix', () => {
+  const L = { mailbox: mailbox.address, pool: coin.address, eligible: 'ab'.repeat(32), closesAt: '2026-11-11T23:59:00Z', round: 33522523 };
+  const m = c.launchMessage(L);
+  assert.deepEqual(c.readLaunch(m), L);
+  assert.equal(c.readLaunch(m.replace('33522523', '33522524 ')), null);
+  assert.match(c.chainPhrase(c.newChainSignature({ address: coin.address, text: m })), /^BRCGIVE1_/);
+  assert.throws(() => c.launchMessage({ ...L, closesAt: 'next week' }), /exact UTC time/);
+});
+
+t("the giveaway's own addresses are set aside when the letters are opened", () => {
+  const mbx = c.walletFromPrivateKeyHex(ch.rand());
+  const letters = [c.sealEntry(mbx.address, coin.address).armored, c.sealEntry(mbx.address, thief.address).armored, c.sealEntry(mbx.address, mbx.address).armored];
+  const r = c.readEntries(letters, mbx, null, [thief.address]);
+  assert.deepEqual(r.entries, [coin.address]);
+  assert.equal(r.rejected.filter((x) => /own addresses/.test(x.reason)).length, 2);
+});
+
 console.log(`\n${passed} chain signature tests passed`);

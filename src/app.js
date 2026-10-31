@@ -1255,7 +1255,7 @@ $('#ib-file').addEventListener('change', async (e) => {
   try {
     const d = await readJsonFile(f);
     if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === 'string')) throw new Error("This isn't a letters file from the BRC Mailbox.");
-    ibExport = { mailbox: String(d.mailbox || ''), round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
+    ibExport = { mailbox: String(d.mailbox || ''), pool: /^[0-9a-f]{64}$/.test(String(d.pool)) ? d.pool : null, round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
     $('#ib-file-title').textContent = f.name;
     $('#ib-file-sub').textContent = `${ibExport.letters.length.toLocaleString('en-US')} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}…${ibExport.mailbox.slice(-4)}` : 'an unnamed mailbox'}`;
     dropState($('#ib-drop'), 'done', 1);
@@ -1280,7 +1280,7 @@ $('#btn-ib-open').addEventListener('click', () => {
   if (!ibExport) { say('#ib-msg', 'Choose the letters file first.', 'bad'); play($('#ib-msg'), 'anim-shake'); return; }
   if (!wallet) { say('#ib-msg', 'Open the mailbox key first. Opening needs it.', 'bad'); openSheet(); return; }
   if (ibExport.mailbox && ibExport.mailbox !== wallet.address) { say('#ib-msg', `These letters are for mailbox ${ibExport.mailbox.slice(0, 10)}…, not the key you opened. Open that mailbox's key.`, 'bad'); return; }
-  const r = giveaway.readEntries(ibExport.letters.map((l) => l.letter), wallet, ibEligible ? ibEligible.set : null);
+  const r = giveaway.readEntries(ibExport.letters.map((l) => l.letter), wallet, ibEligible ? ibEligible.set : null, [ibExport.pool, ...known.OFFICIAL.map((o) => o.address)]);
   ibResult = { ...r, letters: ibExport.letters.length, setAside: r.rejected.map((x) => ({ seq: ibExport.letters[x.index].seq, reason: x.reason })) };
   const rows = $('#ib-rows'); rows.replaceChildren();
   const row = (k, v, small) => rows.append(el('div', {}, el('dt', { text: k }), el('dd', {}, v, small ? el('small', { text: small }) : null)));
