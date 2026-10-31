@@ -546,7 +546,11 @@ with sync_playwright() as pw:
     page.evaluate("location.hash = 'to=" + 'f' * 64 + "'")
     page.wait_for_timeout(200)
     expect(page.locator('#seal-to')).to_have_value(fx['address'])
-    ok('a #to= link fills the address once on opening; later address-bar changes cannot swap it')
+    expect(page.locator('#btn-use-link')).to_be_visible()
+    page.fill('#seal-to', '')
+    page.evaluate("location.hash = 'to=" + fx['address'] + "'")
+    expect(page.locator('#seal-to')).to_have_value(fx['address'])
+    ok('a #to= link fills an empty address box, on opening or later; it never silently swaps an address already there')
 
     # --- Official addresses by name, and look-alikes refused (test build with a stand-in list) ---
     off = browser.new_context(viewport={'width': 1100, 'height': 900}).new_page()

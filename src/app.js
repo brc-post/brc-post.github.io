@@ -662,17 +662,41 @@ function readHash() {
   try { h = decodeURIComponent(location.hash.replace(/^#/, '')); } catch { show('home'); return; }
   const to = h.match(/(?:^|&)to=([0-9a-fA-F]{64})(?:&|$)/);
   if (to) {
-    if (!initial) return;
+    const addr = to[1].toLowerCase();
     show('seal');
     try { history.replaceState(null, '', '#seal'); } catch { /* inside a viewer that can't change the address */ }
     if (EMBEDDED) { say('#seal-msg', 'A link tried to fill in the address, but BRC Post is open inside another page, so it was ignored. Paste the address yourself.', 'warn'); return; }
-    if (!$('#seal-to').value.trim()) { sealToTrusted = to[1].toLowerCase(); $('#seal-to').value = sealToTrusted; $('#seal-to').dispatchEvent(new Event('input')); }
-    say('#seal-msg', 'Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.', 'info');
+    const current = $('#seal-to').value.trim().toLowerCase();
+    // A link fills an empty box, on opening or later (a mailbox link opened in this tab). It never
+    // silently replaces an address you are already writing to: that needs your press.
+    if (!current || current === addr) {
+      sealToTrusted = addr;
+      $('#seal-to').value = addr;
+      $('#seal-to').dispatchEvent(new Event('input'));
+      say('#seal-msg', 'Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.', 'info');
+      $('#seal-text').focus({ preventScroll: true });
+    } else {
+      pendingLinkTo = addr;
+      $('#btn-use-link').hidden = false;
+      $('#btn-use-link').textContent = `Write to ${addr.slice(0, 6)}…${addr.slice(-4)} instead`;
+      say('#seal-msg', `A mailbox link for ${addr.slice(0, 6)}…${addr.slice(-4)} was opened, but you're already writing to someone else. Nothing was changed.`, 'warn');
+    }
+    if (!initial) play($('#seal-msg'), 'anim-in');
     return;
   }
   const key = h.split('&')[0];
   show(ALIASES[key] ?? (SCREENS[key] ? key : 'home'));
 }
+let pendingLinkTo = '';
+$('#btn-use-link').addEventListener('click', () => {
+  if (!pendingLinkTo) return;
+  sealToTrusted = pendingLinkTo;
+  $('#seal-to').value = pendingLinkTo;
+  pendingLinkTo = '';
+  $('#btn-use-link').hidden = true;
+  $('#seal-to').dispatchEvent(new Event('input'));
+  say('#seal-msg', 'Now writing to the mailbox from the link. Check the picture matches the one they showed you.', 'info');
+});
 window.addEventListener('hashchange', readHash);
 window.addEventListener('popstate', readHash);
 

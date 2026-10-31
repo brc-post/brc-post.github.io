@@ -5,6 +5,9 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.7: a mailbox link opened while BRC Post is already open now fills
+    Seal to too (it was only read when the page first opened). It still never
+    silently replaces an address you are writing to: a button offers to switch.
   - test.6: sealing to an address that might not be a mailbox now asks first
     (Patrick sealed a letter to a public coin address, which nobody can open).
     An address from a mailbox link, your own mailbox, a test mailbox or the

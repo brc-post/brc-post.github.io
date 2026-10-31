@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GDLObJEz6eKhBfBdOIfXiQ5fD/T9l0VzWJndHQYToDI='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JxLETW7XTmx6PC2vLBa2iDPFFaIXsvrF4AzgjnSZXTY='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -650,6 +650,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Open your mailbox to use this.</span></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
+        <div class="actions"><button type="button" class="btn btn-secondary" id="btn-use-link" hidden></button></div>
         <div class="out" id="seal-out" hidden>
           <div class="done-head">
             <span class="done-art" aria-hidden="true"><svg class="mini-mark" viewBox="307.6 90 1316 1316"><path class="draw draw-1" pathLength="1" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="120"/><path class="draw draw-2" pathLength="1" d="M544.8 430.0L965.6 790.0L1386.4 430.0" fill="none" stroke="currentColor" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/><circle class="dot" cx="965.6" cy="820.0" r="190.0"/></svg></span>
@@ -874,7 +875,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.6.0-test.6</span>, build <span class="mono">1832ce6c</span>. Works offline. This page sends nothing anywhere.</p>
+      <p>BRC Post <span id="app-version">0.6.0-test.7</span>, build <span class="mono">2712c44d</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -11624,7 +11625,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     }
     const to = h2.match(/(?:^|&)to=([0-9a-fA-F]{64})(?:&|$)/);
     if (to) {
-      if (!initial) return;
+      const addr = to[1].toLowerCase();
       show("seal");
       try {
         history.replaceState(null, "", "#seal");
@@ -11634,17 +11635,35 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         say("#seal-msg", "A link tried to fill in the address, but BRC Post is open inside another page, so it was ignored. Paste the address yourself.", "warn");
         return;
       }
-      if (!$("#seal-to").value.trim()) {
-        sealToTrusted = to[1].toLowerCase();
-        $("#seal-to").value = sealToTrusted;
+      const current2 = $("#seal-to").value.trim().toLowerCase();
+      if (!current2 || current2 === addr) {
+        sealToTrusted = addr;
+        $("#seal-to").value = addr;
         $("#seal-to").dispatchEvent(new Event("input"));
+        say("#seal-msg", "Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.", "info");
+        $("#seal-text").focus({ preventScroll: true });
+      } else {
+        pendingLinkTo = addr;
+        $("#btn-use-link").hidden = false;
+        $("#btn-use-link").textContent = `Write to ${addr.slice(0, 6)}\u2026${addr.slice(-4)} instead`;
+        say("#seal-msg", `A mailbox link for ${addr.slice(0, 6)}\u2026${addr.slice(-4)} was opened, but you're already writing to someone else. Nothing was changed.`, "warn");
       }
-      say("#seal-msg", "Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.", "info");
+      if (!initial) play($("#seal-msg"), "anim-in");
       return;
     }
     const key = h2.split("&")[0];
     show(ALIASES[key] ?? (SCREENS[key] ? key : "home"));
   }
+  var pendingLinkTo = "";
+  $("#btn-use-link").addEventListener("click", () => {
+    if (!pendingLinkTo) return;
+    sealToTrusted = pendingLinkTo;
+    $("#seal-to").value = pendingLinkTo;
+    pendingLinkTo = "";
+    $("#btn-use-link").hidden = true;
+    $("#seal-to").dispatchEvent(new Event("input"));
+    say("#seal-msg", "Now writing to the mailbox from the link. Check the picture matches the one they showed you.", "info");
+  });
   window.addEventListener("hashchange", readHash);
   window.addEventListener("popstate", readHash);
   var looksLikeRecoveryWords = (t) => looksLikeWords(t) && String(t).trim().split(/[\s,.;:()]+/).filter((w) => /^[a-z]+$/i.test(w)).length >= 12;
