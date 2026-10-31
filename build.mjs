@@ -1,6 +1,6 @@
 // Builds dist/brc-post.html: one self-contained file with all code inlined.
 // Same approach as BRC Vault: readable code, embedded fonts, a single script
-// locked by hash, no network access, and a reproducible build label.
+// locked by hash, no network access beyond the public drand beacon relays, and a reproducible build label.
 import { build } from 'esbuild';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';

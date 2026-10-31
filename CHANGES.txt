@@ -5,6 +5,14 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.8: the exact time now fills itself in. "Postmark a file" has a box,
+    ticked by default: "Also prove when it was made". On Make the postmark
+    phrase, Post fetches the current drand beacon, checks its signature here
+    and puts it in the postmark; no more copying it from BRC Pulse. Nothing
+    about you or your file is sent. If drand can't be reached, the postmark is
+    still made, without the time, and says so. Pasting a beacon or a recent
+    block by hand moved under "Advanced". The page's only allowed connection
+    is the four public drand relays (Content Security Policy).
   - test.7: a mailbox link opened while BRC Post is already open now fills
     Seal to too (it was only read when the page first opened). It still never
     silently replaces an address you are writing to: a button offers to switch.

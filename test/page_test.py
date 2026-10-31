@@ -41,6 +41,12 @@ with sync_playwright() as pw:
     page.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.on('request', lambda r: requests.append(r.url))
+    beacon = json.load(open('test/drand-vectors.json'))['beacons'][-1]
+    DRAND = re.compile(r'^https://(api\.drand\.sh|api2\.drand\.sh|api3\.drand\.sh|drand\.cloudflare\.com)/')
+    def fake_drand(route):  # stands in for drand's public relays: the real, signed beacon from the test vectors
+        route.fulfill(status=200, content_type='application/json', headers={'access-control-allow-origin': '*'},
+                      body=json.dumps({'round': beacon['round'], 'randomness': '00' * 32, 'signature': beacon['signature']}))
+    ctx.route(DRAND, fake_drand)
     page.goto(page_url)
     expect(page.locator('#wallet-title')).to_have_text('No mailbox yet')
     expect(page.locator('#s-home')).to_be_visible()
@@ -416,6 +422,32 @@ with sync_playwright() as pw:
     expect(page.locator('#st-make-msg')).to_contain_text('Choose a file first')
     page.locator('#st-file').set_input_files({'name': 'lease-v3.txt', 'mimeType': 'text/plain', 'buffer': doc})
     expect(page.locator('#st-file-sub')).to_contain_text('fingerprint ' + hashlib.sha256(doc).hexdigest()[:16])
+    expect(page.locator('#st-time')).to_be_checked()
+    expect(page.locator('#st-more')).not_to_have_attribute('open', '')
+    page.click('#btn-st-make')
+    expect(page.locator('#st-time-msg')).to_contain_text('Time added')
+    expect(page.locator('#st-time-msg')).to_contain_text(f"round {beacon['round']:,}")
+    expect(page.locator('#st-phrase')).to_contain_text(f"_D{beacon['round']}_{beacon['signature']}")
+    assert any(DRAND.match(u) and u.endswith('/52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971/public/latest') for u in requests), requests
+    ok('one press adds the exact time: Post fetches the current drand beacon, checks it, and puts it in the postmark')
+    ctx.unroute(DRAND)
+    ctx.route(DRAND, lambda r: r.fulfill(status=200, content_type='application/json', headers={'access-control-allow-origin': '*'},
+                                         body=json.dumps({'round': beacon['round'], 'signature': beacon['signature'][:-2] + '00'})))
+    page.click('#btn-st-make')
+    expect(page.locator('#st-time-msg')).to_contain_text("Couldn't reach the time service")
+    phrase = page.locator('#st-phrase').inner_text()
+    assert '_D' not in phrase, phrase
+    ok('a beacon that fails its signature check is never used; the postmark is still made, without the time')
+    ctx.unroute(DRAND)
+    ctx.route(DRAND, fake_drand)
+    page.uncheck('#st-time')
+    expect(page.locator('#st-time-msg')).to_contain_text('No time beacon')
+    n = len(requests)
+    page.click('#btn-st-make')
+    assert '_D' not in page.locator('#st-phrase').inner_text()
+    assert not any(DRAND.match(u) for u in requests[n:]), 'fetched a beacon with the box unticked'
+    page.check('#st-time')
+    ok('unticking the box makes a postmark with no outside connection at all')
     page.click('#st-more summary')
     page.fill('#st-after-height', '92510')
     page.click('#btn-st-make')
@@ -423,7 +455,6 @@ with sync_playwright() as pw:
     page.fill('#st-after-height', '92510 ' + 'ab' * 32)  # pasted from Pulse's "Copy both"
     expect(page.locator('#st-after-height')).to_have_value('92510')
     expect(page.locator('#st-after-hash')).to_have_value('ab' * 32)
-    beacon = json.load(open('test/drand-vectors.json'))['beacons'][-1]
     page.fill('#st-drand', f"{beacon['round']} {beacon['signature'][:-2]}00")
     expect(page.locator('#st-drand-status')).to_have_text('not a valid beacon')
     page.click('#btn-st-make')
@@ -431,6 +462,7 @@ with sync_playwright() as pw:
     page.fill('#st-drand', f"{beacon['round']} {beacon['signature']}")
     expect(page.locator('#st-drand-status')).to_contain_text('Oct 30, 2026, 2:35:33')
     page.click('#btn-st-make')
+    expect(page.locator('#st-phrase')).to_contain_text('_A92510_')
     phrase = page.locator('#st-phrase').inner_text()
     assert re.fullmatch(r'BRCSTAMP1_' + hashlib.sha256(doc).hexdigest() + r'_[0-9a-f]{32}_A92510_' + 'ab' * 32 + f"_D{beacon['round']}_{beacon['signature']}", phrase), phrase
     owner = page.locator('#st-owner-copy').inner_text()
@@ -538,8 +570,8 @@ with sync_playwright() as pw:
     ok('the organiser signs the entry list and draw round on the chain before the draw, under its own phrase prefix')
 
     # --- Link from BRC Pulse ---
+    page.goto('about:blank')  # a fresh load from the link (a same-page hash change raced the old reload here)
     page.goto(page_url + '#to=' + fx['address'])
-    page.reload()
     expect(page.locator('#p-seal')).to_be_visible()
     expect(page.locator('#seal-to')).to_have_value(fx['address'])
     assert 'to=' not in page.evaluate('location.hash')
@@ -586,7 +618,11 @@ with sync_playwright() as pw:
     goto(p2, 'postmark')
     p2.locator('#st-file').set_input_files({'name': 'x.txt', 'mimeType': 'text/plain', 'buffer': b'x'})
     p2.fill('#st-owner', fx['coinAddress'])
+    phone.route(DRAND, lambda r: r.abort())  # offline, or drand unreachable
     p2.click('#btn-st-make')
+    expect(p2.locator('#st-time-msg')).to_contain_text("Couldn't reach the time service")
+    expect(p2.locator('#st-phrase')).to_contain_text('BRCSTAMP1_')
+    ok('with no connection the postmark still works, and says it has no exact time')
     assert p2.evaluate('document.documentElement.scrollWidth') <= 390, 'stamp tab scrolls sideways on a phone'
     p2.screenshot(path=str(out / '08-phone-stamp.png'), full_page=True)
     goto(p2, 'sign')
@@ -781,9 +817,10 @@ with sync_playwright() as pw:
     expect(p2.locator('#s-home')).to_be_visible()
     ok('swiping right from the left edge goes back; short or mid-screen swipes do not')
 
-    others = [u for u in requests if not u.startswith('file:') and not u.startswith('data:')]
+    others = [u for u in requests if not u.startswith('file:') and not u.startswith('data:')
+              and not (DRAND.match(u) and u.endswith('/public/latest'))]
     assert not others, f'unexpected network requests: {others}'
-    ok('made no network requests')
+    ok('its only network request is the public drand beacon, and only when making a postmark')
     assert not errors, f'console errors: {errors}'
     ok('no console errors')
     browser.close()

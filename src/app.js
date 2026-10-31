@@ -1377,6 +1377,7 @@ $('#st-file').addEventListener('change', async (e) => {
 });
 
 for (const id of ['#st-owner', '#st-after-height', '#st-after-hash', '#st-drand']) $(id).addEventListener('input', () => resetStampFrom(2));
+$('#st-time').addEventListener('change', () => { resetStampFrom(2); if (!$('#st-time').checked) say('#st-time-msg', 'No time beacon: the postmark proves the file existed by the block it lands in, not when it was made.', 'info'); else say('#st-time-msg', ''); });
 const utcTime = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'medium' }) + ' UTC';
 const localTime = (ts) => new Date(ts * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
 const localDate = (ts) => new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1429,9 +1430,51 @@ $('#btn-st-testlock').addEventListener('click', () => {
   tidyLockId(); resetStampFrom(3);
 });
 
-$('#btn-st-make').addEventListener('click', () => {
+// The public time beacon, fetched only when making a postmark (and only if "Also prove when it was made" is
+// ticked). Its signature is checked here against drand's key, so a relay can't make one up.
+const DRAND_RELAYS = ['https://api.drand.sh', 'https://drand.cloudflare.com', 'https://api2.drand.sh', 'https://api3.drand.sh'];
+async function fetchBeacon() {
+  for (const base of DRAND_RELAYS) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 4000);
+    try {
+      const r = await fetch(`${base}/${drand.QUICKNET.chainHash}/public/latest`, { signal: ctl.signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' });
+      if (!r.ok) continue;
+      const j = await r.json();
+      const round = Number(j.round), sig = String(j.signature || '').toLowerCase();
+      if (drand.verifyDrand(round, sig)) return { round, signature: sig };
+    } catch { /* try the next relay */ } finally { clearTimeout(timer); }
+  }
+  return null;
+}
+let stMaking = false, autoDrand = '';
+
+$('#btn-st-make').addEventListener('click', async () => {
   resetStampFrom(2);
   if (!stFile) { say('#st-make-msg', 'Choose a file first.', 'bad'); play($('#st-make-msg'), 'anim-shake'); return; }
+  if (stMaking) return;
+  const typed = $('#st-drand').value.trim();
+  if ($('#st-time').checked && (!typed || typed === autoDrand)) {  // a beacon it fetched before is refreshed each time
+    stMaking = true;
+    $('#btn-st-make').disabled = true;
+    say('#st-time-msg', 'Getting the current time beacon…', 'info');
+    try {
+      const b = await fetchBeacon();
+      if (b) {
+        autoDrand = `${b.round} ${b.signature}`;
+        $('#st-drand').value = autoDrand;
+        $('#st-drand').dispatchEvent(new Event('input'));
+        say('#st-time-msg', `Time added: made after ${new Date(drand.drandRoundTime(b.round) * 1000).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'medium' })} (drand round ${b.round.toLocaleString('en-US')}, checked).`, 'good');
+      } else {
+        if (typed === autoDrand) { $('#st-drand').value = ''; $('#st-drand').dispatchEvent(new Event('input')); }
+        autoDrand = '';
+        say('#st-time-msg', "Couldn't reach the time service, so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.", 'warn');
+      }
+    } finally {
+      stMaking = false;
+      $('#btn-st-make').disabled = false;
+    }
+  }
   try {
     const h = $('#st-after-height').value.trim();
     const x = $('#st-after-hash').value.trim();

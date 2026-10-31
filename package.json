@@ -1,6 +1,6 @@
 {
   "name": "brc-post",
-  "version": "0.6.0-test.7",
+  "version": "0.6.0-test.8",
   "description": "Sign, verify and seal messages with BrowserCoin addresses. Offline.",
   "scripts": {
     "build": "node build.mjs",
