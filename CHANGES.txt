@@ -5,6 +5,9 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Seal is not live.
 
 0.5.0 (in progress)
+  - test.4: the BRC Works addresses are filled in: release address 7ccb496c…caa00,
+    giveaway mailbox b4b31b73…9997b, prize pool 41210e34…758d1 (made in BRC Vault
+    by Patrick, Oct 31).
   - test.3: points to BRC Vault's new New wallet tab for mailbox keys.
   - test.2: the check view on BRC Pulse is now called "Check it"; every
     pointer to it says so.

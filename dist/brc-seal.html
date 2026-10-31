@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Qy3zM686l3fY2vNmriZKJ16XoK1J7OmUINrxNWCKO/Q='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UzhSfkJnA36+OvXRy8ueOL0w4bOsVZvVAMSVv6vAY8k='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -845,7 +845,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Seal <span id="app-version">0.5.0-test.3</span>, build <span class="mono">432df333</span>. Works offline. This page sends nothing anywhere.</p>
+      <p>BRC Seal <span id="app-version">0.5.0-test.4</span>, build <span class="mono">5338527e</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Seal proves it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -10784,7 +10784,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
 
   // src/official.js
   var OFFICIAL = Object.freeze([
-    // { address: '<64 hex>', name: 'BRC Works release address', role: 'release' },
+    { address: "7ccb496c7bb6e78a169fdd3c2441772bc98730f3da43c3ee52046ee5e90caa00", name: "BRC Works release address", role: "release" },
+    { address: "b4b31b7337deecf2cd29d5ff22809520f819fa6b8ebfa05e029aa4709699997b", name: "BRC Works giveaway mailbox", role: "mailbox" },
+    { address: "41210e34d2f518620d869caa0b097883f693c40649789eaf77edc4ae5f0758d1", name: "BRC Works prize pool", role: "pool" }
   ]);
 
   // src/known-core.js
