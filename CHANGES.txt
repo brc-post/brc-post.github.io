@@ -1,0 +1,20 @@
+BRC Seal changes
+================
+Version numbers: last number for fixes and wording, middle number for new
+features, first number for changes to file formats or the security model.
+Test builds carry "-test.N" and are never published. BRC Seal is not live.
+
+0.5.0 (in progress)
+  - No coin keys: BRC Seal stops taking wallet files and private keys.
+    Mailbox keys (from BRC Vault or made here) open letters and sign.
+  - Sign on the chain: prove a coin address with the official app's
+    hash-locked payment, no key pasted anywhere.
+  - Link a mailbox to a coin address, on the chain.
+  - The version is shown in the footer next to the build code.
+
+0.4.0
+  - Design direction D, postal language and motion.
+  - Postmarks (file fingerprints on the chain) with optional Lock ID.
+  - Open many letters: a mailbox owner opens a whole BRC Mailbox export.
+  - Giveaway entry core: address-only entries, fingerprints, drand draw.
+  - Fixes from the first security review.

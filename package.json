@@ -1,11 +1,11 @@
 {
   "name": "brc-seal",
-  "version": "0.4.0",
+  "version": "0.5.0-test.1",
   "description": "Sign, verify and seal messages with BrowserCoin addresses. Offline.",
   "scripts": {
     "build": "node build.mjs",
     "drand-bundle": "node tools/build-drand-bundle.mjs",
-    "test": "esbuild test/entry.js --bundle --format=esm --platform=neutral --outfile=build/seal-core.mjs && node test/core.test.mjs && node test/stamp.test.mjs && node test/giveaway.test.mjs && python3 test/crosscheck.py build/crosscheck.json && node build.mjs && python3 test/page_test.py build/page-test"
+    "test": "esbuild test/entry.js --bundle --format=esm --platform=neutral --outfile=build/seal-core.mjs && node test/core.test.mjs && node test/stamp.test.mjs && node test/giveaway.test.mjs && node test/chain.test.mjs && python3 test/crosscheck.py build/crosscheck.json && node build.mjs && python3 test/page_test.py build/page-test"
   },
   "license": "MIT",
   "dependencies": {

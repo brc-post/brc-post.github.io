@@ -85,7 +85,7 @@ export function normalizeMessage(text) {
 }
 
 /** Strip what chat apps wrap around pasted blocks: code fences, quote marks, invisible characters. */
-function cleanPaste(text) {
+export function cleanPaste(text) {
   if (String(text).length > MAX_PASTE) throw new Error('This is far too long to be a signed message or a sealed note.');
   return String(text)
     .replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, '')
@@ -129,7 +129,7 @@ export function isCleanAddress(address) {
 }
 
 /** Strict signature check: clean address, canonical signature, no cofactor tricks. */
-function strictVerify(sigBytes, msgBytes, address) {
+export function strictVerify(sigBytes, msgBytes, address) {
   if (!isCleanAddress(address)) return false;
   try { return ed.verify(sigBytes, msgBytes, hexToBytes(address, 32), { zip215: false }); } catch { return false; }
 }
@@ -164,7 +164,7 @@ function signedBytes(address, message) {
   return enc.encode(`${SIGN_DOMAIN}Address: ${address}\nMessage:\n${message}`);
 }
 
-function checkMessageText(message) {
+export function checkMessageText(message) {
   if (!message) throw new Error('Write a message to sign.');
   if (message.length > MAX_SIGNED_CHARS) throw new Error(`Keep a signed message under ${MAX_SIGNED_CHARS.toLocaleString('en-US')} characters. This one has ${message.length.toLocaleString('en-US')}.`);
   if (/(BEGIN|END)\s*BRC/i.test(message)) throw new Error('A signed message cannot contain BRC Seal markers such as "BEGIN BRC".');
