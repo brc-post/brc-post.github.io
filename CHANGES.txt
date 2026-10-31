@@ -5,6 +5,14 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.6: sealing to an address that might not be a mailbox now asks first
+    (Patrick sealed a letter to a public coin address, which nobody can open).
+    An address from a mailbox link, your own mailbox, a test mailbox or the
+    giveaway mailbox goes straight through; a BRC Works coin address is
+    refused; any other bare address needs a tick: "They gave me this as their
+    BRC Post mailbox". Their mailbox link can be pasted straight into Seal to.
+    New: Ask for their mailbox (a ready message inviting them to get one).
+    A letter that won't open says whose mailbox it was sealed to, and why.
   - test.5: fixes from a Fable 5.1 review of test.4 (no High): after creating,
     the page no longer claims the backup downloaded; Save backup file is the
     main button until pressed. Opening a different mailbox doesn't silently

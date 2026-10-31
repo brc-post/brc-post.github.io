@@ -666,7 +666,7 @@ function readHash() {
     show('seal');
     try { history.replaceState(null, '', '#seal'); } catch { /* inside a viewer that can't change the address */ }
     if (EMBEDDED) { say('#seal-msg', 'A link tried to fill in the address, but BRC Post is open inside another page, so it was ignored. Paste the address yourself.', 'warn'); return; }
-    if (!$('#seal-to').value.trim()) { $('#seal-to').value = to[1].toLowerCase(); $('#seal-to').dispatchEvent(new Event('input')); }
+    if (!$('#seal-to').value.trim()) { sealToTrusted = to[1].toLowerCase(); $('#seal-to').value = sealToTrusted; $('#seal-to').dispatchEvent(new Event('input')); }
     say('#seal-msg', 'Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.', 'info');
     return;
   }
@@ -725,6 +725,7 @@ function routePaste(text, msgSel) {
     if (current && current !== to) {
       say('#seal-msg', `That link is for mailbox ${to.slice(0, 6)}…${to.slice(-4)}, but you're already writing to someone else. To write to the link's mailbox, clear the Seal to box and paste the link again.`, 'warn');
     } else {
+      sealToTrusted = to;
       $('#seal-to').value = to;
       $('#seal-to').dispatchEvent(new Event('input'));
       say('#seal-msg', 'Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.', 'info');
@@ -1084,6 +1085,19 @@ function updateSealCount() {
 }
 $('#seal-text').addEventListener('input', updateSealCount);
 
+// A letter can only be opened by a BRC Post mailbox. A bare 64-character address could just as well be a
+// coin address, and a letter sealed to one can never be read. So a bare address must come from a mailbox
+// link (or be a known mailbox), or the writer confirms it is a mailbox before sealing.
+let sealToTrusted = '';   // an address that came from a mailbox link
+function mailboxKnown(a) {
+  if (!a) return false;
+  if (a === sealToTrusted) return true;
+  const o = known.officialFor(a);
+  if (o && o.role === 'mailbox') return true;
+  if (testWallets && (a === testWallets.alice.address || a === testWallets.bob.address)) return true;
+  return !!(wallet && a === wallet.address) || !!(stored && a === stored.address);
+}
+
 /** The seal-to box takes an address or a pasted mailbox link. Returns the address to seal to. */
 function readSealTo() {
   const raw = $('#seal-to').value;
@@ -1094,7 +1108,10 @@ function readSealTo() {
     if (fake) throw new Error(fake);
     const o = a ? known.officialFor(a) : null;
     $('#seal-link-ok-wrap').hidden = true;
-    say('#seal-to-note', o ? `Sealing to the ${o.name}.` : a ? "Make sure this is their mailbox address (it's in their mailbox link), not a coin address: a coin address can't open letters." : '', 'info');
+    if (o && o.role !== 'mailbox') { $('#seal-mbx-ok-wrap').hidden = true; throw new Error(`That's the ${o.name}, a coin address, not a mailbox. Nobody could ever open a letter sealed to it.`); }
+    const sure = mailboxKnown(a);
+    $('#seal-mbx-ok-wrap').hidden = !a || sure;
+    say('#seal-to-note', o ? `Sealing to the ${o.name}.` : a && sure && a === sealToTrusted ? 'From their mailbox link.' : '', 'info');
     return raw;
   }
   const p = chain.parseChainSigned(raw);
@@ -1103,6 +1120,7 @@ function readSealTo() {
   const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
   if (fake) throw new Error(fake);
   $('#seal-link-ok-wrap').hidden = false;
+  $('#seal-mbx-ok-wrap').hidden = true;
   say('#seal-to-note', `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse → Check it first: anyone can write a link that names someone else's coin address.`, 'warn');
   return p.link.mailbox;
 }
@@ -1116,7 +1134,12 @@ function renderSealWho() {
   const name = nameFor(a);
   who.querySelector('.who-text').textContent = `${a.slice(0, 6)}…${a.slice(-6)}${name ? ` · ${name.replace('test mailbox ', 'test mailbox ')}` : ''}`;
 }
-$('#seal-to').addEventListener('input', () => { $('#seal-link-ok').checked = false; renderSealWho(); try { readSealTo(); } catch (e) { $('#seal-link-ok-wrap').hidden = true; say('#seal-to-note', e.message, 'bad'); } });
+$('#seal-to').addEventListener('input', () => {
+  // Their mailbox link pasted straight into the box: keep just the address, and remember it came from a link.
+  const m = $('#seal-to').value.trim().match(/^(?:https?:\/\/)?brc-post\.github\.io\/?#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&\S*)?$/);
+  if (m) { sealToTrusted = m[1].toLowerCase(); $('#seal-to').value = sealToTrusted; }
+});
+$('#seal-to').addEventListener('input', () => { $('#seal-link-ok').checked = false; $('#seal-mbx-ok').checked = false; renderSealWho(); try { readSealTo(); } catch (e) { $('#seal-link-ok-wrap').hidden = true; say('#seal-to-note', e.message, 'bad'); } });
 
 $('#btn-seal').addEventListener('click', () => {
   $('#seal-out').hidden = true;
@@ -1125,6 +1148,7 @@ $('#btn-seal').addEventListener('click', () => {
     const signIt = $('#seal-sign').checked && !!wallet;
     const to = readSealTo();
     if (chain.looksChainSigned($('#seal-to').value) && !$('#seal-link-ok').checked) throw new Error('Check the mailbox link on BRC Pulse → Check it first, then tick the box. An unchecked link could send this letter to someone pretending to be them.');
+    if (!chain.looksChainSigned($('#seal-to').value) && !mailboxKnown(seal.parseAddress(to)) && !$('#seal-mbx-ok').checked) throw new Error("Is this a BRC Post mailbox? Only a mailbox can open letters, and a coin address looks exactly the same. Tick the box if they gave you this as their mailbox, or tap Ask for their mailbox.");
     const n = seal.sealNote(to, $('#seal-text').value, signIt ? wallet : null);
     if (!chain.looksChainSigned($('#seal-to').value)) $('#seal-to').value = n.to;
     $('#seal-block').textContent = n.armored;
@@ -1145,6 +1169,17 @@ $('#btn-seal').addEventListener('click', () => {
     say('#seal-msg', e.message, 'bad');
     play($('#seal-msg'), 'anim-shake');
   }
+});
+
+// Asking someone for their mailbox: a friendly message to send them.
+const ASK_TEXT = "I'd like to send you a private letter that only you can open. Get a free BRC Post mailbox in a few seconds at https://brc-post.github.io (tap Get a mailbox), then send me your mailbox link.";
+$('#btn-ask-mailbox').addEventListener('click', async () => {
+  const b = $('#btn-ask-mailbox');
+  if (navigator.share) { try { await navigator.share({ text: ASK_TEXT }); return; } catch { return; } }
+  let ok = false;
+  try { await navigator.clipboard.writeText(ASK_TEXT); ok = true; } catch { /* clipboard blocked */ }
+  say('#seal-to-note', ok ? 'Copied a message asking for their mailbox link. Paste it to them in Discord, a text or email.' : `Send them this: ${ASK_TEXT}`, 'info');
+  play(b, 'flash');
 });
 
 // On phones, hand the sealed letter to the share sheet (Messages, Discord, Mail…). Nothing is sent by this page.
@@ -1174,7 +1209,7 @@ $('#btn-open').addEventListener('click', () => {
       const { to } = seal.parseSealed(text);
       const name = nameFor(to);
       if (testWallets && name) hint = ` It's for ${name.replace('test mailbox ', '')}: switch to ${name.replace('test mailbox ', '')} in your mailbox (top right).`;
-      else if (wallet && !testWallets && to !== wallet.address) hint = ` It was sealed to mailbox ${to.slice(0, 6)}…${to.slice(-4)}, not yours (${wallet.address.slice(0, 6)}…${wallet.address.slice(-4)}).`;
+      else if (wallet && !testWallets && to !== wallet.address) hint = ` It was sealed to ${to.slice(0, 6)}…${to.slice(-4)}, not to your mailbox (${wallet.address.slice(0, 6)}…${wallet.address.slice(-4)}). Only that mailbox can open it. If that's a coin address, nobody can: ask the sender to seal it to your mailbox link instead.`;
     } catch { /* the original error says enough */ }
     say('#open-msg', e.message + hint, 'bad');
     play($('#open-msg'), 'anim-shake');

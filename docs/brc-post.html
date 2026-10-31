@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-j55kBD6fYFfyssOo4MlgJitbmFVY0Yl06tfwEjQhAsw='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-GDLObJEz6eKhBfBdOIfXiQ5fD/T9l0VzWJndHQYToDI='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -637,10 +637,12 @@ footer b { font-weight: 600; color: var(--ink-2); }
     <section class="screen" id="p-seal" data-screen="seal" hidden>
       <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/><circle cx="12" cy="14" r="2.3" fill="currentColor" stroke="none"/></svg></span><h2 tabindex="-1">Seal a letter</h2></div>
-      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the key you seal it to can read it.</p>
+      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the mailbox you seal it to can open it.</p>
       <div class="card">
-        <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Their mailbox address, or paste their mailbox link"></textarea></label>
+        <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste their mailbox link"></textarea></label>
         <p class="seal-who" id="seal-to-who" hidden><span class="idc" aria-hidden="true"></span><span class="who-text mono"></span></p>
+        <label class="check" id="seal-mbx-ok-wrap" hidden><input type="checkbox" id="seal-mbx-ok"><span>They gave me this as their <strong>BRC Post mailbox</strong>. (A coin address looks exactly the same, but a letter sealed to one can never be opened.)</span></label>
+        <div class="chips"><button type="button" class="chip" id="btn-ask-mailbox">Ask for their mailbox</button></div>
         <p class="msg" id="seal-to-note" role="status" aria-live="polite"></p>
         <label class="check" id="seal-link-ok-wrap" hidden><input type="checkbox" id="seal-link-ok"><span>I checked this link on <strong>BRC Pulse → Check it</strong>, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)</span></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
@@ -872,7 +874,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.6.0-test.5</span>, build <span class="mono">8f9e6404</span>. Works offline. This page sends nothing anywhere.</p>
+      <p>BRC Post <span id="app-version">0.6.0-test.6</span>, build <span class="mono">1832ce6c</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -11633,7 +11635,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         return;
       }
       if (!$("#seal-to").value.trim()) {
-        $("#seal-to").value = to[1].toLowerCase();
+        sealToTrusted = to[1].toLowerCase();
+        $("#seal-to").value = sealToTrusted;
         $("#seal-to").dispatchEvent(new Event("input"));
       }
       say("#seal-msg", "Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.", "info");
@@ -11695,6 +11698,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       if (current2 && current2 !== to) {
         say("#seal-msg", `That link is for mailbox ${to.slice(0, 6)}\u2026${to.slice(-4)}, but you're already writing to someone else. To write to the link's mailbox, clear the Seal to box and paste the link again.`, "warn");
       } else {
+        sealToTrusted = to;
         $("#seal-to").value = to;
         $("#seal-to").dispatchEvent(new Event("input"));
         say("#seal-msg", "Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.", "info");
@@ -12112,6 +12116,15 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     else delete c.dataset.over;
   }
   $("#seal-text").addEventListener("input", updateSealCount);
+  var sealToTrusted = "";
+  function mailboxKnown(a) {
+    if (!a) return false;
+    if (a === sealToTrusted) return true;
+    const o = officialFor(a);
+    if (o && o.role === "mailbox") return true;
+    if (testWallets && (a === testWallets.alice.address || a === testWallets.bob.address)) return true;
+    return !!(wallet && a === wallet.address) || !!(stored && a === stored.address);
+  }
   function readSealTo() {
     const raw = $("#seal-to").value;
     if (!looksChainSigned(raw)) {
@@ -12124,7 +12137,13 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       if (fake2) throw new Error(fake2);
       const o = a ? officialFor(a) : null;
       $("#seal-link-ok-wrap").hidden = true;
-      say("#seal-to-note", o ? `Sealing to the ${o.name}.` : a ? "Make sure this is their mailbox address (it's in their mailbox link), not a coin address: a coin address can't open letters." : "", "info");
+      if (o && o.role !== "mailbox") {
+        $("#seal-mbx-ok-wrap").hidden = true;
+        throw new Error(`That's the ${o.name}, a coin address, not a mailbox. Nobody could ever open a letter sealed to it.`);
+      }
+      const sure = mailboxKnown(a);
+      $("#seal-mbx-ok-wrap").hidden = !a || sure;
+      say("#seal-to-note", o ? `Sealing to the ${o.name}.` : a && sure && a === sealToTrusted ? "From their mailbox link." : "", "info");
       return raw;
     }
     const p = parseChainSigned(raw);
@@ -12133,6 +12152,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
     if (fake) throw new Error(fake);
     $("#seal-link-ok-wrap").hidden = false;
+    $("#seal-mbx-ok-wrap").hidden = true;
     say("#seal-to-note", `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}\u2026${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse \u2192 Check it first: anyone can write a link that names someone else's coin address.`, "warn");
     return p.link.mailbox;
   }
@@ -12151,7 +12171,15 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     who.querySelector(".who-text").textContent = `${a.slice(0, 6)}\u2026${a.slice(-6)}${name ? ` \xB7 ${name.replace("test mailbox ", "test mailbox ")}` : ""}`;
   }
   $("#seal-to").addEventListener("input", () => {
+    const m = $("#seal-to").value.trim().match(/^(?:https?:\/\/)?brc-post\.github\.io\/?#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&\S*)?$/);
+    if (m) {
+      sealToTrusted = m[1].toLowerCase();
+      $("#seal-to").value = sealToTrusted;
+    }
+  });
+  $("#seal-to").addEventListener("input", () => {
     $("#seal-link-ok").checked = false;
+    $("#seal-mbx-ok").checked = false;
     renderSealWho();
     try {
       readSealTo();
@@ -12167,6 +12195,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       const signIt = $("#seal-sign").checked && !!wallet;
       const to = readSealTo();
       if (looksChainSigned($("#seal-to").value) && !$("#seal-link-ok").checked) throw new Error("Check the mailbox link on BRC Pulse \u2192 Check it first, then tick the box. An unchecked link could send this letter to someone pretending to be them.");
+      if (!looksChainSigned($("#seal-to").value) && !mailboxKnown(parseAddress(to)) && !$("#seal-mbx-ok").checked) throw new Error("Is this a BRC Post mailbox? Only a mailbox can open letters, and a coin address looks exactly the same. Tick the box if they gave you this as their mailbox, or tap Ask for their mailbox.");
       const n = sealNote(to, $("#seal-text").value, signIt ? wallet : null);
       if (!looksChainSigned($("#seal-to").value)) $("#seal-to").value = n.to;
       $("#seal-block").textContent = n.armored;
@@ -12187,6 +12216,26 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       say("#seal-msg", e.message, "bad");
       play($("#seal-msg"), "anim-shake");
     }
+  });
+  var ASK_TEXT = "I'd like to send you a private letter that only you can open. Get a free BRC Post mailbox in a few seconds at https://brc-post.github.io (tap Get a mailbox), then send me your mailbox link.";
+  $("#btn-ask-mailbox").addEventListener("click", async () => {
+    const b = $("#btn-ask-mailbox");
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: ASK_TEXT });
+        return;
+      } catch {
+        return;
+      }
+    }
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(ASK_TEXT);
+      ok = true;
+    } catch {
+    }
+    say("#seal-to-note", ok ? "Copied a message asking for their mailbox link. Paste it to them in Discord, a text or email." : `Send them this: ${ASK_TEXT}`, "info");
+    play(b, "flash");
   });
   $("#btn-seal-send").addEventListener("click", async () => {
     const text = $("#seal-block").textContent;
@@ -12218,7 +12267,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         const { to } = parseSealed(text);
         const name = nameFor(to);
         if (testWallets && name) hint2 = ` It's for ${name.replace("test mailbox ", "")}: switch to ${name.replace("test mailbox ", "")} in your mailbox (top right).`;
-        else if (wallet && !testWallets && to !== wallet.address) hint2 = ` It was sealed to mailbox ${to.slice(0, 6)}\u2026${to.slice(-4)}, not yours (${wallet.address.slice(0, 6)}\u2026${wallet.address.slice(-4)}).`;
+        else if (wallet && !testWallets && to !== wallet.address) hint2 = ` It was sealed to ${to.slice(0, 6)}\u2026${to.slice(-4)}, not to your mailbox (${wallet.address.slice(0, 6)}\u2026${wallet.address.slice(-4)}). Only that mailbox can open it. If that's a coin address, nobody can: ask the sender to seal it to your mailbox link instead.`;
       } catch {
       }
       say("#open-msg", e.message + hint2, "bad");
