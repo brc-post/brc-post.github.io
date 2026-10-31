@@ -2,7 +2,7 @@
 
 Usage: python3 test/page_test.py <output-dir-for-screenshots>
 """
-import json, os, pathlib, sys
+import json, re, os, pathlib, sys
 from playwright.sync_api import sync_playwright, expect
 
 out = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'build/page-test')
@@ -651,7 +651,8 @@ with sync_playwright() as pw:
     saved = json.loads(pathlib.Path(dl.value.path()).read_text())
     assert saved['type'] == 'brc-vault-mailbox-key' and saved['address'] == my_addr
     expect(mb.locator('#share-url')).to_have_text(f'https://brc-post.github.io/#to={my_addr}')
-    expect(mb.locator('#backup-msg')).to_contain_text('backup was saved')
+    expect(mb.locator('#backup-msg')).to_contain_text("Don't see it? Press Save backup file")
+    expect(mb.locator('#btn-backup')).to_have_class(re.compile('btn-primary'))  # saving the backup is the next step
     stored_txt = mb.evaluate("localStorage.getItem('brc-post:mailbox')")
     assert my_addr in stored_txt and 'privateKey' not in stored_txt and json.loads(stored_txt)['ciphertext'] == saved['ciphertext'], 'only the locked backup is remembered'
     ok('Create my mailbox: one password, the locked backup downloads by itself, the device remembers only the locked copy, and the share link is ready')
@@ -679,6 +680,7 @@ with sync_playwright() as pw:
     mb.goto(page_url)
     mb.fill('#home-paste', my_addr)
     expect(mb.locator('#home-msg')).to_contain_text('mailbox address, which is public')
+    expect(mb.locator('#home-paste')).to_have_value('')  # in case it was a private key, it doesn't stay on screen
     expect(mb.locator('#wallet-sheet[open]')).to_have_count(0)
     mb.fill('#home-paste', 'https://brc-post.github.io/#to=' + my_addr)
     expect(mb.locator('#seal-to')).to_have_value(my_addr)
@@ -694,6 +696,12 @@ with sync_playwright() as pw:
     nd.reload()
     expect(nd.locator('.wallet-chip [data-wallet-sub]')).to_have_text('Locked')
     nd.click('.wallet-chip')
+    # Opening a different mailbox here doesn't silently replace the remembered one.
+    nd.click('#btn-other')
+    nd.locator('#wallet-file').set_input_files({'name': 'brc-mailbox-key.json', 'mimeType': 'application/json', 'buffer': fx['mailboxKey'].encode()})
+    expect(nd.locator('#load-remember')).not_to_be_checked()
+    expect(nd.locator('#load-remember-text')).to_contain_text('remembers mailbox')
+    nd.click('#btn-load-cancel')
     nd.click('#btn-remove')
     expect(nd.locator('#unlock-msg')).to_contain_text('again to confirm')
     expect(nd.locator('#mb-locked')).to_be_visible()

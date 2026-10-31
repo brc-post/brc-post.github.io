@@ -5,6 +5,14 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.5: fixes from a Fable 5.1 review of test.4 (no High): after creating,
+    the page no longer claims the backup downloaded; Save backup file is the
+    main button until pressed. Opening a different mailbox doesn't silently
+    replace the remembered one. Stored data is checked before it is parsed.
+    A pasted mailbox link never replaces an address you are already writing
+    to. A pasted 64-character code is cleared from the box. Inside another
+    page, letters and backups explain why they can't open. Stale steps are
+    cleared when the panel closes. "Not on a shared or public computer".
   - test.4: "it just works" mailbox (Patrick, Oct 31). Create my mailbox makes
     one right here: choose a password, the locked backup downloads by itself,
     and this device can remember the LOCKED copy, so next time you only type

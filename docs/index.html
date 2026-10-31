@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-9iwNkqFauEEuvZ/KheO5Adu3DlCcrd9ZPouXwIKe5xI='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-j55kBD6fYFfyssOo4MlgJitbmFVY0Yl06tfwEjQhAsw='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -872,7 +872,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.6.0-test.4</span>, build <span class="mono">f62c0d92</span>. Works offline. This page sends nothing anywhere.</p>
+      <p>BRC Post <span id="app-version">0.6.0-test.5</span>, build <span class="mono">8f9e6404</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -912,7 +912,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Type it again</span><input id="new-confirm" type="password" autocomplete="new-password" spellcheck="false"></label>
           <p class="msg" id="new-hint" role="status" aria-live="polite"></p>
           <label class="check"><input type="checkbox" id="new-understand"><span>I understand: without this password my mailbox can't be opened, and nobody can reset it.</span></label>
-          <label class="check"><input type="checkbox" id="new-remember" checked><span>Remember my mailbox on this device, so next time I only type my password.</span></label>
+          <label class="check"><input type="checkbox" id="new-remember" checked><span>Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.</span></label>
           <div class="actions"><button class="btn btn-primary" id="btn-create-go" type="button" disabled>Create my mailbox</button><button class="btn btn-secondary" id="btn-create-cancel" type="button">Cancel</button></div>
           <p class="msg" id="create-msg" role="status" aria-live="polite"></p>
         </div>
@@ -951,7 +951,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <button class="text-btn" id="btn-paste-code" type="button">I have the printed paper code instead</button>
           <label class="field" id="paste-field" hidden><span>Paper code (starts with BRCMBOX1)</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
           <label class="field" id="password-field" hidden><span>Password</span><input id="wallet-password" type="password" autocomplete="current-password" spellcheck="false"></label>
-          <label class="check" id="load-remember-wrap" hidden><input type="checkbox" id="load-remember" checked><span>Remember my mailbox on this device, so next time I only type my password.</span></label>
+          <label class="check" id="load-remember-wrap" hidden><input type="checkbox" id="load-remember" checked><span id="load-remember-text">Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.</span></label>
           <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Unlock</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
           <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
         </div>
@@ -10997,6 +10997,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   var openBackup = null;
   var afterUnlock = null;
   var pane = "auto";
+  var backupNudge = false;
   function randomWallet() {
     const b = new Uint8Array(32);
     crypto.getRandomValues(b);
@@ -11021,7 +11022,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     try {
       const t = localStorage.getItem(STORE);
       if (!t || t.length > 2e4) return null;
+      if (!/"type"\s*:\s*"brc-vault-mailbox-key"/.test(t) || /privateKey/i.test(t)) return null;
       const id = identifyInput(t);
+      if (id.wallet) wipeWallet(id.wallet);
       if (id.kind === "vault-backup" && id.backup.type === MAILBOX_TYPE) return id.backup;
     } catch {
     }
@@ -11075,6 +11078,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     testWallets = null;
     pendingBackup = null;
     openBackup = null;
+    backupNudge = false;
   }
   var shortAddr = (a) => `${a.slice(0, 4)} ${a.slice(4, 8)} \u2026 ${a.slice(-8, -4)} ${a.slice(-4)}`;
   function mailboxMode() {
@@ -11094,6 +11098,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     $("#loader").hidden = pane !== "load";
     $("#share-box").hidden = mode !== "open";
     $("#btn-backup").hidden = mode !== "open" || !openBackup;
+    $("#btn-backup").classList.toggle("btn-primary", backupNudge);
+    $("#btn-backup").classList.toggle("btn-secondary", !backupNudge);
     $("#btn-link").hidden = !wallet;
     $("#btn-forget").textContent = mode === "test" ? "Stop testing" : stored && openBackup && stored.address === wallet?.address ? "Lock" : "Close mailbox";
     $("#who").hidden = !testWallets;
@@ -11160,6 +11166,11 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   }
   for (const b of $$("[data-wallet]")) b.addEventListener("click", openSheet);
   $("#btn-sheet-close").addEventListener("click", closeSheet);
+  sheet.addEventListener("close", () => {
+    afterUnlock = null;
+    removeAsked = false;
+    if (!wallet) say("#unlock-msg", "");
+  });
   $("#btn-sheet-done").addEventListener("click", closeSheet);
   sheet.addEventListener("cancel", (e) => {
     e.preventDefault();
@@ -11298,7 +11309,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       useWallet(w, { backup, keepOpen: true });
       w = null;
       clearCreate();
-      say("#backup-msg", `Your mailbox is ready. Its backup was saved to your downloads as ${backupName(backup)}. Keep it somewhere safe: it's how you get back in on another device${remembered ? " or if this browser is cleared" : ""}.`, "good");
+      backupNudge = true;
+      renderWallet();
+      say("#backup-msg", `Your mailbox is ready. Its backup file, ${backupName(backup)}, should be in your downloads. Don't see it? Press Save backup file now. ${remembered ? "Keep the file somewhere safe: it's how you get back in on another device, or if this browser is cleared." : "This device won't remember your mailbox, so that file is the only way back in."}`, remembered ? "good" : "warn");
     } catch (e) {
       if (gen === loadGen) say("#create-msg", e.message, "bad");
     } finally {
@@ -11309,6 +11322,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   });
   var unlocking = false;
   $("#btn-unlock").addEventListener("click", async () => {
+    removeAsked = false;
     if (unlocking || !stored || realKeysOff()) return;
     const pw = $("#unlock-password").value;
     if (!pw) {
@@ -11362,6 +11376,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   $("#btn-backup").addEventListener("click", () => {
     if (!openBackup) return;
     saveBackupFile(openBackup);
+    backupNudge = false;
+    renderWallet();
     say("#backup-msg", `Saved ${backupName(openBackup)} to your downloads. It is locked with your password; keep a copy somewhere safe.`, "good");
   });
   $("#btn-share").addEventListener("click", async () => {
@@ -11410,6 +11426,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       pendingBackup = id.backup;
       $("#password-field").hidden = false;
       $("#load-remember-wrap").hidden = false;
+      const other = stored && stored.address !== id.backup.address;
+      $("#load-remember").checked = !other;
+      $("#load-remember-text").textContent = other ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one is then forgotten here).` : "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.";
       $("#wallet-password").focus();
       say("#load-msg", `Mailbox ${shortAddr(id.backup.address)} found. Type its password, then press Unlock.`, "info");
       return null;
@@ -11631,7 +11650,11 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       $("#btn-open").click();
       return;
     }
-    if (stored || !EMBEDDED) {
+    if (realKeysOff()) {
+      say("#open-msg", "BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab to read this letter.", "bad");
+      return;
+    }
+    {
       afterUnlock = () => {
         go("open");
         $("#btn-open").click();
@@ -11651,7 +11674,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       return true;
     }
     const flat = trimmed.replace(/[​-‍⁠﻿­\s]/g, "");
-    const link = trimmed.match(/#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&|\s|$)/);
+    const link = trimmed.match(/(?:^|brc-post\.github\.io\/?)#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&|\s|$)/);
     if (/BEGIN BRC SIGNED MESSAGE|BEGIN BRC CHAIN SIGNED MESSAGE/i.test(t)) {
       $("#verify-text").value = t;
       go("verify");
@@ -11666,13 +11689,23 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       runCompare();
       if (!cmpFp) say("#st-cmp-msg", "This is a postmark receipt. Choose the file it belongs to, to check they match.", "info");
     } else if (link) {
+      const to = link[1].toLowerCase();
+      const current2 = $("#seal-to").value.trim().toLowerCase();
       go("seal");
-      $("#seal-to").value = link[1].toLowerCase();
-      $("#seal-to").dispatchEvent(new Event("input"));
-      say("#seal-msg", "Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.", "info");
+      if (current2 && current2 !== to) {
+        say("#seal-msg", `That link is for mailbox ${to.slice(0, 6)}\u2026${to.slice(-4)}, but you're already writing to someone else. To write to the link's mailbox, clear the Seal to box and paste the link again.`, "warn");
+      } else {
+        $("#seal-to").value = to;
+        $("#seal-to").dispatchEvent(new Event("input"));
+        say("#seal-msg", "Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.", "info");
+      }
       $("#seal-text").focus();
     } else if (/"type"\s*:\s*"brc-vault-mailbox-key"/i.test(t) || /^BRCMBOX1/i.test(flat)) {
       say(msgSel, "");
+      if (realKeysOff()) {
+        say(msgSel, "BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab.", "bad");
+        return true;
+      }
       if (msgSel !== "#load-msg") {
         pane = "load";
         clearLoader();
@@ -11682,8 +11715,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       readWalletText(t).catch((e) => say("#load-msg", e.message, "bad"));
       return true;
     } else if (/^(0x)?[0-9a-f]{64}$/i.test(flat)) {
-      say(msgSel, "That's 64 letters and numbers: a mailbox address, which is public. To write to it, use Seal a letter. If it's a private key, don't paste it anywhere: BRC Post never needs one.", "info");
-      return false;
+      say(msgSel, "That's 64 letters and numbers: a mailbox address, which is public. To write to it, use Seal a letter. If it's a private key, don't paste it anywhere: BRC Post never needs one. It was cleared.", "info");
+      return true;
     } else if (/BROWSERCOIN-WALLET|PRIVATEKEY|^BRCKEY1|"type"\s*:\s*"brc-vault-backup"|^BRCVAULT1/i.test(flat) || looksLikeRecoveryWords(t)) {
       say(msgSel, COIN_KEY, "bad");
       return false;

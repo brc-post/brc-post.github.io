@@ -97,6 +97,7 @@ let loadGen = 0;            // bumps on cancel/lock so a slow unlock can't load 
 let openBackup = null;      // the locked backup of the open mailbox (for Save backup file)
 let afterUnlock = null;     // what to do once the mailbox opens (a pasted letter)
 let pane = 'auto';          // which part of the mailbox panel shows: auto | create | load
+let backupNudge = false;    // just created: Save backup file is the main button until pressed
 
 function randomWallet() {
   const b = new Uint8Array(32);
@@ -124,7 +125,9 @@ function loadStored() {
   try {
     const t = localStorage.getItem(STORE);
     if (!t || t.length > 20000) return null;
+    if (!/"type"\s*:\s*"brc-vault-mailbox-key"/.test(t) || /privateKey/i.test(t)) return null;
     const id = vault.identifyInput(t);
+    if (id.wallet) vault.wipeWallet(id.wallet);
     if (id.kind === 'vault-backup' && id.backup.type === vault.MAILBOX_TYPE) return id.backup;
   } catch { /* unreadable or storage blocked */ }
   return null;
@@ -168,6 +171,7 @@ function forgetEverything() {
   testWallets = null;
   pendingBackup = null;
   openBackup = null;
+  backupNudge = false;
 }
 
 const shortAddr = (a) => `${a.slice(0, 4)} ${a.slice(4, 8)} … ${a.slice(-8, -4)} ${a.slice(-4)}`;
@@ -190,6 +194,8 @@ function renderWallet() {
   $('#loader').hidden = pane !== 'load';
   $('#share-box').hidden = mode !== 'open';
   $('#btn-backup').hidden = mode !== 'open' || !openBackup;
+  $('#btn-backup').classList.toggle('btn-primary', backupNudge);
+  $('#btn-backup').classList.toggle('btn-secondary', !backupNudge);
   $('#btn-link').hidden = !wallet;
   $('#btn-forget').textContent = mode === 'test' ? 'Stop testing' : stored && openBackup && stored.address === wallet?.address ? 'Lock' : 'Close mailbox';
   $('#who').hidden = !testWallets;
@@ -264,6 +270,7 @@ function closeSheet() {
 
 for (const b of $$('[data-wallet]')) b.addEventListener('click', openSheet);
 $('#btn-sheet-close').addEventListener('click', closeSheet);
+sheet.addEventListener('close', () => { afterUnlock = null; removeAsked = false; if (!wallet) say('#unlock-msg', ''); });
 $('#btn-sheet-done').addEventListener('click', closeSheet);
 sheet.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(); });
 // A tap on the dimmed backdrop closes it. The dialog box itself is the backdrop's hit target.
@@ -381,7 +388,9 @@ $('#btn-create-go').addEventListener('click', async () => {
     useWallet(w, { backup, keepOpen: true });
     w = null; // now the open mailbox
     clearCreate();
-    say('#backup-msg', `Your mailbox is ready. Its backup was saved to your downloads as ${backupName(backup)}. Keep it somewhere safe: it's how you get back in on another device${remembered ? ' or if this browser is cleared' : ''}.`, 'good');
+    backupNudge = true;
+    renderWallet();
+    say('#backup-msg', `Your mailbox is ready. Its backup file, ${backupName(backup)}, should be in your downloads. Don't see it? Press Save backup file now. ${remembered ? "Keep the file somewhere safe: it's how you get back in on another device, or if this browser is cleared." : "This device won't remember your mailbox, so that file is the only way back in."}`, remembered ? 'good' : 'warn');
   } catch (e) {
     if (gen === loadGen) say('#create-msg', e.message, 'bad');
   } finally {
@@ -394,6 +403,7 @@ $('#btn-create-go').addEventListener('click', async () => {
 // --- Unlock the mailbox this device remembers.
 let unlocking = false;
 $('#btn-unlock').addEventListener('click', async () => {
+  removeAsked = false;
   if (unlocking || !stored || realKeysOff()) return;
   const pw = $('#unlock-password').value;
   if (!pw) { say('#unlock-msg', 'Type your mailbox password.', 'bad'); return; }
@@ -436,6 +446,8 @@ $('#btn-remove').addEventListener('click', () => {
 $('#btn-backup').addEventListener('click', () => {
   if (!openBackup) return;
   saveBackupFile(openBackup);
+  backupNudge = false;
+  renderWallet();
   say('#backup-msg', `Saved ${backupName(openBackup)} to your downloads. It is locked with your password; keep a copy somewhere safe.`, 'good');
 });
 
@@ -482,6 +494,11 @@ async function readWalletText(text) {
     pendingBackup = id.backup;
     $('#password-field').hidden = false;
     $('#load-remember-wrap').hidden = false;
+    const other = stored && stored.address !== id.backup.address;
+    $('#load-remember').checked = !other;
+    $('#load-remember-text').textContent = other
+      ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one is then forgotten here).`
+      : 'Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.';
     $('#wallet-password').focus();
     say('#load-msg', `Mailbox ${shortAddr(id.backup.address)} found. Type its password, then press Unlock.`, 'info');
     return null;
@@ -669,7 +686,8 @@ const looksLikeRecoveryWords = (t) => vault.looksLikeWords(t) && String(t).trim(
 /** Open a sealed letter now if the mailbox is open; otherwise ask to unlock, then open it. */
 function openPastedLetter() {
   if (wallet) { $('#btn-open').click(); return; }
-  if (stored || !EMBEDDED) {
+  if (realKeysOff()) { say('#open-msg', 'BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab to read this letter.', 'bad'); return; }
+  {
     afterUnlock = () => { go('open'); $('#btn-open').click(); };
     say('#open-msg', stored ? 'This is a sealed letter. Unlock your mailbox to open it.' : 'This is a sealed letter. Open your mailbox to read it.', 'info');
     pane = 'auto';
@@ -685,7 +703,7 @@ function routePaste(text, msgSel) {
   const trimmed = t.trim();
   if (!trimmed) { say(msgSel, ''); return true; }
   const flat = trimmed.replace(/[​-‍⁠﻿­\s]/g, '');
-  const link = trimmed.match(/#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&|\s|$)/);
+  const link = trimmed.match(/(?:^|brc-post\.github\.io\/?)#(?:[^#\s]*&)?to=([0-9a-fA-F]{64})(?:&|\s|$)/);
   if (/BEGIN BRC SIGNED MESSAGE|BEGIN BRC CHAIN SIGNED MESSAGE/i.test(t)) {
     $('#verify-text').value = t;
     go('verify');
@@ -701,20 +719,27 @@ function routePaste(text, msgSel) {
     if (!cmpFp) say('#st-cmp-msg', 'This is a postmark receipt. Choose the file it belongs to, to check they match.', 'info');
   } else if (link) {
     // Someone's mailbox link: start a letter to them.
+    const to = link[1].toLowerCase();
+    const current = $('#seal-to').value.trim().toLowerCase();
     go('seal');
-    $('#seal-to').value = link[1].toLowerCase();
-    $('#seal-to').dispatchEvent(new Event('input'));
-    say('#seal-msg', 'Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.', 'info');
+    if (current && current !== to) {
+      say('#seal-msg', `That link is for mailbox ${to.slice(0, 6)}…${to.slice(-4)}, but you're already writing to someone else. To write to the link's mailbox, clear the Seal to box and paste the link again.`, 'warn');
+    } else {
+      $('#seal-to').value = to;
+      $('#seal-to').dispatchEvent(new Event('input'));
+      say('#seal-msg', 'Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.', 'info');
+    }
     $('#seal-text').focus();
   } else if (/"type"\s*:\s*"brc-vault-mailbox-key"/i.test(t) || /^BRCMBOX1/i.test(flat)) {
     // A mailbox backup: open it in the mailbox panel, where it asks for the password.
     say(msgSel, '');
+    if (realKeysOff()) { say(msgSel, 'BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab.', 'bad'); return true; }
     if (msgSel !== '#load-msg') { pane = 'load'; clearLoader(); renderWallet(); openSheet(); }
     readWalletText(t).catch((e) => say('#load-msg', e.message, 'bad'));
     return true;
   } else if (/^(0x)?[0-9a-f]{64}$/i.test(flat)) {
-    say(msgSel, "That's 64 letters and numbers: a mailbox address, which is public. To write to it, use Seal a letter. If it's a private key, don't paste it anywhere: BRC Post never needs one.", 'info');
-    return false;
+    say(msgSel, "That's 64 letters and numbers: a mailbox address, which is public. To write to it, use Seal a letter. If it's a private key, don't paste it anywhere: BRC Post never needs one. It was cleared.", 'info');
+    return true;
   } else if (/BROWSERCOIN-WALLET|PRIVATEKEY|^BRCKEY1|"type"\s*:\s*"brc-vault-backup"|^BRCVAULT1/i.test(flat) || looksLikeRecoveryWords(t)) {
     say(msgSel, COIN_KEY, 'bad');
     return false;

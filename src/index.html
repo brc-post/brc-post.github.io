@@ -909,7 +909,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Type it again</span><input id="new-confirm" type="password" autocomplete="new-password" spellcheck="false"></label>
           <p class="msg" id="new-hint" role="status" aria-live="polite"></p>
           <label class="check"><input type="checkbox" id="new-understand"><span>I understand: without this password my mailbox can't be opened, and nobody can reset it.</span></label>
-          <label class="check"><input type="checkbox" id="new-remember" checked><span>Remember my mailbox on this device, so next time I only type my password.</span></label>
+          <label class="check"><input type="checkbox" id="new-remember" checked><span>Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.</span></label>
           <div class="actions"><button class="btn btn-primary" id="btn-create-go" type="button" disabled>Create my mailbox</button><button class="btn btn-secondary" id="btn-create-cancel" type="button">Cancel</button></div>
           <p class="msg" id="create-msg" role="status" aria-live="polite"></p>
         </div>
@@ -948,7 +948,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <button class="text-btn" id="btn-paste-code" type="button">I have the printed paper code instead</button>
           <label class="field" id="paste-field" hidden><span>Paper code (starts with BRCMBOX1)</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
           <label class="field" id="password-field" hidden><span>Password</span><input id="wallet-password" type="password" autocomplete="current-password" spellcheck="false"></label>
-          <label class="check" id="load-remember-wrap" hidden><input type="checkbox" id="load-remember" checked><span>Remember my mailbox on this device, so next time I only type my password.</span></label>
+          <label class="check" id="load-remember-wrap" hidden><input type="checkbox" id="load-remember" checked><span id="load-remember-text">Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.</span></label>
           <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Unlock</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
           <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
         </div>
