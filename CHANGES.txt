@@ -10,6 +10,9 @@ Test builds carry "-test.N" and are never published. BRC Seal is not live.
   - Sign on the chain: prove a coin address with the official app's
     hash-locked payment, no key pasted anywhere.
   - Link a mailbox to a coin address, on the chain.
+  - Official BRC Works addresses by name (src/official.js, shared with
+    BRC Pulse); look-alikes are flagged, and refused as a seal-to address.
+  - Release messages for postmarking every published file.
   - The version is shown in the footer next to the build code.
 
 0.4.0

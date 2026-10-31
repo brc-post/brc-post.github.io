@@ -1,5 +1,5 @@
 // Builds a simulated chain with one stamp lock in it, for testing BRC Pulse's "Check a stamp".
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import * as c from '../build/seal-core.mjs';
 const rand = (n = 32) => { const b = new Uint8Array(n); crypto.getRandomValues(b); return c.bytesToHex(b); };
 const be32 = (n) => new Uint8Array([(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255]);
@@ -61,6 +61,19 @@ const chainEdited = chainSigned.replace('Discord', 'Discord server');
 const chainLink = c.chainSignedText(lcs);
 const chainBadLink = chainLink.replace(`Mailbox: ${mailbox.address}`, `Mailbox: ${other.address}`);
 const chainCopy = c.chainSignedText(copyCs);
+// Release postmarks: a genuine one from the release address, and a fake one signed by someone else.
+const rel = c.walletFromPrivateKeyHex(rand());
+const relFile = new TextEncoder().encode('<!doctype html><title>BRC Vault</title>genuine 1.1.0');
+const fakeFile = new TextEncoder().encode('<!doctype html><title>BRC Vault</title>tampered');
+const sha256hex = (b) => c.fingerprint(b);
+const relCs = c.newChainSignature({ address: rel.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '1.1.0', file: 'brc-vault.html', sha256: sha256hex(relFile) }) });
+const fakeCs = c.newChainSignature({ address: other.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '1.1.1', file: 'brc-vault.html', sha256: sha256hex(fakeFile) }) });
+blocks[92522] = block(92522, [mk(rel, c.chainScriptHash(relCs), 13)]);
+blocks[92523] = block(92523, [mk(other, c.chainScriptHash(fakeCs), 14)]);
+mkdirSync('build/pulse-releases', { recursive: true });
+writeFileSync('build/pulse-releases/brc-vault-1.1.0.txt', c.chainSignedText(relCs));
+writeFileSync('build/pulse-releases/brc-vault-1.1.1.txt', c.chainSignedText(fakeCs));
+writeFileSync('build/pulse-official.json', JSON.stringify([{ address: rel.address, name: 'BRC Works release address', role: 'release' }]));
 const badDrand = c.receiptText(st0, { lockId: c.fingerprint(lock) }).replace(`Drand: ${beacon.round}`, `Drand: ${beacon.round + 1}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, chainSigned, chainEdited, chainLink, chainBadLink, chainCopy, chainMessage: cs.message, linkMailbox: mailbox.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, chainSigned, chainEdited, chainLink, chainBadLink, chainCopy, chainMessage: cs.message, linkMailbox: mailbox.address, relFileHex: c.bytesToHex(relFile), fakeFileHex: c.bytesToHex(fakeFile), relAddress: rel.address, lookalike: rel.address.slice(0, 6) + rand().slice(6), lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');
