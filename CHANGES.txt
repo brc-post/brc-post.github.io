@@ -5,6 +5,14 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Seal is not live.
 
 0.5.0 (in progress)
+  - Fixes from the Fable 5.1 security review (Oct 31): every purpose has
+    its own phrase prefix (files, messages, links, releases, giveaway lists);
+    only the signer's own lock counts; locks with wrong signatures are
+    refused; chain-signed messages and links are shown as not checked until
+    BRC Pulse checks them, and sealing to a link needs a confirmation;
+    warnings against locking someone else's phrase; coin material refused
+    before it is parsed; address picture from SHA-256; more look-alikes.
+  - Giveaway: sign the entry list and draw round on the chain before the draw.
   - No coin keys: BRC Seal stops taking wallet files and private keys.
     Mailbox keys (from BRC Vault or made here) open letters and sign.
   - Sign on the chain: prove a coin address with the official app's
