@@ -47,6 +47,20 @@ const fakeReceiptNoBlock = c.receiptText(st2, { lockId: c.fingerprint(lock2) });
 // The receipt's Owner line differs from the address the app actually locked to.
 const other = c.walletFromPrivateKeyHex(rand());
 const wrongOwner = receipt.replace(`Owner: ${me.address}`, `Owner: ${other.address}`);
+// Chain-signed messages (BRC Seal 0.5): one signed by `me`, a mailbox link, and a copy someone
+// else locked to the same script, which must not count as `me` signing.
+const mk = (w, sh, n) => { const p = cat(be32(0x4c4f434b), be32(0xc01dfeed), c.hexToBytes(w.address), be64(100000n), be64(1000n), be32(n), c.hexToBytes(sh)); return cat(p, c.ed25519.sign(p, w.privateKey)); };
+const cs = c.newChainSignature({ address: me.address, text: "I'm pb-hash on the BrowserCoin Discord. Oct 31, 2026." });
+const mailbox = c.walletFromPrivateKeyHex(rand());
+const lcs = c.newChainSignature({ address: me.address, text: c.linkMessage(mailbox, me.address) });
+blocks[92520] = block(92520, [mk(me, c.chainScriptHash(cs), 10), mk(me, c.chainScriptHash(lcs), 11)]);
+const copyCs = c.newChainSignature({ address: me.address, text: 'I owe the bearer 1,000 BRC.' });
+blocks[92521] = block(92521, [mk(other, c.chainScriptHash(copyCs), 12)]);
+const chainSigned = c.chainSignedText(cs);
+const chainEdited = chainSigned.replace('Discord', 'Discord server');
+const chainLink = c.chainSignedText(lcs);
+const chainBadLink = chainLink.replace(`Mailbox: ${mailbox.address}`, `Mailbox: ${other.address}`);
+const chainCopy = c.chainSignedText(copyCs);
 const badDrand = c.receiptText(st0, { lockId: c.fingerprint(lock) }).replace(`Drand: ${beacon.round}`, `Drand: ${beacon.round + 1}`);
-writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
+writeFileSync('build/pulse-fixture.json', JSON.stringify({ tip: 92530, badDrand, beacon, fakeBlock, fakeReceipt, fakeReceiptNoBlock, wrongOwner, blocks, receipt, noLockId, missing, edited, fileHex: c.bytesToHex(file), owner: me.address, chainSigned, chainEdited, chainLink, chainBadLink, chainCopy, chainMessage: cs.message, linkMailbox: mailbox.address, lockBlockTs: c.readBlock(blocks[92510]).timestamp }));
 console.log('fixture: lock in block 92510, receipt without Block line');
