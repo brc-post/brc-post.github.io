@@ -5,6 +5,7 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Seal is not live.
 
 0.5.0 (in progress)
+  - test.3: points to BRC Vault's new New wallet tab for mailbox keys.
   - test.2: the check view on BRC Pulse is now called "Check it"; every
     pointer to it says so.
   - Fixes from the Fable 5.1 security review (Oct 31): every purpose has

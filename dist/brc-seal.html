@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-cu8m8DBQb2pCHKGkOpGKR1BDDC6GscYmrZDRtk71ykc='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Qy3zM686l3fY2vNmriZKJ16XoK1J7OmUINrxNWCKO/Q='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -845,7 +845,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Seal <span id="app-version">0.5.0-test.2</span>, build <span class="mono">72ef26f0</span>. Works offline. This page sends nothing anywhere.</p>
+      <p>BRC Seal <span id="app-version">0.5.0-test.3</span>, build <span class="mono">432df333</span>. Works offline. This page sends nothing anywhere.</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Seal proves it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -11052,7 +11052,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   }
   var NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Seal opens only mailbox keys made in BRC Vault: a brc-mailbox-key-\u2026.json file, or its BRCMBOX1 paper code.";
   var COIN_KEY = "That's a key that can hold coins. BRC Seal never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature \u2192 My coin address. To open letters, use a mailbox key from BRC Vault.";
-  var COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, choose Make a new wallet, then Mailbox key for BRC Seal.";
+  var COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, open New wallet and choose Mailbox key for BRC Seal.";
   async function readWalletText(text) {
     say("#load-msg", "");
     if (EMBEDDED) throw new Error("BRC Seal is open inside another page, so real keys are turned off. Open it in its own tab.");

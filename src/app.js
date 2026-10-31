@@ -272,7 +272,7 @@ function clearSecretsFromPage() {
 
 const NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Seal opens only mailbox keys made in BRC Vault: a brc-mailbox-key-….json file, or its BRCMBOX1 paper code.";
 const COIN_KEY = "That's a key that can hold coins. BRC Seal never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature → My coin address. To open letters, use a mailbox key from BRC Vault.";
-const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, choose Make a new wallet, then Mailbox key for BRC Seal.";
+const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, open New wallet and choose Mailbox key for BRC Seal.";
 
 /** Only a locked mailbox key gets through. Anything that can hold coins is refused and wiped. */
 async function readWalletText(text) {
