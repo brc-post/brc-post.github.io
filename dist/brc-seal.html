@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-MotwrpNnJXj0fSfGwwZZLXWyAaompDQ3a1N1mPloDAM='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JHzZqyWjEY2A1Mvic+1gP25xh9JKQYuyf3eMcdfsmBw='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -232,6 +232,9 @@ a { color: var(--brand-deep); }
 .verdict[data-tone="good"] { background: var(--good-tint); border-color: #c9e6db; }
 .verdict[data-tone="bad"] { background: var(--danger-tint); border-color: #f0cdc5; }
 .verdict[data-tone="warn"] { background: var(--caution-tint); border-color: #eedcb5; }
+.verdict[data-tone="info"] { background: var(--brand-tint); border-color: #d6d5ff; }
+.verdict[data-tone="info"] .verdict-title { color: #2c2a8f; }
+.verdict a { color: var(--brand-deep); font-weight: 500; }
 .verdict-title { display: flex; align-items: center; gap: 0.55rem; font-weight: 650; font-size: 1.05rem; letter-spacing: -0.015em; }
 .verdict[data-tone="good"] .verdict-title { color: var(--good); }
 .verdict[data-tone="bad"] .verdict-title { color: var(--danger); }
@@ -254,6 +257,13 @@ a { color: var(--brand-deep); }
 .msg[data-tone="info"] { color: var(--muted); }
 .notice { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--sunken); font-size: 0.86rem; color: var(--ink-2); }
 .notice strong { font-weight: 600; }
+.phrase-warn { margin: 0.8rem 0 0; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); background: var(--danger-tint); color: var(--ink-2); font-size: 0.84rem; }
+.privacy[data-mode="chain"] { background: var(--sunken); color: var(--ink-2); }
+.privacy[data-mode="mailbox"] { background: var(--brand-tint); color: #2c2a8f; }
+textarea.to-box { min-height: 3rem; height: 3rem; resize: vertical; }
+.link-btn { appearance: none; border: 0; background: none; padding: 0; font: inherit; font-weight: 500; color: var(--brand-deep); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.sheet-note a { color: var(--brand-deep); font-weight: 500; }
+#sc-recipe { margin-top: 1rem; }
 
 /* Success headers: a small animated picture above a result */
 .done-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.9rem; }
@@ -460,8 +470,8 @@ footer b { font-weight: 600; color: var(--ink-2); }
   </header>
 
   <main class="wrap">
-    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Loading a real wallet is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your wallet. Test wallets still work.</p>
-    <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
+    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Opening a real mailbox key is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your key. Test keys still work.</p>
+    <p class="test-banner"><strong>Test build, not published.</strong> Use the test keys to try everything. BRC Seal never takes a key that holds coins: no wallet files, private keys or recovery words, ever.</p>
 
     <!-- ================= HOME ================= -->
     <section class="screen" id="s-home" data-screen="home" tabindex="-1" aria-label="BRC Seal home">
@@ -475,13 +485,13 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <span class="wordmark" role="img" aria-label="BRC Seal"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span>
         </div>
         <h1><span class="w">Sign it.</span> <span class="w accent">Seal it.</span> <span class="w">Postmark it.</span></h1>
-        <p>Your BrowserCoin wallet is your signature, your envelope and your postmark. Everything happens on your device. Nothing is uploaded.</p>
+        <p>Your BrowserCoin address is your signature, your envelope and your postmark, and your coin keys never come near this page. Everything happens on your device. Nothing is uploaded.</p>
       </div>
 
       <nav class="tiles" aria-label="What do you want to do?">
         <a class="tile" href="#sign" id="go-sign">
           <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span>
-          <span class="tile-text"><strong>Add my signature</strong><span>Prove a message is from you</span></span>
+          <span class="tile-text"><strong>Add my signature</strong><span>Prove a message is from your address</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </a>
         <a class="tile" href="#seal" id="go-seal">
@@ -496,30 +506,41 @@ footer b { font-weight: 600; color: var(--ink-2); }
         </a>
         <a class="tile ghost" href="#received" id="go-received">
           <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span>
-          <span class="tile-text"><strong>I received something</strong><span>Check a signature, open a letter, check a postmark</span></span>
+          <span class="tile-text"><strong>I received something</strong><span>Check a signature or a link, open a letter, check a postmark</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </a>
       </nav>
 
       <button type="button" class="wallet-chip" data-wallet aria-haspopup="dialog">
         <span class="idc empty" data-idc aria-hidden="true"></span>
-        <span class="wc-text"><strong data-wallet-name>No wallet loaded</strong><span data-wallet-sub>Needed to sign and to open letters</span></span>
+        <span class="wc-text"><strong data-wallet-name>No mailbox key</strong><span data-wallet-sub>Needed to open letters</span></span>
         <span class="wc-act" data-wallet-act>Load</span>
       </button>
       <ul class="trust">
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Works offline</li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Nothing leaves this page</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Your key is never saved</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Never asks for a coin key</li>
       </ul>
     </section>
 
     <!-- ================= SIGN ================= -->
     <section class="screen" id="p-sign" data-screen="sign" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span><h2 tabindex="-1">Add my signature</h2></div>
-      <p class="lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
+      <p class="lede"><strong>Prove an address is yours.</strong> Sign a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
       <div class="card">
-        <div class="field" style="margin-top:0"><span>Who will see it?</span>
+        <div class="field" style="margin-top:0"><span>Sign as</span>
+          <div class="seg" role="radiogroup" aria-label="Sign as" id="sign-as">
+            <button type="button" role="radio" aria-checked="true" data-as="chain"><strong>My coin address</strong><small>On the chain, with the official app</small></button>
+            <button type="button" role="radio" aria-checked="false" data-as="mailbox"><strong>My mailbox</strong><small>Instant, with your mailbox key</small></button>
+          </div>
+        </div>
+        <p class="privacy" id="sign-as-note"></p>
+        <div id="sign-chain-part">
+          <label class="field"><span>Your coin address</span><input id="sc-address" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address the official app shows for your wallet"></label>
+        </div>
+        <div id="sign-mailbox-part" hidden>
+        <div class="field"><span>Who will see it?</span>
           <div class="seg" role="radiogroup" aria-label="Who will see it?" id="sign-mode">
             <button type="button" role="radio" aria-checked="true" data-mode="public"><strong>Anyone</strong><small>Post it publicly</small></button>
             <button type="button" role="radio" aria-checked="false" data-mode="private"><strong>One person</strong><small>Sealed so only they can check it</small></button>
@@ -530,49 +551,74 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Their address</span><input id="sign-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address of the person checking it"></label>
           <div class="chips" id="sign-quick" hidden><button type="button" class="chip" data-sign-to="alice">Alice's address</button><button type="button" class="chip" data-sign-to="bob">Bob's address</button></div>
         </div>
-        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
-        <div class="chips" aria-label="Examples">
-          <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
+        </div>
+        <p class="notice" id="sc-link-note" hidden><strong>Linking your mailbox.</strong> This message says your mailbox <span class="mono" id="sc-link-mailbox"></span> belongs to the coin address above, and your mailbox key has already signed it. Sign it on the chain to finish. <button type="button" class="link-btn" id="btn-sc-unlink">Write my own message instead</button></p>
+        <p class="notice" id="sc-commit-note" hidden><strong>Fixing the giveaway list before the draw.</strong> This message records the entry list's fingerprint and the drand round of the draw. Sign it on the chain with the BRC Works release address, and add the result to the giveaway settings. BRC Pulse shows a winner only if this lock is in a block well before that round. <button type="button" class="link-btn" id="btn-sc-uncommit">Write my own message instead</button></p>
+        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 31, 2026."></textarea></label>
+        <div class="chips" aria-label="Examples" id="sign-fills">
+          <button type="button" class="chip" data-fill="mine">This address is mine</button>
           <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
           <button type="button" class="chip" data-fill="pool">Prove a pool payout address</button>
         </div>
-        <div class="actions"><button class="btn btn-primary btn-block" id="btn-sign" type="button">Sign with my wallet</button></div>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-sign" type="button">Make the phrase</button></div>
         <p class="msg" id="sign-msg" role="status" aria-live="polite"></p>
+        <div id="sc-recipe" hidden>
+          <div class="recipe">
+            <ol>
+              <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
+              <li><strong>Amount:</strong> <span class="mono" id="sc-amount"></span> BRC. You can take it back later.</li>
+              <li><strong>Recipient address:</strong> your coin address
+                <div class="inline-copy"><span class="mono" id="sc-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="sc-owner-copy"><span class="lbl">Copy</span></button></div></li>
+              <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
+                <div class="inline-copy"><span class="mono" id="sc-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="sc-phrase"><span class="lbl">Copy</span></button></div></li>
+              <li>Leave the fee as it is and press <strong>Lock coins</strong>. Your key signs the lock inside the official app, where it already lives.</li>
+            </ol>
+            <p class="phrase-warn"><strong>Only lock a phrase this page just made from words you can read above.</strong> A phrase someone sends you is a message you can't read, and locking it signs it in your name.</p>
+            <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="sc-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="sc-check-owner"></span>.</p>
+          </div>
+          <label class="field"><span>Lock ID <span class="count" id="sc-lockid-status">recommended</span></span>
+            <input id="sc-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste it from the app, or leave empty"></label>
+          <p class="field-help">With the Lock ID, BRC Pulse checks your exact lock straight away. Without it, Pulse searches for it, and anyone who copies your phrase into a lock of their own can slow that down.</p>
+          <div class="actions"><button class="btn btn-primary btn-block" id="btn-sc-done" type="button">I've locked it: make my signed message</button></div>
+          <p class="msg" id="sc-msg" role="status" aria-live="polite"></p>
+        </div>
         <div class="out" id="sign-out" hidden>
           <div class="done-head">
             <span class="done-art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="sig-line" pathLength="1" d="M3 16c3-1 4-9 7-9s1 7 4 7 3-3 7-3"/><path d="M3 20.5h18" opacity=".35"/></svg></span>
             <div><h3 id="sign-out-title">Signed</h3><p id="sign-out-sub">Share this whole block. Anyone can check it.</p></div>
           </div>
           <pre class="block" id="sign-block"></pre>
-          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button></div>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button><a class="btn btn-secondary" id="sign-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" hidden>Check it on BRC Pulse</a></div>
         </div>
       </div>
       <details class="how">
         <summary>How signing works</summary>
         <div class="how-body">
-          <p>Your BrowserCoin address is a public key. Your wallet's private key can make a <strong>signature</strong>: a 128-character code that only that key can produce, and that fits only this exact message.</p>
+          <p><strong>On the chain, for your coin address.</strong> BRC Seal never sees your coin key. It turns your message and your address into a phrase. You lock a tiny amount with that phrase in the official app, which signs the lock with your key, the way it signs any payment. Only your key could have made that lock, so the chain itself is the signature.</p>
           <ol>
-            <li>The page signs your message together with your address and a fixed label, <code>BrowserCoin Signed Message v1</code>.</li>
-            <li>Anyone who pastes the block into BRC Seal → I received something can check the signature against the address. No wallet needed.</li>
-            <li>Change one letter of the message and the check fails.</li>
+            <li>The phrase is a fingerprint of <code>BrowserCoin Chain-Signed Message v1</code>, your address and your message, plus a random salt.</li>
+            <li>Anyone with the signed message can rebuild the phrase and find the lock on <strong>BRC Pulse → Stamps</strong>, which checks it was made by your address. Change one letter and it no longer matches.</li>
+            <li>It costs the app's small fee plus the amount you lock, which you can take back later with Redeem.</li>
           </ol>
-          <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
-          <p><strong>Your privacy:</strong> BrowserCoin's chain is public. Anyone can see every address's balance, payments and mining rewards. A public signature ties your address to whatever the message says, for good, and can't be taken back. Use an address that holds little for public signing, and keep your coins in another wallet. Or choose <strong>One person</strong>: your signed message is sealed so only that address can open and check it. They could still show it to others, so choose someone you trust.</p>
-          <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 giveaway, proving a pool payout address is yours, settling "that's my address" arguments.</p>
+          <p><strong>With your mailbox, instantly.</strong> A mailbox key is a separate key made in BRC Vault for letters and signing. It never holds coins, so loading it here risks nothing you own. Link it to your coin address once, on the chain, and everything it signs shows as your mailbox.</p>
+          <p><strong>Your privacy:</strong> BrowserCoin's chain is public. A public signature ties your address to whatever the message says, for good. Or choose <strong>One person</strong> when signing with your mailbox: the signed message is sealed so only they can open and check it.</p>
+          <p><strong>Uses:</strong> claiming a Discord role as a real miner, proving a pool payout address is yours, settling "that's my address" arguments.</p>
         </div>
       </details>
     </section>
 
     <!-- ================= SEAL ================= -->
     <section class="screen" id="p-seal" data-screen="seal" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/><circle cx="12" cy="14" r="2.3" fill="currentColor" stroke="none"/></svg></span><h2 tabindex="-1">Seal a letter</h2></div>
-      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the wallet you seal it to can read it.</p>
+      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the key you seal it to can read it.</p>
       <div class="card">
-        <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+        <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Their mailbox address, or paste their mailbox link"></textarea></label>
+        <p class="msg" id="seal-to-note" role="status" aria-live="polite"></p>
+        <label class="check" id="seal-link-ok-wrap" hidden><input type="checkbox" id="seal-link-ok"><span>I checked this link on <strong>BRC Pulse → Stamps</strong>, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)</span></label>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
         <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
-        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Load a wallet to use this.</span></label>
+        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Open your mailbox key to use this.</span></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
         <div class="out" id="seal-out" hidden>
@@ -588,14 +634,15 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <details class="how">
         <summary>How sealing works, and its one limit</summary>
         <div class="how-body">
-          <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching wallet can unlock it.</p>
+          <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching key can unlock it.</p>
           <ol>
             <li>The page makes a one-time key just for this letter and combines it with the recipient's address (X25519).</li>
             <li>The letter is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.</li>
-            <li>If you tick "sign it", your signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.</li>
+            <li>If you tick "sign it", your mailbox key's signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.</li>
             <li>Signed and anonymous letters are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.</li>
           </ol>
-          <p><strong>The limit:</strong> there are no rotating keys. If the recipient's wallet key is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.</p>
+          <p><strong>The limit:</strong> there are no rotating keys. If the recipient's mailbox key is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.</p>
+          <p><strong>Seal to a mailbox, not a coin address.</strong> A coin address's key lives in the official app, which can't open letters. Paste the person's mailbox link and BRC Seal seals to their mailbox.</p>
           <p><strong>Visible to everyone:</strong> who the letter is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.</p>
         </div>
       </details>
@@ -603,7 +650,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= POSTMARK ================= -->
     <section class="screen" id="p-stamp" data-screen="postmark" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="M15.5 9.5c1.5-1 3-1 4.5 0M15.5 12c1.5-1 3-1 4.5 0M15.5 14.5c1.5-1 3-1 4.5 0"/></svg></span><h2 tabindex="-1">Postmark a file</h2></div>
       <p class="lede"><strong>Prove a file existed by a date.</strong> The file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
       <ol class="steps">
@@ -643,6 +690,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
                   <div class="inline-copy"><span class="mono" id="st-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="st-phrase"><span class="lbl">Copy</span></button></div></li>
                 <li>Leave the fee as it is, press <strong>Lock coins</strong>, and copy the <strong>Lock ID</strong> it shows.</li>
               </ol>
+              <p class="phrase-warn"><strong>Only postmark files you made or checked yourself, and only lock a phrase this page just made.</strong> A phrase someone sends you could sign something in your name.</p>
               <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="st-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="st-check-owner"></span>. If either doesn't, the phrase or the recipient address was pasted wrong.</p>
             </div>
           </div>
@@ -700,7 +748,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= RECEIVED ================= -->
     <section class="screen" id="s-received" data-screen="received" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span><h2 tabindex="-1">I received something</h2></div>
       <p class="lede">Paste it here and BRC Seal will work out what it is.</p>
       <div class="card">
@@ -709,17 +757,18 @@ footer b { font-weight: 600; color: var(--ink-2); }
       </div>
       <p class="or">or choose</p>
       <div class="route-list">
-        <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
-        <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your wallet</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message, or whose mailbox a link is</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your mailbox</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
         <a class="tile" href="#check" id="go-check"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a postmark</strong><span>Match a file to its receipt</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#inbox" id="go-inbox"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><span class="tile-text"><strong>Open many letters</strong><span>For a mailbox owner: open a whole mailbox at once</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
       </div>
     </section>
 
     <!-- ================= VERIFY ================= -->
     <section class="screen" id="p-verify" data-screen="verify" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a signature</h2></div>
-      <p class="lede">Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No wallet needed.</p>
+      <p class="lede">Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No key needed.</p>
       <div class="card">
         <label class="field"><span>Signed message</span><textarea id="verify-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-verify" type="button">Check signature</button></div>
@@ -731,6 +780,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <div class="how-body">
           <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
           <ul>
+            <li>A message signed on the chain is checked in full on <strong>BRC Pulse → Stamps</strong>, which reads the chain. Here, offline, BRC Seal can only check it is complete and well-formed.</li>
             <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
             <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
             <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
@@ -741,9 +791,9 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= OPEN ================= -->
     <section class="screen" id="p-open" data-screen="open" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><h2 tabindex="-1">Open a letter</h2></div>
-      <p class="lede">Paste the whole block. Opening needs the wallet it was sealed to.</p>
+      <p class="lede">Paste the whole block. Opening needs the mailbox key it was sealed to.</p>
       <div class="card">
         <label class="field"><span>Sealed letter</span><textarea id="open-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-open" type="button">Open the letter</button></div>
@@ -756,7 +806,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <ul>
             <li>An anonymous letter could be from anyone. Treat its claims the way you'd treat an unsigned letter in the post.</li>
             <li>A signed letter shows the sender's address, checked. It still only proves the address, not the person.</li>
-            <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a letter asks. Nobody legitimate needs them.</li>
+            <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a letter asks, and never paste them into any page. Nobody legitimate needs them. BRC Seal never will.</li>
           </ul>
         </div>
       </details>
@@ -764,7 +814,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= CHECK A POSTMARK ================= -->
     <section class="screen" id="p-check" data-screen="check" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a postmark</h2></div>
       <p class="lede">Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on <strong>BRC Pulse → Stamps</strong>, which reads the chain.</p>
       <div class="card">
@@ -774,9 +824,30 @@ footer b { font-weight: 600; color: var(--ink-2); }
       </div>
     </section>
 
+
+    <!-- ================= OPEN MANY LETTERS ================= -->
+    <section class="screen" id="p-inbox" data-screen="inbox" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><h2 tabindex="-1">Open many letters</h2></div>
+      <p class="lede">For a mailbox owner. Open every letter from a BRC Mailbox at once, here and offline, with the mailbox key. For a giveaway, this counts the entries and makes the list to publish.</p>
+      <div class="card">
+        <label class="drop" id="ib-drop"><input type="file" id="ib-file" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="ib-file-title">Choose the letters file</strong><span id="ib-file-sub">From BRC Pulse → Giveaway → Download every letter</span></span></label>
+        <label class="drop" id="ib-elig-drop" style="margin-top:0.7rem"><input type="file" id="ib-elig" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="drop-text"><strong id="ib-elig-title">Eligible list (optional)</strong><span id="ib-elig-sub">The giveaway's eligible.json, to set aside addresses that can't enter</span></span></label>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-ib-open" type="button">Open all letters</button></div>
+        <p class="msg" id="ib-msg" role="status" aria-live="polite"></p>
+        <div id="ib-out" hidden>
+          <dl class="rows" id="ib-rows"></dl>
+          <div id="ib-aside"></div>
+          <div class="actions"><button class="btn btn-secondary" type="button" id="btn-ib-commit" style="flex:1 1 100%" hidden>Sign this list on the chain, before the draw</button><button class="btn btn-primary" type="button" id="btn-ib-save" style="flex:1 1 12rem">Save the entry list</button><button class="btn btn-secondary" type="button" data-copy="ib-fp" style="flex:1 1 10rem"><span class="lbl">Copy fingerprint</span></button></div>
+          <span class="mono" id="ib-fp" hidden></span>
+        </div>
+      </div>
+    </section>
+
     <footer>
-      <p>BRC Seal 0.4, test build <span class="mono">328b70ae</span>. Works offline. This page sends nothing anywhere.</p>
-      <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault</a> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse</a> · <span aria-current="page">Seal</span></p>
+      <p>BRC Seal <span id="app-version">0.5.0-test.1</span>, build <span class="mono">247cd9ab</span>. Works offline. This page sends nothing anywhere.</p>
+      <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Seal proves it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
+      <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
     </footer>
   </main>
@@ -787,41 +858,39 @@ footer b { font-weight: 600; color: var(--ink-2); }
   <dialog class="sheet" id="wallet-sheet" aria-labelledby="sheet-title">
     <div class="sheet-inner">
       <div class="grabber" aria-hidden="true"></div>
-      <div class="sheet-head"><h2 id="sheet-title">Your wallet</h2><button type="button" class="x" id="btn-sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div class="sheet-head"><h2 id="sheet-title">Your mailbox key</h2><button type="button" class="x" id="btn-sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
       <section id="wallet" data-state="empty" aria-labelledby="wallet-title">
         <div class="wallet-row">
           <span class="idc empty" data-idc aria-hidden="true"></span>
           <div class="wallet-text">
-            <strong id="wallet-title">No wallet loaded</strong>
-            <span id="wallet-sub">You can check signatures and seal letters without one. Signing and opening need a wallet.</span>
+            <strong id="wallet-title">No mailbox key open</strong>
+            <span id="wallet-sub">You can sign on the chain, check and seal without one. Opening letters needs your mailbox key.</span>
           </div>
         </div>
-        <div class="who" id="who" role="group" aria-label="Act as test wallet" hidden>
+        <div class="who" id="who" role="group" aria-label="Act as test key" hidden>
           <button type="button" data-who="alice" aria-pressed="true">Alice</button>
           <button type="button" data-who="bob" aria-pressed="false">Bob</button>
         </div>
         <div class="wallet-actions" id="wallet-actions">
-          <button class="btn btn-secondary" id="btn-test" type="button">Use test wallets</button>
-          <button class="btn btn-secondary" id="btn-load" type="button">Load my wallet</button>
-          <button class="btn btn-secondary" id="btn-forget" type="button" hidden>Forget wallet</button>
+          <button class="btn btn-secondary" id="btn-test" type="button">Use test keys</button>
+          <button class="btn btn-secondary" id="btn-load" type="button">Open my mailbox key</button>
+          <button class="btn btn-secondary" id="btn-link" type="button" hidden>Link to my coin address</button>
+          <button class="btn btn-secondary" id="btn-forget" type="button" hidden>Forget key</button>
           <button class="btn btn-primary" id="btn-sheet-done" type="button" hidden>Done</button>
         </div>
         <div class="loader" id="loader" hidden>
           <label class="drop" id="drop">
             <input type="file" id="wallet-file" accept=".json,.txt,application/json,text/plain">
             <span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M16 12.5h2M3 9.5h18M7 6V4.8A1.8 1.8 0 0 1 9.2 3l8.3 1.6"/></svg></span>
-            <span class="drop-text"><strong>Choose your wallet file</strong>From browsercoin.org/app → Settings → Export key…, or a BRC Vault backup</span>
+            <span class="drop-text"><strong>Choose your mailbox key file</strong>brc-mailbox-key-….json, made in BRC Vault</span>
           </label>
-          <label class="field"><span>Or paste a wallet file, private key, key code or 24 recovery words</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
-          <div id="confirm-field" hidden>
-            <p class="notice" id="confirm-ambiguous" hidden><strong>Is this a private key or an address?</strong> They look alike. If you pasted your address by mistake, press Cancel: an address can't sign or open anything.</p>
-            <label class="check"><input type="checkbox" id="confirm-mine"><span>This is my wallet's address: <span class="mono" id="confirm-address"></span></span></label>
-          </div>
-          <label class="field" id="password-field" hidden><span>This backup is password-protected. Enter its password</span><input id="wallet-password" type="password" autocomplete="off"></label>
-          <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Load wallet</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
+          <label class="field"><span>Or paste the file, or its paper code (BRCMBOX1…)</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
+          <label class="field" id="password-field" hidden><span>Enter the mailbox key's password</span><input id="wallet-password" type="password" autocomplete="off"></label>
+          <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Open key</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
           <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
         </div>
-        <p class="sheet-note">Your key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page.</p>
+        <p class="sheet-note"><strong>No coin keys, ever.</strong> BRC Seal refuses wallet files, private keys and recovery words, so nobody can talk you into pasting one here. A mailbox key holds no coins. Don't have one? <a href="https://pb-hash.github.io/brc-vault/#new-mailbox" target="_blank" rel="noopener noreferrer">Make one in BRC Vault</a>.</p>
+        <p class="sheet-note">An open key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page, or after 10 minutes untouched.</p>
       </section>
     </div>
   </dialog>
@@ -4661,6 +4730,9 @@ zoo`.split("\n");
   var BACKUP_TYPE = "brc-vault-backup";
   var BACKUP_VERSION = 1;
   var COMPACT_PREFIX = "BRCVAULT1";
+  var MAILBOX_TYPE = "brc-vault-mailbox-key";
+  var MAILBOX_COMPACT_PREFIX = "BRCMBOX1";
+  var isBackupType = (t) => t === BACKUP_TYPE || t === MAILBOX_TYPE;
   var KEY_PREFIX = "BRCKEY1";
   var BROWSERCOIN_WALLET_TYPE = "browsercoin-wallet";
   var MIN_LOG_N = 14;
@@ -4732,9 +4804,9 @@ zoo`.split("\n");
     raw.fill(0);
     return key;
   }
-  function associatedData(address, kdf, saltHex, ivHex) {
+  function associatedData(type, address, kdf, saltHex, ivHex) {
     return new TextEncoder().encode(
-      [BACKUP_TYPE, BACKUP_VERSION, address, kdf.name, kdf.logN, kdf.r, kdf.p, kdf.dkLen, saltHex, ivHex].join("|")
+      [type, BACKUP_VERSION, address, kdf.name, kdf.logN, kdf.r, kdf.p, kdf.dkLen, saltHex, ivHex].join("|")
     );
   }
   var HEX_FIELD = (name, len) => (v) => {
@@ -4749,14 +4821,14 @@ zoo`.split("\n");
   var checkIv = HEX_FIELD("iv", 12);
   var checkCiphertext = HEX_FIELD("locked key", 48);
   function validateBackup(b) {
-    if (!b || typeof b !== "object" || b.type !== BACKUP_TYPE) throw new Error("This is not a BRC Vault backup.");
+    if (!b || typeof b !== "object" || !isBackupType(b.type)) throw new Error("This is not a BRC Vault backup.");
     if (b.version !== BACKUP_VERSION) throw new Error(`This backup is version ${String(b.version).slice(0, 8)}; this copy of BRC Vault reads version ${BACKUP_VERSION}.`);
     const k = b.kdf || {};
     const kdf = { name: k.name, logN: k.logN, r: k.r, p: k.p, dkLen: k.dkLen };
     checkKdf(kdf);
     if (!b.cipher || b.cipher.name !== "aes-256-gcm") throw new Error("Unsupported encryption method in this backup.");
     return {
-      type: BACKUP_TYPE,
+      type: b.type,
       version: BACKUP_VERSION,
       address: checkAddress(b.address),
       kdf: { ...kdf, salt: checkSalt(k.salt) },
@@ -4774,15 +4846,18 @@ zoo`.split("\n");
     let pt;
     try {
       pt = new Uint8Array(await globalThis.crypto.subtle.decrypt(
-        { name: "AES-GCM", iv, additionalData: associatedData(b.address, kdf, saltHex, b.cipher.iv), tagLength: 128 },
+        { name: "AES-GCM", iv, additionalData: associatedData(b.type, b.address, kdf, saltHex, b.cipher.iv), tagLength: 128 },
         key,
         ct
       ));
     } catch {
       throw new Error("Wrong password, or the backup has been changed or damaged.");
     }
-    const wallet2 = { privateKey: pt, address: addressFromPrivateKey(pt) };
-    if (wallet2.address !== b.address) throw new Error("The decrypted key does not match the address in the backup.");
+    const wallet2 = { privateKey: pt, address: addressFromPrivateKey(pt), purpose: b.type === MAILBOX_TYPE ? "mailbox" : "coins" };
+    if (wallet2.address !== b.address) {
+      wipeWallet(wallet2);
+      throw new Error("The decrypted key does not match the address in the backup.");
+    }
     return wallet2;
   }
   var DESKTOP_FORMAT = "brc-wallet-desktop";
@@ -4924,14 +4999,15 @@ zoo`.split("\n");
   var SMALL_INT = /^(0|[1-9][0-9]{0,2})$/;
   function compactToBackup(text) {
     const parts = String(text).replace(/\s+/g, "").split(":");
-    if (parts[0].toUpperCase() !== COMPACT_PREFIX) throw new Error("This is not a BRC Vault backup code.");
+    const prefix = parts[0].toUpperCase();
+    if (prefix !== COMPACT_PREFIX && prefix !== MAILBOX_COMPACT_PREFIX) throw new Error("This is not a BRC Vault backup code.");
     if (parts.length !== 8) throw new Error("This backup code has the wrong number of parts. Check that every line, including the colons, was copied.");
     const [, address, logN, r, p, salt, iv, ciphertext] = parts;
     for (const [label, v] of [["strength settings", logN], ["strength settings", r], ["strength settings", p]]) {
       if (!SMALL_INT.test(v)) throw new Error(`The ${label} in this backup code are damaged.`);
     }
     return validateBackup({
-      type: BACKUP_TYPE,
+      type: prefix === MAILBOX_COMPACT_PREFIX ? MAILBOX_TYPE : BACKUP_TYPE,
       version: BACKUP_VERSION,
       address,
       kdf: { name: "scrypt", logN: Number(logN), r: Number(r), p: Number(p), dkLen: 32, salt },
@@ -4970,10 +5046,10 @@ zoo`.split("\n");
   function identifyInput(text) {
     if (String(text).length > MAX_INPUT_LENGTH) throw new Error("This is far too long to be a wallet, a backup or a key.");
     const clean3 = String(text).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, "").replace(/[\u00A0\u2007\u202F]/g, " ").replace(/[\u2028\u2029\r]/g, "\n");
-    const t = clean3.trim().replace(/^(BRCVAULT1|BRCKEY1)[ \t]+(?=[0-9A-Fa-f])/i, (m, p) => `${p.toUpperCase()}:`);
+    const t = clean3.trim().replace(/^(BRCVAULT1|BRCMBOX1|BRCKEY1)[ \t]+(?=[0-9A-Fa-f])/i, (m, p) => `${p.toUpperCase()}:`);
     if (!t) throw new Error("Nothing to read yet.");
     const squashed = t.toUpperCase().replace(/\s+/g, "");
-    if (squashed.startsWith(COMPACT_PREFIX + ":")) {
+    if (squashed.startsWith(COMPACT_PREFIX + ":") || squashed.startsWith(MAILBOX_COMPACT_PREFIX + ":")) {
       return { kind: "vault-backup", backup: compactToBackup(stripPaperChecks(t)) };
     }
     if (squashed.startsWith(KEY_PREFIX + ":")) {
@@ -4996,7 +5072,7 @@ zoo`.split("\n");
       return { kind: "private-key", wallet: wallet2, ambiguous: false, checked: false };
     }
     let body = t;
-    if (!body.startsWith("{") && /browsercoin-wallet|brc-vault-backup|privateKeyHex/.test(body)) {
+    if (!body.startsWith("{") && /browsercoin-wallet|brc-vault-backup|brc-vault-mailbox-key|privateKeyHex/.test(body)) {
       body = `{${body.replace(/^[\s{]*/, "").replace(/[\s}]*$/, "")}}`;
     } else if (body.startsWith("{") && !body.endsWith("}") && /"(type|privateKeyHex)"\s*:/.test(body)) {
       body = `${body.replace(/[\s,]*$/, "")}}`;
@@ -5007,7 +5083,7 @@ zoo`.split("\n");
         parsed = { ...parsed, type: BROWSERCOIN_WALLET_TYPE };
       }
       if (parsed) {
-        if (parsed.type === BACKUP_TYPE) return { kind: "vault-backup", backup: validateBackup(parsed) };
+        if (isBackupType(parsed.type)) return { kind: "vault-backup", backup: validateBackup(parsed) };
         if (parsed.type === BROWSERCOIN_WALLET_TYPE && parsed.encrypted === true) return { kind: "desktop-backup", backup: validateDesktopBackup(parsed) };
         if (parsed.type === BROWSERCOIN_WALLET_TYPE) return { kind: "browsercoin-wallet", wallet: refuseWellKnownKey(parseBrowserCoinWallet(JSON.stringify(parsed))) };
         throw new Error("This file is neither a BrowserCoin wallet nor a BRC Vault backup.");
@@ -5113,7 +5189,8 @@ zoo`.split("\n");
       }
       return { kind: "browsercoin-wallet", wallet: wallet2, rescued: true };
     }
-    if (/brc-vault-backup/.test(text)) {
+    const rescueType = /brc-vault-mailbox-key/.test(text) ? MAILBOX_TYPE : /brc-vault-backup/.test(text) ? BACKUP_TYPE : null;
+    if (rescueType) {
       const f = {
         address: field(text, "address", "[0-9a-fA-F]{64}"),
         logN: field(text, "logN", "[0-9]{1,3}"),
@@ -5125,7 +5202,7 @@ zoo`.split("\n");
       };
       try {
         const backup = validateBackup({
-          type: BACKUP_TYPE,
+          type: rescueType,
           version: BACKUP_VERSION,
           address: f.address,
           kdf: { name: "scrypt", logN: Number(f.logN), r: Number(f.r), p: Number(f.p), dkLen: 32, salt: f.salt },
@@ -7786,7 +7863,7 @@ zoo`.split("\n");
     return out;
   }
   function normalizeMessage(text) {
-    return String(text).normalize("NFC").replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, "").replace(/[\u00A0\u2007\u202F]/g, " ").replace(/\r\n?|[\u2028\u2029]/g, "\n").split("\n").map((line) => line.replace(/[ \t]+$/, "")).join("\n").replace(/^\n+|\n+$/g, "");
+    return String(text).normalize("NFC").replace(/[\u200B-\u200D\u2060\uFEFF\u00AD]/g, "").replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, " ").replace(/\r\n?|[\u2028\u2029]/g, "\n").split("\n").map((line) => line.replace(/[ \t]+$/, "")).join("\n").replace(/^\n+|\n+$/g, "");
   }
   function cleanPaste(text) {
     if (String(text).length > MAX_PASTE) throw new Error("This is far too long to be a signed message or a sealed note.");
@@ -8013,14 +8090,6 @@ ${message}`);
     const sig = body.slice(36, 100);
     const ok = strictVerify(sig, noteSigBytes(recipientEd, ephPub, textBytes), from);
     return { to, message, signed: true, from, signatureValid: ok, hidden: hasHiddenCharacters(message) };
-  }
-  function raffleHeight(height) {
-    const h2 = typeof height === "string" ? Number(height.replace(/[,\s]/g, "")) : height;
-    if (!Number.isSafeInteger(h2) || h2 <= 0) throw new Error("The giveaway block height must be a whole number, like 100000.");
-    return h2;
-  }
-  function raffleEntryText(height) {
-    return `I'm entering the BrowserCoin block ${raffleHeight(height).toLocaleString("en-US")} giveaway.`;
   }
 
   // node_modules/@noble/curves/esm/abstract/weierstrass.js
@@ -10329,6 +10398,7 @@ ${message}`);
   // src/stamp-core.js
   var enc2 = new TextEncoder();
   var STAMP_PREFIX = "BRCSTAMP1";
+  var PHRASE_PREFIX = Object.freeze({ file: STAMP_PREFIX, sign: "BRCSIGN1", link: "BRCLINK1", release: "BRCREL1", list: "BRCLIST1", launch: "BRCGIVE1" });
   var SUGGESTED_AMOUNT = "0.001";
   var OP_SHA256 = 168;
   var OP_EQUALVERIFY = 136;
@@ -10347,7 +10417,8 @@ ${message}`);
     if (!new RegExp(`^[0-9a-f]{${len}}$`).test(h2)) throw new Error(`${what} should be ${len} characters, 0\u20139 and a\u2013f.`);
     return h2;
   }
-  function newStamp({ fingerprint: fp, owner, after = null, drand = null, salt = null }) {
+  function newStamp({ fingerprint: fp, owner, after = null, drand = null, salt = null, kind = "file" }) {
+    if (!PHRASE_PREFIX[kind]) throw new Error("Unknown kind of stamp.");
     const f = cleanHex(fp, "The fingerprint");
     const o = parseAddress(owner);
     if (!isCleanAddress(o)) throw new Error("The owner address isn't one a real wallet could have. Check it for a typo.");
@@ -10371,10 +10442,10 @@ ${message}`);
       s = bytesToHex3(b);
     }
     s = cleanHex(s, "The salt", 32);
-    return { fingerprint: f, salt: s, owner: o, after: a, drand: d };
+    return { fingerprint: f, salt: s, owner: o, after: a, drand: d, kind };
   }
   function stampPhrase(st) {
-    return `${STAMP_PREFIX}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ""}${st.drand ? `_D${st.drand.round}_${st.drand.signature}` : ""}`;
+    return `${PHRASE_PREFIX[st.kind || "file"]}_${st.fingerprint}_${st.salt}${st.after ? `_A${st.after.height}_${st.after.hash}` : ""}${st.drand ? `_D${st.drand.round}_${st.drand.signature}` : ""}`;
   }
   function stampScript(st) {
     const preimage = sha256(enc2.encode(stampPhrase(st)));
@@ -10451,8 +10522,294 @@ ${message}`);
     const fileLine = field2("File");
     return { stamp: st, lockId, block, fileLabel: fileLine };
   }
+  etc.sha512Sync = etc.sha512Sync || ((...m) => sha512(etc.concatBytes(...m)));
   function stampDrandTime(st) {
     return st.drand ? drandRoundTime(st.drand.round) : null;
+  }
+
+  // src/giveaway-core.js
+  var enc3 = new TextEncoder();
+  var ENTRY_RE = /^BRC Works giveaway entry v1\nAddress: ([0-9a-f]{64})$/;
+  function parseEntryText(text) {
+    const m = normalizeMessage(text).match(ENTRY_RE);
+    if (!m) throw new Error("Not a giveaway entry.");
+    if (!isCleanAddress(m[1])) throw new Error("The address in this entry isn't one a real wallet could have.");
+    return m[1];
+  }
+  function fingerprintOf(label, addresses) {
+    const sorted = [...new Set(addresses)].sort();
+    for (const a of sorted) if (!/^[0-9a-f]{64}$/.test(a)) throw new Error("Every address must be 64 characters, 0\u20139 and a\u2013f.");
+    return bytesToHex3(sha256(enc3.encode(`${label}
+${sorted.join("\n")}`)));
+  }
+  var listFingerprint = (addresses) => fingerprintOf("BRC Works giveaway list v1", addresses);
+  var eligibleFingerprint = (addresses) => fingerprintOf("BRC Works giveaway eligible v1", addresses);
+  function readEntries(letters, mailboxWallet, eligible, exclude = []) {
+    const seen = /* @__PURE__ */ new Set();
+    const own = new Set([mailboxWallet.address, ...exclude].filter(Boolean));
+    const rejected = [];
+    letters.forEach((letter, i) => {
+      let address;
+      try {
+        const { to } = parseSealed(letter);
+        if (to !== mailboxWallet.address) throw new Error("Sealed to a different address, not this mailbox.");
+        address = parseEntryText(openNote(letter, mailboxWallet).message);
+      } catch (e) {
+        rejected.push({ index: i, reason: e.message });
+        return;
+      }
+      if (own.has(address)) {
+        rejected.push({ index: i, address, reason: "This is one of the giveaway's own addresses, which can't enter." });
+        return;
+      }
+      if (eligible && !eligible.has(address)) {
+        rejected.push({ index: i, address, reason: "This address is not on the eligible list." });
+        return;
+      }
+      if (seen.has(address)) {
+        rejected.push({ index: i, address, reason: "This address already entered." });
+        return;
+      }
+      seen.add(address);
+    });
+    const entries = [...seen].sort();
+    return { entries, rejected, fingerprint: entries.length ? listFingerprint(entries) : null };
+  }
+  var LAUNCH_HEAD = "BRC Works giveaway v1";
+  var HEX64 = /^[0-9a-f]{64}$/;
+  function launchMessage({ mailbox, pool, eligible, closesAt, round }) {
+    for (const [k, v] of [["mailbox", mailbox], ["prize pool", pool], ["eligible list fingerprint", eligible]]) if (!HEX64.test(String(v))) throw new Error(`The ${k} should be 64 characters, 0\u20139 and a\u2013f.`);
+    if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d{3})?Z$/.test(String(closesAt))) throw new Error("Entries close should be an exact UTC time, like 2026-11-11T23:59:00Z.");
+    if (!Number.isSafeInteger(round) || round < 1) throw new Error("The draw round should be a drand round number.");
+    return `${LAUNCH_HEAD}
+Giveaway: block 100,000
+Mailbox: ${mailbox}
+Prize pool: ${pool}
+Eligible: ${eligible}
+Entries close: ${closesAt}
+Draw round: ${round}`;
+  }
+  function readLaunch(message) {
+    const m = /^BRC Works giveaway v1\nGiveaway: block 100,000\nMailbox: ([0-9a-f]{64})\nPrize pool: ([0-9a-f]{64})\nEligible: ([0-9a-f]{64})\nEntries close: (\S{20,24})\nDraw round: (\d{1,12})$/.exec(String(message));
+    if (!m) return null;
+    const r = { mailbox: m[1], pool: m[2], eligible: m[3], closesAt: m[4], round: Number(m[5]) };
+    try {
+      return launchMessage(r) === message ? r : null;
+    } catch {
+      return null;
+    }
+  }
+  var COMMIT_HEAD = "BRC Works giveaway list v1";
+  function listCommitMessage({ count, fingerprint, round }) {
+    if (!Number.isSafeInteger(count) || count < 0) throw new Error("The entry count is not a whole number.");
+    if (!/^[0-9a-f]{64}$/.test(String(fingerprint))) throw new Error("The list fingerprint should be 64 characters, 0\u20139 and a\u2013f.");
+    if (!Number.isSafeInteger(round) || round < 1) throw new Error("The draw round should be a drand round number.");
+    return `${COMMIT_HEAD}
+Giveaway: block 100,000
+Entries: ${count}
+Fingerprint: ${fingerprint}
+Draw round: ${round}`;
+  }
+  function readListCommit(message) {
+    const m = /^BRC Works giveaway list v1\nGiveaway: block 100,000\nEntries: (\d{1,9})\nFingerprint: ([0-9a-f]{64})\nDraw round: (\d{1,12})$/.exec(String(message));
+    if (!m) return null;
+    const r = { count: Number(m[1]), fingerprint: m[2], round: Number(m[3]) };
+    try {
+      return listCommitMessage(r) === message ? r : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // src/release-core.js
+  var HEAD = "BRC Works release v1";
+  var TOOLS = ["BRC Vault", "BRC Pulse", "BRC Seal", "BRC Mailbox"];
+  function releaseMessage({ tool, version, file, sha256: sha2562 }) {
+    if (!TOOLS.includes(tool)) throw new Error(`Tool should be one of: ${TOOLS.join(", ")}.`);
+    if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error("A release version looks like 1.2.3 (test builds are never released).");
+    if (!/^[A-Za-z0-9._-]{1,80}$/.test(file)) throw new Error("The file name should be plain, like brc-vault.html.");
+    if (!/^[0-9a-f]{64}$/.test(sha2562)) throw new Error("SHA-256 should be 64 characters, 0\u20139 and a\u2013f.");
+    return `${HEAD}
+Tool: ${tool}
+Version: ${version}
+File: ${file}
+SHA-256: ${sha2562}`;
+  }
+  function readRelease(message) {
+    const lines = String(message).split("\n");
+    if (lines[0] !== HEAD || lines.length !== 5) return null;
+    const get = (label) => (lines.find((l) => l.startsWith(label)) || "").slice(label.length).trim();
+    const r = { tool: get("Tool:"), version: get("Version:"), file: get("File:"), sha256: get("SHA-256:") };
+    try {
+      return releaseMessage(r) === message ? r : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // src/chain-core.js
+  function kindFor(message) {
+    const first = String(message).split("\n", 1)[0];
+    if (first === LINK_HEAD) return "link";
+    if (readRelease(message)) return "release";
+    if (readListCommit(message)) return "list";
+    if (readLaunch(message)) return "launch";
+    return "sign";
+  }
+  var enc4 = new TextEncoder();
+  var CHAIN_DOMAIN = "BrowserCoin Chain-Signed Message v1\n";
+  var CHAIN_BEGIN = "-----BEGIN BRC CHAIN SIGNED MESSAGE-----";
+  var CSIG_BEGIN = "-----BEGIN BRC CHAIN SIGNATURE-----";
+  var CSIG_END = "-----END BRC CHAIN SIGNATURE-----";
+  function chainFingerprint(address, message) {
+    return bytesToHex3(sha256(enc4.encode(`${CHAIN_DOMAIN}Address: ${address}
+Message:
+${message}`)));
+  }
+  function newChainSignature({ address, text, after = null, drand = null, salt = null }) {
+    const a = parseAddress(address);
+    if (!isCleanAddress(a)) throw new Error("This address isn't one a real wallet could have. Check it for a typo.");
+    const message = normalizeMessage(text);
+    checkMessageText(message);
+    const stamp = newStamp({ fingerprint: chainFingerprint(a, message), owner: a, after, drand, salt, kind: kindFor(message) });
+    return { address: a, message, stamp };
+  }
+  var chainPhrase = (cs) => stampPhrase(cs.stamp);
+  var chainScriptHex = (cs) => stampScriptHex(cs.stamp);
+  function chainSignedText(cs, { lockId = null, block = null } = {}) {
+    const lines = [CHAIN_BEGIN, cs.message, CSIG_BEGIN, `Address: ${cs.address}`, `Salt: ${cs.stamp.salt}`];
+    if (cs.stamp.after) lines.push(`After: ${cs.stamp.after.height} ${cs.stamp.after.hash}`);
+    if (cs.stamp.drand) lines.push(`Drand: ${cs.stamp.drand.round} ${cs.stamp.drand.signature}`);
+    if (lockId != null && String(lockId).trim()) {
+      const id = String(lockId).replace(/[\s​-‍⁠﻿]/g, "").toLowerCase().replace(/^0x/, "");
+      if (!/^[0-9a-f]{64}$/.test(id)) throw new Error("The Lock ID should be 64 characters, 0\u20139 and a\u2013f.");
+      lines.push(`Lock ID: ${id}`);
+    }
+    if (block != null) lines.push(`Block: ${block}`);
+    lines.push(CSIG_END);
+    return lines.join("\n");
+  }
+  function looksChainSigned(text) {
+    return String(text || "").includes(CHAIN_BEGIN);
+  }
+  function parseChainSigned(text) {
+    if (String(text || "").length > 2e4) throw new Error("This is far too long to be a chain-signed message.");
+    const t = cleanPaste(text);
+    const a = t.indexOf(CHAIN_BEGIN);
+    if (a < 0) throw new Error("This is not a BRC chain-signed message. It should start with -----BEGIN BRC CHAIN SIGNED MESSAGE-----.");
+    if (t.indexOf(CHAIN_BEGIN, a + 1) >= 0) throw new Error("This contains more than one chain-signed message. Check one at a time.");
+    const b = t.indexOf(CSIG_BEGIN, a);
+    const c = t.indexOf(CSIG_END, b);
+    if (b < 0) throw new Error("The signature part is missing. Copy the whole block, down to -----END BRC CHAIN SIGNATURE-----.");
+    if (c < 0) throw new Error("The last line, -----END BRC CHAIN SIGNATURE-----, is missing. Copy the whole block.");
+    const message = normalizeMessage(t.slice(a + CHAIN_BEGIN.length, b));
+    if (!message) throw new Error("The message part is empty.");
+    const body = t.slice(b + CSIG_BEGIN.length, c);
+    const field2 = (name) => {
+      const want = name.toLowerCase() + ":";
+      for (const raw of body.split("\n")) {
+        const line = raw.trim();
+        if (line.slice(0, want.length).toLowerCase() === want) {
+          const v = line.slice(want.length).trim();
+          return v || null;
+        }
+      }
+      return null;
+    };
+    const need = (name) => {
+      const v = field2(name);
+      if (!v) throw new Error(`The "${name}:" line is missing from the signature.`);
+      return v;
+    };
+    let after = null;
+    const afterLine = field2("After");
+    if (afterLine) {
+      const m = afterLine.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/);
+      if (!m) throw new Error('The "After:" line should be a block number and a block ID.');
+      after = { height: m[1], hash: m[2] };
+    }
+    let drand = null;
+    const drandLine = field2("Drand");
+    if (drandLine) {
+      const m = drandLine.replace(/,/g, "").match(/^(\d+)\s+(?:0x)?([0-9a-fA-F]{96})$/);
+      if (!m) throw new Error('The "Drand:" line should be a round number and a 96-character signature.');
+      drand = { round: Number(m[1]), signature: m[2] };
+    }
+    const address = parseAddress(need("Address"));
+    const cs = { address, message, stamp: newStamp({ fingerprint: chainFingerprint(address, message), owner: address, salt: need("Salt"), after, drand, kind: kindFor(message) }) };
+    const lockLine = field2("Lock ID");
+    let lockId = null;
+    if (lockLine) {
+      lockId = lockLine.replace(/\s+/g, "").toLowerCase().replace(/^0x/, "");
+      if (!/^[0-9a-f]{64}$/.test(lockId)) throw new Error('The "Lock ID:" line should be 64 characters, 0\u20139 and a\u2013f.');
+    }
+    const blockLine = field2("Block");
+    let block = null;
+    if (blockLine) {
+      block = Number(blockLine.replace(/[,\s]/g, ""));
+      if (!Number.isSafeInteger(block) || block < 1) throw new Error('The "Block:" line should be a block number.');
+    }
+    return { ...cs, lockId, block, hidden: hasHiddenCharacters(message), link: readLink(message, address) };
+  }
+  var LINK_HEAD = "BRC mailbox link v1";
+  var LINK_SIG_DOMAIN = "BrowserCoin Mailbox Link v1\n";
+  var linkBody = (coin, mailbox) => `${LINK_HEAD}
+Coin address: ${coin}
+Mailbox: ${mailbox}`;
+  function linkMessage(mailboxWallet, coinAddress) {
+    const coin = parseAddress(coinAddress);
+    if (!isCleanAddress(coin)) throw new Error("This coin address isn't one a real wallet could have. Check it for a typo.");
+    if (coin === mailboxWallet.address) throw new Error("That is the mailbox itself. Enter the coin address you want to link it to.");
+    const body = linkBody(coin, mailboxWallet.address);
+    const sig = sign(enc4.encode(LINK_SIG_DOMAIN + body), mailboxWallet.privateKey);
+    return `${body}
+Mailbox signature: ${bytesToHex3(sig)}`;
+  }
+  function readLink(message, signer) {
+    const lines = String(message).split("\n");
+    if (lines[0] !== LINK_HEAD) return null;
+    const get = (label) => {
+      const l = lines.find((x) => x.startsWith(label));
+      return l ? l.slice(label.length).trim().toLowerCase() : null;
+    };
+    const coin = get("Coin address:");
+    const mailbox = get("Mailbox:");
+    const sig = get("Mailbox signature:");
+    const bad = (reason) => ({ coin, mailbox, valid: false, reason });
+    if (lines.length !== 4 || !/^[0-9a-f]{64}$/.test(coin || "") || !/^[0-9a-f]{64}$/.test(mailbox || "") || !/^[0-9a-f]{128}$/.test(sig || "")) return bad("This mailbox link is damaged.");
+    if (signer && signer !== coin) return bad("This link was signed on the chain by a different address than the coin address it names.");
+    if (!strictVerify(hexToBytes3(sig, 64), enc4.encode(LINK_SIG_DOMAIN + linkBody(coin, mailbox)), mailbox)) return bad("The mailbox's own signature doesn't match, so the mailbox never agreed to this link.");
+    return { coin, mailbox, valid: true };
+  }
+
+  // src/official.js
+  var OFFICIAL = Object.freeze([
+    // { address: '<64 hex>', name: 'BRC Works release address', role: 'release' },
+  ]);
+
+  // src/known-core.js
+  var EDGE = 6;
+  function officialFor(address, list = OFFICIAL) {
+    const a = String(address || "").toLowerCase();
+    return list.find((o) => o.address === a) || null;
+  }
+  function lookalikeOf(address, list = OFFICIAL) {
+    const a = String(address || "").toLowerCase();
+    if (!/^[0-9a-f]{64}$/.test(a) || officialFor(a, list)) return null;
+    return list.find((o) => o.address.slice(0, EDGE) === a.slice(0, EDGE) || o.address.slice(-EDGE) === a.slice(-EDGE) || o.address.slice(0, 4) === a.slice(0, 4) && o.address.slice(-4) === a.slice(-4)) || null;
+  }
+  var PIC_COLORS = ["#5956fd", "#0d7a5f", "#e0552f", "#1f8fd6", "#c2417a", "#7c5cff", "#d99a0b", "#2f9e8f"];
+  function addressPicture(address) {
+    const b = sha256(hexToBytes3(String(address).toLowerCase(), 32));
+    const c1 = PIC_COLORS[b[0] % 8];
+    let c2 = PIC_COLORS[b[1] % 8];
+    if (c2 === c1) c2 = PIC_COLORS[(b[1] + 3) % 8];
+    const colors = [];
+    for (let row = 0; row < 3; row++) {
+      const left = b[2 + row] & 3, mid = b[5 + row] & 3;
+      for (const v of [left, mid, left]) colors.push(v === 0 ? "transparent" : v === 3 ? c2 : c1);
+    }
+    return { colors };
   }
 
   // src/app.js
@@ -10477,6 +10834,7 @@ ${message}`);
   var ICONS = {
     good: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="check-ring" pathLength="1" cx="12" cy="12" r="9" transform="rotate(-90 12 12)"/><path class="check-draw" pathLength="1" d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>',
     bad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
     warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4M12 17h.01"/></svg>'
   };
   function verdict(tone, title, ...body) {
@@ -10493,7 +10851,6 @@ ${message}`);
     void node.offsetWidth;
     node.classList.add(...cls);
   }
-  var IDC_COLORS = ["#5956fd", "#0d7a5f", "#e0552f", "#1f8fd6", "#c2417a", "#7c5cff", "#d99a0b", "#2f9e8f"];
   function paintIdenticon(node, address) {
     node.replaceChildren();
     if (!address) {
@@ -10502,17 +10859,10 @@ ${message}`);
       return;
     }
     node.classList.remove("empty");
-    const b = hexToBytes3(address.slice(0, 16));
-    const c1 = IDC_COLORS[b[0] % 8];
-    let c2 = IDC_COLORS[b[1] % 8];
-    if (c2 === c1) c2 = IDC_COLORS[(b[1] + 3) % 8];
-    for (let row = 0; row < 3; row++) {
-      const left = b[2 + row] & 3, mid = b[5 + row] & 3;
-      for (const v of [left, mid, left]) {
-        const cell = document.createElement("i");
-        cell.style.background = v === 0 ? "transparent" : v === 3 ? c2 : c1;
-        node.append(cell);
-      }
+    for (const colour of addressPicture(address).colors) {
+      const cell = document.createElement("i");
+      cell.style.background = colour;
+      node.append(cell);
     }
   }
   function kv(rows) {
@@ -10520,12 +10870,18 @@ ${message}`);
   }
   function addressNode(address) {
     const name = nameFor(address);
-    return el("span", {}, el("span", { class: "mono", text: address }), name ? el("span", { text: `  (${name})` }) : null);
+    const fake = lookalikeNote(address);
+    return el(
+      "span",
+      {},
+      el("span", { class: "mono", text: address }),
+      name ? el("span", { text: `  (${name})` }) : null,
+      fake ? el("span", { class: "bad-text lookalike", text: ` ${fake}` }) : null
+    );
   }
   var wallet = null;
   var testWallets = null;
   var pendingBackup = null;
-  var pendingConfirm = null;
   var loadGen = 0;
   function randomWallet() {
     const b = new Uint8Array(32);
@@ -10534,7 +10890,10 @@ ${message}`);
     b.fill(0);
     return w;
   }
-  var KNOWN = Object.freeze({});
+  function lookalikeNote(address) {
+    const o = lookalikeOf(address);
+    return o ? `Careful: this address looks like the ${o.name} (${o.address.slice(0, 6)}\u2026${o.address.slice(-6)}), but it isn't. Someone may be imitating it. Compare every character.` : "";
+  }
   var EMBEDDED = (() => {
     try {
       return window.top !== window.self || !!window.opener;
@@ -10543,12 +10902,13 @@ ${message}`);
     }
   })();
   function nameFor(address) {
-    if (KNOWN[address]) return KNOWN[address];
+    const o = officialFor(address);
+    if (o) return o.name;
     if (testWallets) {
-      if (address === testWallets.alice.address) return "test wallet Alice";
-      if (address === testWallets.bob.address) return "test wallet Bob";
+      if (address === testWallets.alice.address) return "test key Alice";
+      if (address === testWallets.bob.address) return "test key Bob";
     }
-    if (wallet && !testWallets && address === wallet.address) return "your loaded wallet";
+    if (wallet && !testWallets && address === wallet.address) return "your mailbox";
     return "";
   }
   function forgetEverything() {
@@ -10559,8 +10919,6 @@ ${message}`);
     wallet = null;
     testWallets = null;
     pendingBackup = null;
-    if (pendingConfirm) wipeWallet(pendingConfirm.wallet);
-    pendingConfirm = null;
   }
   var shortAddr = (a) => `${a.slice(0, 4)} ${a.slice(4, 8)} \u2026 ${a.slice(-8, -4)} ${a.slice(-4)}`;
   function renderWallet() {
@@ -10571,6 +10929,7 @@ ${message}`);
     $("#btn-forget").hidden = !wallet;
     $("#btn-test").hidden = !!testWallets;
     $("#btn-load").hidden = !!wallet && !testWallets;
+    $("#btn-link").hidden = !wallet;
     $("#btn-sheet-done").hidden = !wallet;
     $("#who").hidden = !testWallets;
     $("#seal-quick").hidden = !testWallets;
@@ -10578,33 +10937,27 @@ ${message}`);
     $("#sign-quick").hidden = !testWallets;
     const testName = testWallets ? wallet === testWallets.alice ? "Alice" : "Bob" : "";
     if (!wallet) {
-      title.textContent = "No wallet loaded";
-      sub.textContent = "You can check signatures and seal letters without one. Signing and opening need a wallet.";
+      title.textContent = "No mailbox key open";
+      sub.textContent = "You can sign on the chain, check and seal without one. Opening letters needs your mailbox key.";
     } else {
-      title.textContent = testWallets ? `Acting as test wallet ${testName}` : "Your wallet is loaded";
+      title.textContent = testWallets ? `Acting as test key ${testName}` : "Your mailbox key is open";
       sub.replaceChildren(el("span", { class: "mono", text: wallet.address }));
     }
     for (const node of $$("[data-idc]")) paintIdenticon(node, wallet ? wallet.address : "");
-    for (const node of $$("[data-wallet-name]")) node.textContent = !wallet ? "No wallet loaded" : testWallets ? `Test wallet ${testName}` : "Your wallet";
+    for (const node of $$("[data-wallet-name]")) node.textContent = !wallet ? "No mailbox key" : testWallets ? `Test key ${testName}` : "Your mailbox";
     for (const node of $$("[data-wallet-sub]")) {
       if (wallet) node.replaceChildren(el("span", { class: "mono", text: shortAddr(wallet.address) }));
-      else node.textContent = "Needed to sign and to open letters";
+      else node.textContent = "Needed to open letters";
     }
-    for (const node of $$("[data-wallet-act]")) node.textContent = wallet ? "Switch" : "Load";
-    for (const node of $$("[data-wallet-short]")) node.textContent = !wallet ? "No wallet" : testWallets ? testName : `${wallet.address.slice(0, 4)}\u2026${wallet.address.slice(-4)}`;
+    for (const node of $$("[data-wallet-act]")) node.textContent = wallet ? "Switch" : "Open";
+    for (const node of $$("[data-wallet-short]")) node.textContent = !wallet ? "No key" : testWallets ? testName : `${wallet.address.slice(0, 4)}\u2026${wallet.address.slice(-4)}`;
     for (const b of $$("#who button")) b.setAttribute("aria-pressed", String(!!testWallets && testWallets[b.dataset.who] === wallet));
-    const ownerBox = $("#st-owner");
-    if (!ownerBox.value || ownerBox.value === ownerBox.dataset.auto) {
-      ownerBox.value = wallet ? wallet.address : "";
-      ownerBox.dataset.auto = ownerBox.value;
-      resetStampFrom(2);
-    }
     const canSign = !!wallet;
     const wrap = $("#seal-sign-wrap");
     $("#seal-sign").disabled = !canSign;
     if (!canSign) $("#seal-sign").checked = false;
     wrap.setAttribute("aria-disabled", String(!canSign));
-    $("#seal-sign-label").textContent = canSign ? `Sign it so they know it's from me (${wallet.address.slice(0, 10)}\u2026${wallet.address.slice(-4)}).` : "Sign it so they know it's from me. Load a wallet to use this.";
+    $("#seal-sign-label").textContent = canSign ? `Sign it with my mailbox key so they know it's from me (${wallet.address.slice(0, 10)}\u2026${wallet.address.slice(-4)}).` : "Sign it so they know it's from me. Open your mailbox key to use this.";
   }
   function flashWallet() {
     for (const node of $$(".wallet-chip, .wallet-mini")) play(node, "flash");
@@ -10662,6 +11015,7 @@ ${message}`);
   }
   $("#btn-forget").addEventListener("click", () => {
     forgetEverything();
+    stopLinking();
     clearLoader();
     $("#loader").hidden = true;
     clearSecretsFromPage();
@@ -10686,11 +11040,7 @@ ${message}`);
     $("#wallet-password").value = "";
     $("#wallet-file").value = "";
     $("#password-field").hidden = true;
-    $("#confirm-field").hidden = true;
-    $("#confirm-mine").checked = false;
     pendingBackup = null;
-    if (pendingConfirm) wipeWallet(pendingConfirm.wallet);
-    pendingConfirm = null;
     say("#load-msg", "");
   }
   function clearSecretsFromPage() {
@@ -10700,31 +11050,39 @@ ${message}`);
     say("#sign-msg", "");
     say("#open-msg", "");
   }
+  var NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Seal opens only mailbox keys made in BRC Vault: a brc-mailbox-key-\u2026.json file, or its BRCMBOX1 paper code.";
+  var COIN_KEY = "That's a key that can hold coins. BRC Seal never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature \u2192 My coin address. To open letters, use a mailbox key from BRC Vault.";
+  var COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, choose Make a new wallet, then Mailbox key for BRC Seal.";
   async function readWalletText(text) {
     say("#load-msg", "");
-    if (EMBEDDED) throw new Error("BRC Seal is open inside another page, so real wallets are turned off. Open it in its own tab.");
-    const id = identifyInput(text);
-    if (id.kind === "vault-backup" || id.kind === "desktop-backup") {
+    if (EMBEDDED) throw new Error("BRC Seal is open inside another page, so real keys are turned off. Open it in its own tab.");
+    const flat = String(text).replace(/[\u200B-\u200D\u2060\uFEFF\u00AD\s]/g, "").toUpperCase();
+    const named = /["\u201C\u201D]TYPE["\u201C\u201D]:["\u201C\u201D]BRC-VAULT-MAILBOX-KEY["\u201C\u201D]/.test(flat);
+    if (!named && !flat.startsWith("BRCMBOX1")) {
+      $("#wallet-paste").value = "";
+      if (/BRC-VAULT-BACKUP|^BRCVAULT1/.test(flat)) throw new Error(COIN_BACKUP);
+      if (/BROWSERCOIN-WALLET|PRIVATEKEY|^BRCKEY1|^(0X)?[0-9A-F]{64}$/.test(flat) || /^\s*([a-z]+\s+){11,}[a-z]+\s*$/i.test(String(text))) throw new Error(COIN_KEY);
+      throw new Error(NOT_A_MAILBOX_KEY);
+    }
+    let id;
+    try {
+      id = identifyInput(text);
+    } catch {
+      throw new Error(NOT_A_MAILBOX_KEY);
+    }
+    if (id.kind === "vault-backup" && id.backup.type === MAILBOX_TYPE) {
       pendingBackup = id.backup;
       $("#password-field").hidden = false;
       $("#wallet-password").focus();
-      say("#load-msg", "Enter the backup password, then press Load wallet.", "info");
+      say("#load-msg", "Enter the password for this mailbox key, then press Open key.", "info");
       return null;
     }
-    if (id.kind === "private-key" && (id.ambiguous || id.checked !== true)) {
-      pendingConfirm = { wallet: id.wallet, ambiguous: !!id.ambiguous };
-      $("#confirm-address").textContent = id.wallet.address;
-      $("#confirm-ambiguous").hidden = !id.ambiguous;
-      $("#confirm-field").hidden = false;
-      $("#confirm-mine").checked = false;
-      say("#load-msg", "Check the address below, tick the box, then press Load wallet.", "info");
-      return null;
-    }
-    return { wallet: id.wallet };
+    if (id.wallet) wipeWallet(id.wallet);
+    $("#wallet-paste").value = "";
+    throw new Error(id.kind === "vault-backup" ? COIN_BACKUP : COIN_KEY);
   }
   function useWallet(w) {
     const keep = w;
-    if (pendingConfirm && pendingConfirm.wallet === w) pendingConfirm = null;
     forgetEverything();
     wallet = keep;
     clearSecretsFromPage();
@@ -10739,14 +11097,6 @@ ${message}`);
     btn.disabled = true;
     const gen = loadGen;
     try {
-      if (pendingConfirm) {
-        if (!$("#confirm-mine").checked) {
-          say("#load-msg", "Tick the box to confirm this is your address, or press Cancel.", "bad");
-          return;
-        }
-        useWallet(pendingConfirm.wallet);
-        return;
-      }
       if (pendingBackup) {
         const pw = $("#wallet-password").value;
         if (!pw) {
@@ -10759,12 +11109,16 @@ ${message}`);
           wipeWallet(w);
           return;
         }
+        if (w.purpose !== "mailbox") {
+          wipeWallet(w);
+          throw new Error(COIN_BACKUP);
+        }
         useWallet(w);
         return;
       }
       const text = $("#wallet-paste").value;
       if (!text.trim()) {
-        say("#load-msg", "Choose your wallet file or paste it first.", "bad");
+        say("#load-msg", "Choose your mailbox key file or paste it first.", "bad");
         return;
       }
       const r = await readWalletText(text);
@@ -10778,7 +11132,7 @@ ${message}`);
   async function loadFile(file) {
     if (!file) return;
     if (file.size > MAX_INPUT_LENGTH) {
-      say("#load-msg", "This file is far too large to be a wallet.", "bad");
+      say("#load-msg", "This file is far too large to be a mailbox key.", "bad");
       return;
     }
     try {
@@ -10791,7 +11145,7 @@ ${message}`);
     }
   }
   $("#wallet-paste").addEventListener("input", () => {
-    if (!pendingBackup && !pendingConfirm) return;
+    if (!pendingBackup) return;
     const keep = $("#wallet-paste").value;
     clearLoader();
     $("#wallet-paste").value = keep;
@@ -10810,8 +11164,8 @@ ${message}`);
   $("#wallet-password").addEventListener("keydown", (e) => {
     if (e.key === "Enter") $("#btn-load-go").click();
   });
-  var SCREENS = { home: "#s-home", sign: "#p-sign", seal: "#p-seal", postmark: "#p-stamp", received: "#s-received", verify: "#p-verify", open: "#p-open", check: "#p-check" };
-  var PARENT = { sign: "home", seal: "home", postmark: "home", received: "home", verify: "received", open: "received", check: "received" };
+  var SCREENS = { home: "#s-home", sign: "#p-sign", seal: "#p-seal", postmark: "#p-stamp", received: "#s-received", verify: "#p-verify", open: "#p-open", check: "#p-check", inbox: "#p-inbox" };
+  var PARENT = { sign: "home", seal: "home", postmark: "home", received: "home", verify: "received", open: "received", check: "received", inbox: "received" };
   var ALIASES = { stamp: "postmark", "": "home" };
   var depth = (name) => name === "home" ? 0 : PARENT[name] === "home" ? 1 : 2;
   var current = null;
@@ -10922,7 +11276,7 @@ ${message}`);
       say("#rx-msg", "");
       return;
     }
-    if (/BEGIN BRC SIGNED MESSAGE/i.test(t)) {
+    if (/BEGIN BRC SIGNED MESSAGE|BEGIN BRC CHAIN SIGNED MESSAGE/i.test(t)) {
       $("#verify-text").value = t;
       go("verify");
       $("#btn-verify").click();
@@ -10930,7 +11284,7 @@ ${message}`);
       $("#open-text").value = t;
       go("open");
       if (wallet) $("#btn-open").click();
-      else say("#open-msg", "This is a sealed letter. Load the wallet it was sealed to, then press Open the letter.", "info");
+      else say("#open-msg", "This is a sealed letter. Open the mailbox key it was sealed to, then press Open the letter.", "info");
     } else if (/BEGIN BRC STAMP RECEIPT/i.test(t)) {
       $("#st-cmp-receipt").value = t;
       go("check");
@@ -10951,7 +11305,7 @@ ${message}`);
   });
   var today = () => (/* @__PURE__ */ new Date()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   var FILLS = {
-    giveaway: () => raffleEntryText(1e5),
+    mine: () => `This address is mine. Signed on ${today()}.`,
     discord: () => `I'm ____ on the BrowserCoin Discord. Signed on ${today()}.`,
     pool: () => `This is my payout address for ____ pool. Signed on ${today()}.`
   };
@@ -10981,9 +11335,9 @@ ${message}`);
     note.dataset.mode = signMode;
     note.replaceChildren(el("strong", { text: PRIVACY[signMode][0] }), PRIVACY[signMode][1]);
     $("#sign-private").hidden = signMode !== "private";
-    $("#btn-sign").textContent = signMode === "private" ? "Sign and seal for them" : "Sign with my wallet";
     $("#sign-out").hidden = true;
     say("#sign-msg", "");
+    renderSignAs();
   }
   for (const b of $$("#sign-mode button")) b.addEventListener("click", () => {
     signMode = b.dataset.mode;
@@ -10999,11 +11353,158 @@ ${message}`);
   for (const chip of $$("[data-sign-to]")) chip.addEventListener("click", () => {
     if (testWallets) $("#sign-to").value = testWallets[chip.dataset.signTo].address;
   });
+  var signAs = "chain";
+  var scSig = null;
+  var linking = null;
+  var AS_NOTE = {
+    chain: ["No key needed here. ", "You lock a tiny amount in the official app with a phrase made from your message. Your key signs that lock inside the app, and the chain becomes your signature. Check it on BRC Pulse once the lock is in a block."],
+    mailbox: ["Signed by your mailbox key. ", "Instant, and no coins involved. It proves your mailbox wrote it; link your mailbox to your coin address once, on the chain, so people know whose mailbox it is."]
+  };
+  function renderSignAs() {
+    for (const b of $$("#sign-as button")) b.setAttribute("aria-checked", String(b.dataset.as === signAs));
+    const note = $("#sign-as-note");
+    note.dataset.mode = signAs;
+    note.replaceChildren(el("strong", { text: AS_NOTE[signAs][0] }), AS_NOTE[signAs][1]);
+    $("#sign-chain-part").hidden = signAs !== "chain";
+    $("#sign-mailbox-part").hidden = signAs !== "mailbox";
+    $("#btn-sign").textContent = signAs === "chain" ? "Make the phrase" : signMode === "private" ? "Sign and seal for them" : "Sign with my mailbox key";
+    resetChainSig();
+  }
+  function resetChainSig() {
+    scSig = null;
+    $("#sc-recipe").hidden = true;
+    $("#sc-lockid").value = "";
+    tidyScLockId();
+    say("#sc-msg", "");
+  }
+  function setSignAs(as) {
+    if (signAs === as) return;
+    signAs = as;
+    if (as !== "chain") {
+      stopLinking();
+      stopCommit();
+    }
+    $("#sign-out").hidden = true;
+    say("#sign-msg", "");
+    renderSignAs();
+  }
+  for (const b of $$("#sign-as button")) b.addEventListener("click", () => setSignAs(b.dataset.as));
+  $("#sign-as").addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    e.preventDefault();
+    setSignAs(signAs === "chain" ? "mailbox" : "chain");
+    $(`#sign-as [data-as="${signAs}"]`).focus();
+  });
+  for (const id of ["#sc-address", "#sign-text"]) $(id).addEventListener("input", () => {
+    if (scSig) {
+      resetChainSig();
+      $("#sign-out").hidden = true;
+    }
+  });
+  function tidyScLockId() {
+    const box = $("#sc-lockid"), out = $("#sc-lockid-status");
+    const raw = box.value;
+    const found = raw.replace(/\s+/g, "").match(/(?<![0-9a-fA-F])(?:0x)?([0-9a-fA-F]{64})(?![0-9a-fA-F])/);
+    if (found && found[1].toLowerCase() !== raw) box.value = found[1].toLowerCase();
+    delete out.dataset.over;
+    delete out.dataset.good;
+    const v = box.value.trim();
+    if (!v) out.textContent = "optional";
+    else if (/^[0-9a-f]{64}$/.test(v)) {
+      out.textContent = "looks right";
+      out.dataset.good = "";
+    } else {
+      out.textContent = "not a Lock ID";
+      out.dataset.over = "";
+    }
+  }
+  $("#sc-lockid").addEventListener("input", () => {
+    tidyScLockId();
+    $("#sign-out").hidden = true;
+  });
+  function startLinking() {
+    if (!wallet) return;
+    stopCommit();
+    linking = { mailbox: wallet.address };
+    closeSheet();
+    go("sign");
+    signAs = "chain";
+    renderSignAs();
+    $("#sc-link-note").hidden = false;
+    $("#sc-link-mailbox").textContent = `${wallet.address.slice(0, 10)}\u2026${wallet.address.slice(-4)}`;
+    $("#sign-text").value = "";
+    $("#sign-text").readOnly = true;
+    $("#sign-text").placeholder = "Enter your coin address above. The link message appears here.";
+    $("#sign-fills").hidden = true;
+    updateLinkText();
+    $("#sc-address").focus();
+  }
+  function updateLinkText() {
+    if (!linking) return;
+    const a = $("#sc-address").value.trim();
+    let text = "";
+    try {
+      if (a && wallet && wallet.address === linking.mailbox) text = linkMessage(wallet, a);
+    } catch {
+    }
+    $("#sign-text").value = text;
+    updateSignCount();
+  }
+  function stopLinking() {
+    if (!linking) return;
+    linking = null;
+    $("#sc-link-note").hidden = true;
+    $("#sign-text").readOnly = false;
+    $("#sign-text").value = "";
+    $("#sign-text").placeholder = "I'm pb-hash on Discord. Today is Oct 31, 2026.";
+    $("#sign-fills").hidden = false;
+    updateSignCount();
+  }
+  $("#sc-address").addEventListener("input", updateLinkText);
+  $("#btn-sc-unlink").addEventListener("click", () => {
+    stopLinking();
+    resetChainSig();
+    $("#sign-text").focus();
+  });
+  $("#btn-link").addEventListener("click", startLinking);
+  var committing = null;
+  function startCommit(message) {
+    stopLinking();
+    committing = message;
+    go("sign");
+    signAs = "chain";
+    renderSignAs();
+    $("#sc-commit-note").hidden = false;
+    $("#sign-text").value = message;
+    $("#sign-text").readOnly = true;
+    $("#sign-fills").hidden = true;
+    updateSignCount();
+    $("#sc-address").focus();
+  }
+  function stopCommit() {
+    if (!committing) return;
+    committing = null;
+    $("#sc-commit-note").hidden = true;
+    $("#sign-text").readOnly = false;
+    $("#sign-text").value = "";
+    $("#sign-fills").hidden = false;
+    updateSignCount();
+  }
+  $("#btn-sc-uncommit").addEventListener("click", () => {
+    stopCommit();
+    resetChainSig();
+    $("#sign-text").focus();
+  });
   renderSignMode();
   $("#btn-sign").addEventListener("click", () => {
     $("#sign-out").hidden = true;
+    $("#sign-pulse").hidden = true;
+    if (signAs === "chain") {
+      makeChainPhrase();
+      return;
+    }
     if (!wallet) {
-      say("#sign-msg", "Load a wallet or use the test wallets first. Signing needs a private key.", "bad");
+      say("#sign-msg", "Open your mailbox key, or use the test keys, first. Or sign as your coin address, on the chain.", "bad");
       openSheet();
       return;
     }
@@ -11016,12 +11517,12 @@ ${message}`);
         $("#sign-to").value = n.to;
         const who = nameFor(n.to);
         $("#sign-block").textContent = n.armored;
-        $("#sign-out-title").textContent = `Signed and sealed for ${who ? who.replace("test wallet ", "") : `${n.to.slice(0, 6)}\u2026${n.to.slice(-4)}`}`;
+        $("#sign-out-title").textContent = `Signed and sealed for ${who ? who.replace("test key ", "") : `${n.to.slice(0, 6)}\u2026${n.to.slice(-4)}`}`;
         $("#sign-out-sub").textContent = "Send this whole block. Only they can open it and check your signature.";
         $("#btn-sign-copy").querySelector(".lbl").textContent = $("#btn-sign-copy").dataset.label = "Copy the sealed letter";
       } else {
         $("#sign-block").textContent = s.armored;
-        $("#sign-out-title").textContent = "Signed";
+        $("#sign-out-title").textContent = "Signed by your mailbox";
         $("#sign-out-sub").textContent = "Share this whole block. Anyone can check it.";
         $("#btn-sign-copy").querySelector(".lbl").textContent = $("#btn-sign-copy").dataset.label = "Copy the signed message";
       }
@@ -11032,6 +11533,88 @@ ${message}`);
       say("#sign-msg", e.message, "bad");
     }
   });
+  function makeChainPhrase() {
+    resetChainSig();
+    say("#sign-msg", "");
+    try {
+      if (linking && (!wallet || wallet.address !== linking.mailbox)) throw new Error("Your mailbox key was closed. Open it again to link it.");
+      if (linking) updateLinkText();
+      const cs = newChainSignature({ address: $("#sc-address").value, text: $("#sign-text").value });
+      $("#sc-address").value = cs.address;
+      scSig = cs;
+      $("#sc-amount").textContent = SUGGESTED_AMOUNT;
+      $("#sc-owner-copy").textContent = cs.address;
+      $("#sc-phrase").textContent = chainPhrase(cs);
+      const scriptHex = chainScriptHex(cs);
+      $("#sc-check").textContent = `PUSH(32) ${scriptHex.slice(4, 24)}\u2026`;
+      $("#sc-check-owner").textContent = `PUSH(32) ${cs.address.slice(0, 20)}\u2026`;
+      $("#sc-recipe").hidden = false;
+      play($("#sc-recipe"));
+      $("#sc-recipe").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    } catch (e) {
+      say("#sign-msg", e.message, "bad");
+      play($("#sign-msg"), "anim-shake");
+    }
+  }
+  $("#btn-sc-done").addEventListener("click", () => {
+    say("#sc-msg", "");
+    if (!scSig) return;
+    try {
+      const text = chainSignedText(scSig, { lockId: $("#sc-lockid").value.trim() || null });
+      $("#sign-block").textContent = text;
+      $("#sign-out-title").textContent = linking ? "Mailbox link signed on the chain" : committing ? "Giveaway list signed on the chain" : "Signed on the chain";
+      $("#sign-out-sub").textContent = linking ? "Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse \u2192 Stamps once the lock is in a block." : "Share this whole block. Anyone can check it on BRC Pulse \u2192 Stamps once the lock is in a block, usually within a few minutes.";
+      $("#btn-sign-copy").querySelector(".lbl").textContent = $("#btn-sign-copy").dataset.label = linking ? "Copy the mailbox link" : "Copy the signed message";
+      $("#sign-pulse").hidden = false;
+      $("#sign-out").hidden = false;
+      play($("#sign-out"));
+      $("#sign-out").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    } catch (e) {
+      say("#sc-msg", e.message, "bad");
+    }
+  });
+  var PULSE_STAMPS = "https://pb-hash.github.io/brc-pulse/#stamp";
+  function showChainSigned(text, out) {
+    let p;
+    try {
+      p = parseChainSigned(text);
+    } catch (e) {
+      say("#verify-msg", e.message, "bad");
+      play($("#verify-msg"), "anim-shake");
+      return;
+    }
+    const where = el(
+      "p",
+      {},
+      "BRC Seal works offline, so it can't look at the chain. To finish the check, paste this block into ",
+      el("a", { href: PULSE_STAMPS, target: "_blank", rel: "noopener noreferrer", text: "BRC Pulse \u2192 Stamps" }),
+      ", which finds the lock and checks your address made it."
+    );
+    const rows = [["Claims to be signed by", addressNode(p.address)], ["Message", el("div", { class: "message-box", text: p.message })]];
+    if (p.lockId) rows.push(["Lock ID", el("span", { class: "mono", text: `${p.lockId.slice(0, 16)}\u2026` })]);
+    if (p.link && !p.link.valid) {
+      out.append(verdict("bad", "Not a valid mailbox link", el("p", { text: p.link.reason }), kv([["Claims to be", addressNode(p.address)]])));
+      return;
+    }
+    if (p.link) {
+      out.append(verdict(
+        "warn",
+        "A mailbox link: only the mailbox's side is checked here",
+        el("p", { text: "The mailbox key's own signature checks out. Whether the coin address really made this link is not checked yet: anyone can write this block for any coin address. Until BRC Pulse finds the coin address's own lock, treat it as a claim." }),
+        where,
+        kv([["Coin address", addressNode(p.link.coin)], ["Mailbox", addressNode(p.link.mailbox)]])
+      ));
+      return;
+    }
+    out.append(verdict(
+      "warn",
+      "Not checked yet: it needs BRC Pulse",
+      el("p", { text: "Anyone can write a block like this for any address. It only counts once BRC Pulse finds the lock and confirms that address made it." }),
+      p.hidden ? el("p", { text: "It also contains invisible or direction-changing characters, so it may not read the way it looks." }) : null,
+      where,
+      kv(rows)
+    ));
+  }
   $("#btn-verify").addEventListener("click", () => {
     const out = $("#verify-out");
     out.replaceChildren();
@@ -11039,6 +11622,10 @@ ${message}`);
     const text = $("#verify-text").value;
     if (!text.trim()) {
       say("#verify-msg", "Paste a signed message first.", "bad");
+      return;
+    }
+    if (looksChainSigned(text)) {
+      showChainSigned(text, out);
       return;
     }
     let v;
@@ -11060,7 +11647,7 @@ ${message}`);
       out.append(verdict(
         "good",
         "Valid signature",
-        el("p", { text: "This exact message was signed by the wallet that controls this address." }),
+        el("p", { text: "This exact message was signed by the key that controls this address. It is usually a mailbox: check for a mailbox link to see whose." }),
         kv([["Signed by", addressNode(v.address)], ["Message", el("div", { class: "message-box", text: v.message })]])
       ));
     } else {
@@ -11086,16 +11673,51 @@ ${message}`);
     else delete c.dataset.over;
   }
   $("#seal-text").addEventListener("input", updateSealCount);
+  function readSealTo() {
+    const raw = $("#seal-to").value;
+    if (!looksChainSigned(raw)) {
+      let a = null;
+      try {
+        a = parseAddress(raw);
+      } catch {
+      }
+      const fake2 = a ? lookalikeNote(a) : "";
+      if (fake2) throw new Error(fake2);
+      const o = a ? officialFor(a) : null;
+      $("#seal-link-ok-wrap").hidden = true;
+      say("#seal-to-note", o ? `Sealing to the ${o.name}.` : a ? "Is this their mailbox? A coin address's key stays in the official app, which can't open letters. If you have their mailbox link, paste that instead." : "", "info");
+      return raw;
+    }
+    const p = parseChainSigned(raw);
+    if (!p.link) throw new Error("That's a message signed on the chain, not a mailbox link. Paste their mailbox link, or their mailbox address.");
+    if (!p.link.valid) throw new Error(`That mailbox link isn't valid. ${p.link.reason}`);
+    const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
+    if (fake) throw new Error(fake);
+    $("#seal-link-ok-wrap").hidden = false;
+    say("#seal-to-note", `A link to the mailbox of coin address ${p.link.coin.slice(0, 10)}\u2026${p.link.coin.slice(-4)}. Only the mailbox's side can be checked here. Check the link on BRC Pulse \u2192 Stamps first: anyone can write a link that names someone else's coin address.`, "warn");
+    return p.link.mailbox;
+  }
+  $("#seal-to").addEventListener("input", () => {
+    $("#seal-link-ok").checked = false;
+    try {
+      readSealTo();
+    } catch (e) {
+      $("#seal-link-ok-wrap").hidden = true;
+      say("#seal-to-note", e.message, "bad");
+    }
+  });
   $("#btn-seal").addEventListener("click", () => {
     $("#seal-out").hidden = true;
     say("#seal-msg", "");
     try {
       const signIt = $("#seal-sign").checked && !!wallet;
-      const n = sealNote($("#seal-to").value, $("#seal-text").value, signIt ? wallet : null);
-      $("#seal-to").value = n.to;
+      const to = readSealTo();
+      if (looksChainSigned($("#seal-to").value) && !$("#seal-link-ok").checked) throw new Error("Check the mailbox link on BRC Pulse \u2192 Stamps first, then tick the box. An unchecked link could send this letter to someone pretending to be them.");
+      const n = sealNote(to, $("#seal-text").value, signIt ? wallet : null);
+      if (!looksChainSigned($("#seal-to").value)) $("#seal-to").value = n.to;
       $("#seal-block").textContent = n.armored;
       const who = nameFor(n.to);
-      $("#seal-out-title").textContent = `Sealed to ${who ? who.replace("test wallet ", "") : `${n.to.slice(0, 6)}\u2026${n.to.slice(-4)}`}${n.signed ? ", signed by you" : ", anonymous"}`;
+      $("#seal-out-title").textContent = `Sealed to ${who ? who.replace("test key ", "") : `${n.to.slice(0, 6)}\u2026${n.to.slice(-4)}`}${n.signed ? ", signed by your mailbox" : ", anonymous"}`;
       const len = $("#seal-len");
       if (n.length > DISCORD_LIMIT) {
         len.dataset.tone = "warn";
@@ -11121,7 +11743,7 @@ ${message}`);
       return;
     }
     if (!wallet) {
-      say("#open-msg", "Load the wallet this letter was sealed to. Opening needs its private key.", "bad");
+      say("#open-msg", "Open the mailbox key this letter was sealed to. Opening needs it.", "bad");
       openSheet();
       return;
     }
@@ -11133,7 +11755,7 @@ ${message}`);
       try {
         const { to } = parseSealed(text);
         const name = nameFor(to);
-        if (testWallets && name) hint2 = ` It's for ${name.replace("test wallet ", "")}: switch to ${name.replace("test wallet ", "")} in your wallet (top right).`;
+        if (testWallets && name) hint2 = ` It's for ${name.replace("test key ", "")}: switch to ${name.replace("test key ", "")} in your mailbox key (top right).`;
       } catch {
       }
       say("#open-msg", e.message + hint2, "bad");
@@ -11143,7 +11765,7 @@ ${message}`);
     let fromRow;
     let tone = "good";
     let title = "Opened";
-    let lede = "Only your wallet could open this letter.";
+    let lede = "Only your mailbox key could open this letter.";
     if (!o.signed) {
       fromRow = el("span", { text: "Anonymous. The sender didn't sign it, so it could be from anyone." });
     } else if (o.signatureValid) {
@@ -11185,6 +11807,10 @@ ${message}`);
         title = "Opened, but part of it is not signed";
         lede = "Only the signed text below is vouched for. The words in the red box were added by whoever sealed the letter, and could be from anyone.";
       }
+    }
+    if (looksChainSigned(o.message)) {
+      rows.push(["Careful", el("span", { class: "bad-text", text: 'This letter contains a block "signed on the chain". It is not checked here: paste that block into BRC Pulse \u2192 Stamps before trusting it.' })]);
+      if (tone === "good") tone = "warn";
     }
     out.append(verdict(tone, title, el("p", { text: lede }), kv(rows)));
   });
@@ -11419,7 +12045,7 @@ ${message}`);
     $("#pm-by").replaceChildren(document.createTextNode("The lock\u2019s block"), el("small", { text: "shown on BRC Pulse, usually within minutes" }));
     const who = nameFor(st.owner);
     $("#pm-from").replaceChildren(
-      document.createTextNode(wallet && wallet.address === st.owner ? "You" : who || "This address"),
+      document.createTextNode(who || "Your address"),
       el("small", { class: "mono", text: `${st.owner.slice(0, 6)}\u2026${st.owner.slice(-4)}` })
     );
   }
@@ -11527,6 +12153,128 @@ ${message}`);
     }
     runCompare();
   });
+  var ibExport = null;
+  var ibEligible = null;
+  var ibResult = null;
+  async function readJsonFile(file) {
+    if (!file) return null;
+    if (file.size > 50 * 1024 * 1024) throw new Error("This file is far too large.");
+    try {
+      return JSON.parse(await file.text());
+    } catch {
+      throw new Error("This file isn't readable JSON. Choose the file as it was downloaded.");
+    }
+  }
+  $("#ib-file").addEventListener("change", async (e) => {
+    ibExport = null;
+    $("#ib-out").hidden = true;
+    say("#ib-msg", "");
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    try {
+      const d = await readJsonFile(f);
+      if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === "string")) throw new Error("This isn't a letters file from the BRC Mailbox.");
+      ibExport = { mailbox: String(d.mailbox || ""), pool: /^[0-9a-f]{64}$/.test(String(d.pool)) ? d.pool : null, round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
+      $("#ib-file-title").textContent = f.name;
+      $("#ib-file-sub").textContent = `${ibExport.letters.length.toLocaleString("en-US")} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}\u2026${ibExport.mailbox.slice(-4)}` : "an unnamed mailbox"}`;
+      dropState($("#ib-drop"), "done", 1);
+    } catch (err2) {
+      say("#ib-msg", err2.message, "bad");
+      dropState($("#ib-drop"), "");
+    }
+  });
+  $("#ib-elig").addEventListener("change", async (e) => {
+    ibEligible = null;
+    $("#ib-out").hidden = true;
+    say("#ib-msg", "");
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    try {
+      const d = await readJsonFile(f);
+      if (!d || !Array.isArray(d.addresses)) throw new Error("This isn't an eligible list.");
+      const fp = eligibleFingerprint(d.addresses);
+      if (d.fingerprint && d.fingerprint !== fp) throw new Error("This eligible list doesn't match its own fingerprint. It was changed after it was made.");
+      ibEligible = { set: new Set(d.addresses), fingerprint: fp, count: new Set(d.addresses).size };
+      $("#ib-elig-title").textContent = f.name;
+      $("#ib-elig-sub").textContent = `${ibEligible.count.toLocaleString("en-US")} addresses \xB7 fingerprint ${fp.slice(0, 16)}\u2026`;
+      dropState($("#ib-elig-drop"), "done", 1);
+    } catch (err2) {
+      say("#ib-msg", err2.message, "bad");
+      dropState($("#ib-elig-drop"), "");
+    }
+  });
+  $("#btn-ib-open").addEventListener("click", () => {
+    $("#ib-out").hidden = true;
+    say("#ib-msg", "");
+    if (!ibExport) {
+      say("#ib-msg", "Choose the letters file first.", "bad");
+      play($("#ib-msg"), "anim-shake");
+      return;
+    }
+    if (!wallet) {
+      say("#ib-msg", "Open the mailbox key first. Opening needs it.", "bad");
+      openSheet();
+      return;
+    }
+    if (ibExport.mailbox && ibExport.mailbox !== wallet.address) {
+      say("#ib-msg", `These letters are for mailbox ${ibExport.mailbox.slice(0, 10)}\u2026, not the key you opened. Open that mailbox's key.`, "bad");
+      return;
+    }
+    const r = readEntries(ibExport.letters.map((l) => l.letter), wallet, ibEligible ? ibEligible.set : null, [ibExport.pool, ...OFFICIAL.map((o) => o.address)]);
+    ibResult = { ...r, letters: ibExport.letters.length, setAside: r.rejected.map((x) => ({ seq: ibExport.letters[x.index].seq, reason: x.reason })) };
+    const rows = $("#ib-rows");
+    rows.replaceChildren();
+    const row = (k, v, small) => rows.append(el("div", {}, el("dt", { text: k }), el("dd", {}, v, small ? el("small", { text: small }) : null)));
+    row("Letters", ibResult.letters.toLocaleString("en-US"));
+    row("Valid entries", r.entries.length.toLocaleString("en-US"), ibEligible ? "one per eligible address" : "one per address; no eligible list checked");
+    row("Set aside", r.rejected.length.toLocaleString("en-US"));
+    row("List fingerprint", r.fingerprint ? `${r.fingerprint.slice(0, 16)}\u2026` : "none", r.fingerprint ? "publish this before the draw" : "");
+    $("#ib-fp").textContent = r.fingerprint || "";
+    const aside = $("#ib-aside");
+    aside.replaceChildren();
+    if (r.rejected.length) {
+      const counts = /* @__PURE__ */ new Map();
+      for (const x of r.rejected) counts.set(x.reason, (counts.get(x.reason) || 0) + 1);
+      aside.append(el("p", { class: "pm-note", text: "Set aside: " + [...counts].map(([k, n]) => `${n} \xD7 ${k.replace(/\.$/, "")}`).join("; ") + "." }));
+    }
+    $("#btn-ib-save").disabled = !r.entries.length;
+    $("#btn-ib-commit").hidden = !r.entries.length;
+    $("#ib-out").hidden = false;
+    play($("#ib-out"));
+  });
+  $("#btn-ib-commit").addEventListener("click", () => {
+    if (!ibResult || !ibResult.entries.length) return;
+    if (!ibExport.round) {
+      say("#ib-msg", "This letters file doesn't say which drand round the draw uses. Download it again from BRC Pulse \u2192 Giveaway.", "bad");
+      return;
+    }
+    try {
+      startCommit(listCommitMessage({ count: ibResult.entries.length, fingerprint: ibResult.fingerprint, round: ibExport.round }));
+    } catch (e) {
+      say("#ib-msg", e.message, "bad");
+    }
+  });
+  $("#btn-ib-save").addEventListener("click", () => {
+    if (!ibResult || !ibResult.entries.length) return;
+    const body = {
+      v: 1,
+      mailbox: wallet ? wallet.address : null,
+      round: ibExport ? ibExport.round : null,
+      letters: ibResult.letters,
+      count: ibResult.entries.length,
+      fingerprint: ibResult.fingerprint,
+      eligibleFingerprint: ibEligible ? ibEligible.fingerprint : null,
+      addresses: ibResult.entries,
+      setAside: ibResult.setAside
+    };
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1) + "\n"], { type: "application/json" }));
+    a.download = "entries.json";
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1e3);
+  });
   var swipe = null;
   var hint = $("#edge-hint");
   function endSwipe(back) {
@@ -11591,7 +12339,8 @@ ${message}`);
       clearLoader();
       clearSecretsFromPage();
       renderWallet();
-      $("#wallet-sub").textContent = "Your wallet was forgotten after 10 minutes without use. Load it again when you need it.";
+      stopLinking();
+      $("#wallet-sub").textContent = "Your mailbox key was closed after 10 minutes without use. Open it again when you need it.";
       for (const node of $$("[data-wallet-sub]")) node.textContent = "Forgotten after 10 minutes idle";
     }
   }
