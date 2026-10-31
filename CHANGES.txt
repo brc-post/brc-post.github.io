@@ -5,6 +5,21 @@ features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published. BRC Post is not live.
 
 0.6.0 (in progress)
+  - test.4: "it just works" mailbox (Patrick, Oct 31). Create my mailbox makes
+    one right here: choose a password, the locked backup downloads by itself,
+    and this device can remember the LOCKED copy, so next time you only type
+    your password (Unlock). I already have a mailbox opens a backup file (or
+    its paper code, behind a link) and can remember it too. Remove from this
+    device needs a second press. Your mailbox link (#to=address) with Share
+    and Copy; opening it starts a letter with the address and its picture.
+    One "Paste it here" box on the home screen: letters (asking for the
+    password if needed, then opening), signatures, receipts, mailbox links,
+    mailbox backups; an address is explained as public; coin keys refused.
+    Sealed letters get a Send button (share sheet). Plain words: mailbox,
+    password, backup; "Post seals it".
+  - test.3: pasting a 64-character code into the mailbox key box (an address
+    looks exactly like a private key) now says so and points to the
+    brc-mailbox-key-….json file, instead of only "a key that can hold coins".
   - test.2: published for testing at https://brc-post.github.io (its own origin);
     test builds ask search engines not to index it (robots tag and robots.txt).
   - test.1: BRC Seal is now BRC Post (Patrick, Oct 31): the name grows into the
