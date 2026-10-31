@@ -710,6 +710,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
         <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your wallet</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
         <a class="tile" href="#check" id="go-check"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a postmark</strong><span>Match a file to its receipt</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#inbox" id="go-inbox"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><span class="tile-text"><strong>Open many letters</strong><span>For a mailbox owner: open a whole mailbox at once</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
       </div>
     </section>
 
@@ -769,6 +770,26 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <label class="field"><span>Receipt</span><textarea id="st-cmp-receipt" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="-----BEGIN BRC STAMP RECEIPT-----"></textarea></label>
         <label class="drop" id="st-cmp-drop" style="margin-top:0.9rem"><input type="file" id="st-cmp-file"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="st-cmp-file-title">Choose the file</strong>Read here, never uploaded</span><span class="bar" aria-hidden="true"></span></label>
         <p class="msg" id="st-cmp-msg" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+
+    <!-- ================= OPEN MANY LETTERS ================= -->
+    <section class="screen" id="p-inbox" data-screen="inbox" hidden>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><h2 tabindex="-1">Open many letters</h2></div>
+      <p class="lede">For a mailbox owner. Open every letter from a BRC Mailbox at once, here and offline, with the mailbox's wallet. For a giveaway, this counts the entries and makes the list to publish.</p>
+      <div class="card">
+        <label class="drop" id="ib-drop"><input type="file" id="ib-file" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="ib-file-title">Choose the letters file</strong><span id="ib-file-sub">From BRC Pulse → Giveaway → Download every letter</span></span></label>
+        <label class="drop" id="ib-elig-drop" style="margin-top:0.7rem"><input type="file" id="ib-elig" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="drop-text"><strong id="ib-elig-title">Eligible list (optional)</strong><span id="ib-elig-sub">The giveaway's eligible.json, to set aside addresses that can't enter</span></span></label>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-ib-open" type="button">Open all letters</button></div>
+        <p class="msg" id="ib-msg" role="status" aria-live="polite"></p>
+        <div id="ib-out" hidden>
+          <dl class="rows" id="ib-rows"></dl>
+          <div id="ib-aside"></div>
+          <div class="actions"><button class="btn btn-primary" type="button" id="btn-ib-save" style="flex:1 1 12rem">Save the entry list</button><button class="btn btn-secondary" type="button" data-copy="ib-fp" style="flex:1 1 10rem"><span class="lbl">Copy fingerprint</span></button></div>
+          <span class="mono" id="ib-fp" hidden></span>
+        </div>
       </div>
     </section>
 

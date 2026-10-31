@@ -379,6 +379,40 @@ with sync_playwright() as pw:
     expect(page.locator('#st-cmp-msg')).to_contain_text("doesn't match")
     ok('checks a file against its receipt, offline')
 
+    # --- Open many letters: a mailbox owner counts giveaway entries ---
+    open_wallet(page)
+    page.click('#btn-forget')
+    page.click('#btn-load')
+    page.fill('#wallet-paste', fx['walletFile'])
+    page.click('#btn-load-go')
+    expect(page.locator('#wallet-title')).to_have_text('Your wallet is loaded')
+    goto(page, 'received')
+    page.click('#go-inbox')
+    expect(page.locator('#p-inbox')).to_be_visible()
+    page.click('#btn-ib-open')
+    expect(page.locator('#ib-msg')).to_contain_text('Choose the letters file')
+    page.locator('#ib-file').set_input_files({'name': 'letters.json', 'mimeType': 'application/json', 'buffer': fx['mailboxExport'].encode()})
+    expect(page.locator('#ib-file-sub')).to_contain_text('6 letters')
+    page.locator('#ib-elig').set_input_files({'name': 'eligible.json', 'mimeType': 'application/json', 'buffer': fx['eligible'].encode()})
+    expect(page.locator('#ib-elig-sub')).to_contain_text('5 addresses')
+    page.click('#btn-ib-open')
+    expect(page.locator('#ib-rows')).to_contain_text('Valid entries3')
+    expect(page.locator('#ib-rows')).to_contain_text('Set aside3')
+    expect(page.locator('#ib-aside')).to_contain_text('already entered')
+    expect(page.locator('#ib-aside')).to_contain_text('not on the eligible list')
+    expect(page.locator('#ib-aside')).to_contain_text('Not a giveaway entry')
+    with page.expect_download() as dl:
+        page.click('#btn-ib-save')
+    saved = json.load(open(dl.value.path()))
+    assert saved['addresses'] == fx['expectedEntries'] and saved['fingerprint'] == fx['expectedFingerprint'], saved
+    assert [x['seq'] for x in saved['setAside']] == [3, 4, 5], saved['setAside']
+    page.screenshot(path=str(out / '09-inbox.png'), full_page=True)
+    ok('Open many letters counts the giveaway entries offline and saves the list with its fingerprint')
+    bad_elig = json.loads(fx['eligible']); bad_elig['addresses'] = bad_elig['addresses'][1:]
+    page.locator('#ib-elig').set_input_files({'name': 'eligible.json', 'mimeType': 'application/json', 'buffer': json.dumps(bad_elig).encode()})
+    expect(page.locator('#ib-msg')).to_contain_text("doesn't match its own fingerprint")
+    ok('an eligible list edited after it was made is refused')
+
     # --- Link from BRC Pulse ---
     page.goto(page_url + '#to=' + fx['address'])
     page.reload()

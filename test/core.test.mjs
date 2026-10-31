@@ -271,9 +271,22 @@ console.log(`\n${passed} core tests passed`);
 // A BRC Vault backup and a wallet file for the page test (fast scrypt setting so the test is quick).
 const pageWallet = c.walletFromPrivateKeyHex(rand());
 const backup = await c.encryptWallet(pageWallet, 'correct horse battery staple', { kdf: { name: 'scrypt', logN: 14, r: 8, p: 1, dkLen: 32 } });
+// A giveaway mailbox export sealed to that wallet, and an eligible list, for "Open many letters".
+const people = Array.from({ length: 6 }, () => c.walletFromPrivateKeyHex(rand()).address);
+const eligibleFile = { v: 1, cutoff: 92500, count: 5, fingerprint: c.eligibleFingerprint(people.slice(0, 5)), addresses: [...people.slice(0, 5)].sort() };
+const sealed = [
+  c.sealEntry(pageWallet.address, people[0]), c.sealEntry(pageWallet.address, people[1]), c.sealEntry(pageWallet.address, people[1]),
+  c.sealEntry(pageWallet.address, people[5]), c.sealNote(pageWallet.address, 'Good luck everyone!', null), c.sealEntry(pageWallet.address, people[2]),
+].map((n) => n.armored);
+const mailboxExport = { mailbox: pageWallet.address, count: sealed.length, letters: sealed.map((letter, i) => ({ seq: i + 1, id: String(i), at: '2026-11-05T12:00:00.000Z', letter })) };
+const expected = c.readEntries(sealed, pageWallet, new Set(eligibleFile.addresses));
 writeFileSync('build/page-fixture.json', JSON.stringify({
   walletFile: JSON.stringify({ type: 'browsercoin-wallet', version: 1, address: pageWallet.address, privateKeyHex: c.bytesToHex(pageWallet.privateKey), warning: 'Anyone with the private key controls the wallet. Keep this safe.' }, null, 2),
   address: pageWallet.address,
   backup: JSON.stringify(backup, null, 2),
   password: 'correct horse battery staple',
+  mailboxExport: JSON.stringify(mailboxExport),
+  eligible: JSON.stringify(eligibleFile),
+  expectedEntries: expected.entries,
+  expectedFingerprint: expected.fingerprint,
 }));

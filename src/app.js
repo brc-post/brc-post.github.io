@@ -5,6 +5,7 @@ import * as vault from './vault-core.js';
 import * as seal from './seal-core.js';
 import * as stamp from './stamp-core.js';
 import * as drand from './drand-core.js';
+import * as giveaway from './giveaway-core.js';
 import { sha256 } from '@noble/hashes/sha2';
 
 const $ = (sel) => document.querySelector(sel);
@@ -379,8 +380,8 @@ $('#wallet-password').addEventListener('keydown', (e) => { if (e.key === 'Enter'
 // Screens. Each one has its own #address, so the phone's back gesture works.
 // ---------------------------------------------------------------------------
 
-const SCREENS = { home: '#s-home', sign: '#p-sign', seal: '#p-seal', postmark: '#p-stamp', received: '#s-received', verify: '#p-verify', open: '#p-open', check: '#p-check' };
-const PARENT = { sign: 'home', seal: 'home', postmark: 'home', received: 'home', verify: 'received', open: 'received', check: 'received' };
+const SCREENS = { home: '#s-home', sign: '#p-sign', seal: '#p-seal', postmark: '#p-stamp', received: '#s-received', verify: '#p-verify', open: '#p-open', check: '#p-check', inbox: '#p-inbox' };
+const PARENT = { sign: 'home', seal: 'home', postmark: 'home', received: 'home', verify: 'received', open: 'received', check: 'received', inbox: 'received' };
 const ALIASES = { stamp: 'postmark', '': 'home' };
 const depth = (name) => (name === 'home' ? 0 : PARENT[name] === 'home' ? 1 : 2);
 let current = null;
@@ -1014,6 +1015,81 @@ $('#st-cmp-file').addEventListener('change', async (e) => {
     $('#st-cmp-file-title').textContent = 'This file could not be read. Try again.';
   }
   runCompare();
+});
+
+
+// ---------------------------------------------------------------------------
+// Open many letters: a mailbox owner opens a whole BRC Mailbox export at once.
+// For the giveaway it keeps one valid, eligible entry per address and makes the
+// list to publish, with its fingerprint. Everything happens here, offline.
+// ---------------------------------------------------------------------------
+
+let ibExport = null;   // { mailbox, letters: [{ seq, letter }] }
+let ibEligible = null; // { set, fingerprint, count }
+let ibResult = null;
+async function readJsonFile(file) {
+  if (!file) return null;
+  if (file.size > 50 * 1024 * 1024) throw new Error('This file is far too large.');
+  try { return JSON.parse(await file.text()); } catch { throw new Error("This file isn't readable JSON. Choose the file as it was downloaded."); }
+}
+$('#ib-file').addEventListener('change', async (e) => {
+  ibExport = null; $('#ib-out').hidden = true; say('#ib-msg', '');
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const d = await readJsonFile(f);
+    if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === 'string')) throw new Error("This isn't a letters file from the BRC Mailbox.");
+    ibExport = { mailbox: String(d.mailbox || ''), letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
+    $('#ib-file-title').textContent = f.name;
+    $('#ib-file-sub').textContent = `${ibExport.letters.length.toLocaleString('en-US')} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}…${ibExport.mailbox.slice(-4)}` : 'an unnamed mailbox'}`;
+    dropState($('#ib-drop'), 'done', 1);
+  } catch (err) { say('#ib-msg', err.message, 'bad'); dropState($('#ib-drop'), ''); }
+});
+$('#ib-elig').addEventListener('change', async (e) => {
+  ibEligible = null; $('#ib-out').hidden = true; say('#ib-msg', '');
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const d = await readJsonFile(f);
+    if (!d || !Array.isArray(d.addresses)) throw new Error("This isn't an eligible list.");
+    const fp = giveaway.eligibleFingerprint(d.addresses);
+    if (d.fingerprint && d.fingerprint !== fp) throw new Error("This eligible list doesn't match its own fingerprint. It was changed after it was made.");
+    ibEligible = { set: new Set(d.addresses), fingerprint: fp, count: new Set(d.addresses).size };
+    $('#ib-elig-title').textContent = f.name;
+    $('#ib-elig-sub').textContent = `${ibEligible.count.toLocaleString('en-US')} addresses · fingerprint ${fp.slice(0, 16)}…`;
+    dropState($('#ib-elig-drop'), 'done', 1);
+  } catch (err) { say('#ib-msg', err.message, 'bad'); dropState($('#ib-elig-drop'), ''); }
+});
+$('#btn-ib-open').addEventListener('click', () => {
+  $('#ib-out').hidden = true; say('#ib-msg', '');
+  if (!ibExport) { say('#ib-msg', 'Choose the letters file first.', 'bad'); play($('#ib-msg'), 'anim-shake'); return; }
+  if (!wallet) { say('#ib-msg', "Load the mailbox's wallet first. Opening needs its key.", 'bad'); openSheet(); return; }
+  if (ibExport.mailbox && ibExport.mailbox !== wallet.address) { say('#ib-msg', `These letters are for mailbox ${ibExport.mailbox.slice(0, 10)}…, not the wallet you loaded. Load that mailbox's wallet.`, 'bad'); return; }
+  const r = giveaway.readEntries(ibExport.letters.map((l) => l.letter), wallet, ibEligible ? ibEligible.set : null);
+  ibResult = { ...r, letters: ibExport.letters.length, setAside: r.rejected.map((x) => ({ seq: ibExport.letters[x.index].seq, reason: x.reason })) };
+  const rows = $('#ib-rows'); rows.replaceChildren();
+  const row = (k, v, small) => rows.append(el('div', {}, el('dt', { text: k }), el('dd', {}, v, small ? el('small', { text: small }) : null)));
+  row('Letters', ibResult.letters.toLocaleString('en-US'));
+  row('Valid entries', r.entries.length.toLocaleString('en-US'), ibEligible ? 'one per eligible address' : 'one per address; no eligible list checked');
+  row('Set aside', r.rejected.length.toLocaleString('en-US'));
+  row('List fingerprint', r.fingerprint ? `${r.fingerprint.slice(0, 16)}…` : 'none', r.fingerprint ? 'publish this before the draw' : '');
+  $('#ib-fp').textContent = r.fingerprint || '';
+  const aside = $('#ib-aside'); aside.replaceChildren();
+  if (r.rejected.length) {
+    const counts = new Map();
+    for (const x of r.rejected) counts.set(x.reason, (counts.get(x.reason) || 0) + 1);
+    aside.append(el('p', { class: 'pm-note', text: 'Set aside: ' + [...counts].map(([k, n]) => `${n} × ${k.replace(/\.$/, '')}`).join('; ') + '.' }));
+  }
+  $('#btn-ib-save').disabled = !r.entries.length;
+  $('#ib-out').hidden = false; play($('#ib-out'));
+});
+$('#btn-ib-save').addEventListener('click', () => {
+  if (!ibResult || !ibResult.entries.length) return;
+  const body = { v: 1, mailbox: wallet ? wallet.address : null, letters: ibResult.letters, count: ibResult.entries.length, fingerprint: ibResult.fingerprint,
+    eligibleFingerprint: ibEligible ? ibEligible.fingerprint : null, addresses: ibResult.entries, setAside: ibResult.setAside };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(body, null, 1) + '\n'], { type: 'application/json' }));
+  a.download = 'entries.json';
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 
 // ---------------------------------------------------------------------------
