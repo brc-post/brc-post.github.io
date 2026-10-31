@@ -1043,13 +1043,14 @@ $('#btn-sc-done').addEventListener('click', () => {
 // ---------------------------------------------------------------------------
 
 const PULSE_STAMPS = 'https://pb-hash.github.io/brc-pulse/#stamp';
+const pulseCheckUrl = (text) => `https://pb-hash.github.io/brc-pulse/#check=${encodeURIComponent(String(text).trim())}`;
 
 /** A chain-signed message: everything that can be checked offline, and where to check the rest. */
 function showChainSigned(text, out) {
   let p;
   try { p = chain.parseChainSigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
-  const where = el('p', {}, 'BRC Post works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
-    el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Check it' }), ', which finds the lock and checks your address made it.');
+  const where = el('p', {}, 'BRC Post works offline, so it can\'t look at the chain. To finish the check, ',
+    el('a', { href: pulseCheckUrl(text), target: '_blank', rel: 'noopener noreferrer', text: 'check it on BRC Pulse' }), ': it finds the lock and checks the address made it.');
   const rows = [['Claims to be signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
   if (p.lockId) rows.push(['Lock ID', el('span', { class: 'mono', text: `${p.lockId.slice(0, 16)}…` })]);
   if (p.link && !p.link.valid) {
@@ -1377,7 +1378,11 @@ $('#st-file').addEventListener('change', async (e) => {
 });
 
 for (const id of ['#st-owner', '#st-after-height', '#st-after-hash', '#st-drand']) $(id).addEventListener('input', () => resetStampFrom(2));
-$('#st-time').addEventListener('change', () => { resetStampFrom(2); if (!$('#st-time').checked) say('#st-time-msg', 'No time beacon: the postmark proves the file existed by the block it lands in, not when it was made.', 'info'); else say('#st-time-msg', ''); });
+$('#st-time').addEventListener('change', () => {
+  resetStampFrom(2);
+  if (!$('#st-time').checked && autoDrand && $('#st-drand').value.trim() === autoDrand) { $('#st-drand').value = ''; autoDrand = ''; $('#st-drand').dispatchEvent(new Event('input')); }
+  if (!$('#st-time').checked) say('#st-time-msg', 'No time beacon: the postmark proves the file existed by the block it lands in, not when it was made.', 'info'); else say('#st-time-msg', '');
+});
 const utcTime = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'medium' }) + ' UTC';
 const localTime = (ts) => new Date(ts * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
 const localDate = (ts) => new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1442,7 +1447,9 @@ async function fetchBeacon() {
       if (!r.ok) continue;
       const j = await r.json();
       const round = Number(j.round), sig = String(j.signature || '').toLowerCase();
-      if (drand.verifyDrand(round, sig)) return { round, signature: sig };
+      // Genuine is not enough: it must also be current, or "made after" would quietly be days weaker.
+      const age = Date.now() / 1000 - drand.drandRoundTime(round);
+      if (drand.verifyDrand(round, sig) && age < 120 && age > -60) return { round, signature: sig };
     } catch { /* try the next relay */ } finally { clearTimeout(timer); }
   }
   return null;
@@ -1468,7 +1475,7 @@ $('#btn-st-make').addEventListener('click', async () => {
       } else {
         if (typed === autoDrand) { $('#st-drand').value = ''; $('#st-drand').dispatchEvent(new Event('input')); }
         autoDrand = '';
-        say('#st-time-msg', "Couldn't reach the time service, so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.", 'warn');
+        say('#st-time-msg', "Couldn't get the current time from the time service (or this device's clock is off), so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.", 'warn');
       }
     } finally {
       stMaking = false;
@@ -1524,8 +1531,10 @@ function renderPostmark(st, file) {
       ? document.createTextNode(`Block ${Number(st.after.height).toLocaleString('en-US')}`)
       : el('span', { text: 'Not recorded' }), el('small', { text: st.after ? 'checked on BRC Pulse' : 'add a drand beacon to record this' }));
   }
-  $('#pm-title').textContent = 'Posted';
-  $('#pm-sub').textContent = 'Your receipt is ready. The date is set by the block your lock lands in.';
+  const locked = !!$('#st-lockid').value.trim();
+  $('#pm-title').textContent = locked ? 'Posted' : 'Ready to post';
+  $('#pm-sub').textContent = locked ? 'Your receipt is ready. The date is set by the block your lock lands in.'
+    : "It's only posted once you press Lock coins in the BrowserCoin app (step 3). Then this receipt proves it; check it on BRC Pulse.";
   $('#pm-by').replaceChildren(document.createTextNode('The lock’s block'), el('small', { text: 'shown on BRC Pulse, usually within minutes' }));
   const who = nameFor(st.owner);
   $('#pm-from').replaceChildren(document.createTextNode(who || 'Your address'),
@@ -1549,6 +1558,7 @@ $('#btn-st-receipt').addEventListener('click', () => {
   try {
     stReceipt = stamp.receiptText(stStamp, { lockId: $('#st-lockid').value.trim() || null, fileName: stFile.name, fileSize: stFile.size });
     $('#st-receipt').textContent = stReceipt;
+    $('#st-pulse').href = pulseCheckUrl(stReceipt);
     $('#st-receipt-out').hidden = false;
     $('#st-step3').dataset.done = '';
     renderPostmark(stStamp, stFile);

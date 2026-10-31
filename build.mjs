@@ -92,6 +92,9 @@ html = html.replace('/*__VERSION__*/', () => version);
 // Test builds ask search engines to stay away: the site is live for testing but unlisted until a release.
 const isTest = version.includes('-test');
 if (isTest) html = html.replace('</title>', '</title>\n<meta name="robots" content="noindex, nofollow">');
+// The "Test build, not published" banner is only in test builds.
+if (!isTest) html = html.replace(/<!--TEST-ONLY-->[\s\S]*?<!--\/TEST-ONLY-->\n?/g, '');
+else html = html.replace(/<!--\/?TEST-ONLY-->/g, '');
 if ((html.match(/<script/g) || []).length !== 1) throw new Error('Expected exactly one script tag');
 
 if (process.env.BRC_OFFICIAL) {

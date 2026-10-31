@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-M1wAf/AaW3f/pRCosrl4hTF3Ql5h39Uv2xf3ri83oqc='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-s8gEkQn+TiSY5BJvxYKuU6LFBbNsDr3joxUP3SfDVS4='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#f5f6f8">
 <title>BRC Post</title>
-<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22307.6%2090.0%201316.0%201316.0%22%3E%3Crect%20x%3D%22361.5%22%20y%3D%22143.9%22%20width%3D%221208.2%22%20height%3D%221208.2%22%20rx%3D%22198.7%22%20fill%3D%22none%22%20stroke%3D%22%23353535%22%20stroke-width%3D%22107.8%22%2F%3E%3Cpath%20d%3D%22M544.8%20430.0L965.6%20790.0L1386.4%20430.0%22%20fill%3D%22none%22%20stroke%3D%22%23353535%22%20stroke-width%3D%22107.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%22965.6%22%20cy%3D%22820.0%22%20r%3D%22190.0%22%20fill%3D%22%235956FD%22%2F%3E%3C%2Fsvg%3E">
 <style>
 /* Geist and Geist Mono © Vercel, SIL Open Font License 1.1 */
@@ -487,14 +486,13 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true"><rect x="361.5" y="143.9" width="1208.2" height="1208.2" rx="198.7" fill="none" stroke="currentColor" stroke-width="107.8"/><path fill="currentColor" d="M544.8 415.0L868.2 1150.0L1063.0 1150.0L1386.4 415.0L1121.0 415.0A185.7 185.7 0 0 1 1134.1 594.6L965.6 958.7L797.1 594.6A185.7 185.7 0 0 1 810.2 415.0Z"/><circle cx="965.6" cy="516.6" r="114.0" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
-      <span class="status-pill" role="status" title="This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file."><span class="dot" aria-hidden="true"></span><span>Private<span class="pill-word">, works offline</span></span></span>
+      <span class="status-pill" role="status" title="This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file; drand's servers see your IP address, like any website."><span class="dot" aria-hidden="true"></span><span>Private<span class="pill-word">, works offline</span></span></span>
     </div>
   </header>
 
   <main class="wrap">
     <p class="frame-warning" id="frame-warning" hidden><strong>BRC Post is open inside another page.</strong> Opening a real mailbox is turned off here, because the outer page could watch what you type. Open BRC Post in its own tab to use your key. Test keys still work.</p>
-    <p class="test-banner"><strong>Test build, not published.</strong> Try anything: BRC Post never takes a key that holds coins, so nothing here can touch your coins.</p>
-
+    
     <!-- ================= HOME ================= -->
     <section class="screen" id="s-home" data-screen="home" tabindex="-1" aria-label="BRC Post home">
       <div class="hero">
@@ -698,7 +696,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <h3>Post it on BrowserCoin</h3>
           <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
           <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
-          <label class="check" id="st-time-wrap"><input type="checkbox" id="st-time" checked><span><strong>Also prove when it was made</strong>, to within 3 seconds<span class="check-sub">Adds the public time beacon from drand, run by a group of independent organisations. Nothing about you or your file is sent.</span></span></label>
+          <label class="check" id="st-time-wrap"><input type="checkbox" id="st-time" checked><span><strong>Also prove when it was made</strong>, to within 3 seconds<span class="check-sub">Adds the public time beacon from drand, run by a group of independent organisations. Nothing about you or your file is sent; like any website, drand's servers see your IP address.</span></span></label>
           <p class="msg" id="st-time-msg" role="status" aria-live="polite"></p>
           <details class="more" id="st-more">
             <summary class="chip">Advanced: add a time by hand</summary>
@@ -759,6 +757,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <button class="btn btn-primary" type="button" id="btn-st-save" style="flex:1 1 12rem">Save the receipt</button>
           <button class="btn btn-secondary" type="button" id="btn-st-share" style="flex:1 1 10rem" hidden>Share the receipt</button>
           <button class="btn btn-secondary" type="button" data-copy="st-receipt" style="flex:1 1 8rem"><span class="lbl">Copy</span></button>
+          <a class="btn btn-secondary" id="st-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" style="flex:1 1 12rem">Check it on BRC Pulse</a>
         </div>
         <details class="how" style="margin-top:1rem">
           <summary>Show the receipt text</summary>
@@ -878,7 +877,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.6.0-test.8</span>, build <span class="mono">335c007f</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file.</p>
+      <p>BRC Post <span id="app-version">0.6.0</span>, build <span class="mono">b3c80491</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -12038,7 +12037,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       say("#sc-msg", e.message, "bad");
     }
   });
-  var PULSE_STAMPS = "https://pb-hash.github.io/brc-pulse/#stamp";
+  var pulseCheckUrl = (text) => `https://pb-hash.github.io/brc-pulse/#check=${encodeURIComponent(String(text).trim())}`;
   function showChainSigned(text, out) {
     let p;
     try {
@@ -12051,9 +12050,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     const where = el(
       "p",
       {},
-      "BRC Post works offline, so it can't look at the chain. To finish the check, paste this block into ",
-      el("a", { href: PULSE_STAMPS, target: "_blank", rel: "noopener noreferrer", text: "BRC Pulse \u2192 Check it" }),
-      ", which finds the lock and checks your address made it."
+      "BRC Post works offline, so it can't look at the chain. To finish the check, ",
+      el("a", { href: pulseCheckUrl(text), target: "_blank", rel: "noopener noreferrer", text: "check it on BRC Pulse" }),
+      ": it finds the lock and checks the address made it."
     );
     const rows = [["Claims to be signed by", addressNode(p.address)], ["Message", el("div", { class: "message-box", text: p.message })]];
     if (p.lockId) rows.push(["Lock ID", el("span", { class: "mono", text: `${p.lockId.slice(0, 16)}\u2026` })]);
@@ -12454,6 +12453,11 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   for (const id of ["#st-owner", "#st-after-height", "#st-after-hash", "#st-drand"]) $(id).addEventListener("input", () => resetStampFrom(2));
   $("#st-time").addEventListener("change", () => {
     resetStampFrom(2);
+    if (!$("#st-time").checked && autoDrand && $("#st-drand").value.trim() === autoDrand) {
+      $("#st-drand").value = "";
+      autoDrand = "";
+      $("#st-drand").dispatchEvent(new Event("input"));
+    }
     if (!$("#st-time").checked) say("#st-time-msg", "No time beacon: the postmark proves the file existed by the block it lands in, not when it was made.", "info");
     else say("#st-time-msg", "");
   });
@@ -12540,7 +12544,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         if (!r.ok) continue;
         const j = await r.json();
         const round = Number(j.round), sig = String(j.signature || "").toLowerCase();
-        if (verifyDrand(round, sig)) return { round, signature: sig };
+        const age = Date.now() / 1e3 - drandRoundTime(round);
+        if (verifyDrand(round, sig) && age < 120 && age > -60) return { round, signature: sig };
       } catch {
       } finally {
         clearTimeout(timer);
@@ -12576,7 +12581,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
             $("#st-drand").dispatchEvent(new Event("input"));
           }
           autoDrand = "";
-          say("#st-time-msg", "Couldn't reach the time service, so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.", "warn");
+          say("#st-time-msg", "Couldn't get the current time from the time service (or this device's clock is off), so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.", "warn");
         }
       } finally {
         stMaking = false;
@@ -12625,8 +12630,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       $("#pm-line").textContent = "AWAITING BLOCK";
       $("#pm-after").replaceChildren(st.after ? document.createTextNode(`Block ${Number(st.after.height).toLocaleString("en-US")}`) : el("span", { text: "Not recorded" }), el("small", { text: st.after ? "checked on BRC Pulse" : "add a drand beacon to record this" }));
     }
-    $("#pm-title").textContent = "Posted";
-    $("#pm-sub").textContent = "Your receipt is ready. The date is set by the block your lock lands in.";
+    const locked = !!$("#st-lockid").value.trim();
+    $("#pm-title").textContent = locked ? "Posted" : "Ready to post";
+    $("#pm-sub").textContent = locked ? "Your receipt is ready. The date is set by the block your lock lands in." : "It's only posted once you press Lock coins in the BrowserCoin app (step 3). Then this receipt proves it; check it on BRC Pulse.";
     $("#pm-by").replaceChildren(document.createTextNode("The lock\u2019s block"), el("small", { text: "shown on BRC Pulse, usually within minutes" }));
     const who = nameFor(st.owner);
     $("#pm-from").replaceChildren(
@@ -12656,6 +12662,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     try {
       stReceipt = receiptText(stStamp, { lockId: $("#st-lockid").value.trim() || null, fileName: stFile.name, fileSize: stFile.size });
       $("#st-receipt").textContent = stReceipt;
+      $("#st-pulse").href = pulseCheckUrl(stReceipt);
       $("#st-receipt-out").hidden = false;
       $("#st-step3").dataset.done = "";
       renderPostmark(stStamp, stFile);

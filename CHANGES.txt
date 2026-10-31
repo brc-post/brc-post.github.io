@@ -2,9 +2,19 @@ BRC Post changes
 ================
 Version numbers: last number for fixes and wording, middle number for new
 features, first number for changes to file formats or the security model.
-Test builds carry "-test.N" and are never published. BRC Post is not live.
+Test builds carry "-test.N" and are never published.
 
-0.6.0 (in progress)
+0.6.0 (Oct 31, 2026): the first public release
+  - Release: the test banner and the "noindex" request come off; BRC Post
+    is public at https://brc-post.github.io/.
+  - Fixes from a security review of test.6-8 (no High or Medium): only a
+    current drand beacon is used (a genuine but old one from a stale or
+    hostile relay is refused); unticking "Also prove when it was made"
+    removes a beacon it had fetched; the wording says drand's servers see
+    your IP address, like any website. A postmark card reads "Ready to post"
+    until the app's Lock ID is in (it can't know the coins were locked).
+    New: "Check it on BRC Pulse" opens Pulse with the receipt or signed
+    block already filled in (after the #, which no server receives).
   - test.8: the exact time now fills itself in. "Postmark a file" has a box,
     ticked by default: "Also prove when it was made". On Make the postmark
     phrase, Post fetches the current drand beacon, checks its signature here

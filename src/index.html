@@ -484,13 +484,13 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true">/*__VAULT_MARK__*/</svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
-      <span class="status-pill" role="status" title="This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file."><span class="dot" aria-hidden="true"></span><span>Private<span class="pill-word">, works offline</span></span></span>
+      <span class="status-pill" role="status" title="This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file; drand's servers see your IP address, like any website."><span class="dot" aria-hidden="true"></span><span>Private<span class="pill-word">, works offline</span></span></span>
     </div>
   </header>
 
   <main class="wrap">
     <p class="frame-warning" id="frame-warning" hidden><strong>BRC Post is open inside another page.</strong> Opening a real mailbox is turned off here, because the outer page could watch what you type. Open BRC Post in its own tab to use your key. Test keys still work.</p>
-    <p class="test-banner"><strong>Test build, not published.</strong> Try anything: BRC Post never takes a key that holds coins, so nothing here can touch your coins.</p>
+    <!--TEST-ONLY--><p class="test-banner"><strong>Test build, not published.</strong> Try anything: BRC Post never takes a key that holds coins, so nothing here can touch your coins.</p><!--/TEST-ONLY-->
 
     <!-- ================= HOME ================= -->
     <section class="screen" id="s-home" data-screen="home" tabindex="-1" aria-label="BRC Post home">
@@ -695,7 +695,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <h3>Post it on BrowserCoin</h3>
           <p class="sub">The address that can take the locked coins back later. Normally your own.</p>
           <label class="field"><span>Your address</span><input id="st-owner" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
-          <label class="check" id="st-time-wrap"><input type="checkbox" id="st-time" checked><span><strong>Also prove when it was made</strong>, to within 3 seconds<span class="check-sub">Adds the public time beacon from drand, run by a group of independent organisations. Nothing about you or your file is sent.</span></span></label>
+          <label class="check" id="st-time-wrap"><input type="checkbox" id="st-time" checked><span><strong>Also prove when it was made</strong>, to within 3 seconds<span class="check-sub">Adds the public time beacon from drand, run by a group of independent organisations. Nothing about you or your file is sent; like any website, drand's servers see your IP address.</span></span></label>
           <p class="msg" id="st-time-msg" role="status" aria-live="polite"></p>
           <details class="more" id="st-more">
             <summary class="chip">Advanced: add a time by hand</summary>
@@ -756,6 +756,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <button class="btn btn-primary" type="button" id="btn-st-save" style="flex:1 1 12rem">Save the receipt</button>
           <button class="btn btn-secondary" type="button" id="btn-st-share" style="flex:1 1 10rem" hidden>Share the receipt</button>
           <button class="btn btn-secondary" type="button" data-copy="st-receipt" style="flex:1 1 8rem"><span class="lbl">Copy</span></button>
+          <a class="btn btn-secondary" id="st-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" style="flex:1 1 12rem">Check it on BRC Pulse</a>
         </div>
         <details class="how" style="margin-top:1rem">
           <summary>Show the receipt text</summary>
@@ -875,7 +876,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">/*__VERSION__*/</span>, build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file.</p>
+      <p>BRC Post <span id="app-version">/*__VERSION__*/</span>, build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>

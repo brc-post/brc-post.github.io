@@ -47,6 +47,8 @@ with sync_playwright() as pw:
         route.fulfill(status=200, content_type='application/json', headers={'access-control-allow-origin': '*'},
                       body=json.dumps({'round': beacon['round'], 'randomness': '00' * 32, 'signature': beacon['signature']}))
     ctx.route(DRAND, fake_drand)
+    # Post only takes a beacon that is current, so this page's clock reads a few seconds after the test beacon.
+    ctx.add_init_script(f"(() => {{ const off = {(1692803367 + (beacon['round'] - 1) * 3) * 1000 + 5000} - Date.now(), n = Date.now; Date.now = () => n() + off; }})()")
     page.goto(page_url)
     expect(page.locator('#wallet-title')).to_have_text('No mailbox yet')
     expect(page.locator('#s-home')).to_be_visible()
@@ -430,14 +432,29 @@ with sync_playwright() as pw:
     expect(page.locator('#st-phrase')).to_contain_text(f"_D{beacon['round']}_{beacon['signature']}")
     assert any(DRAND.match(u) and u.endswith('/52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971/public/latest') for u in requests), requests
     ok('one press adds the exact time: Post fetches the current drand beacon, checks it, and puts it in the postmark')
+    expect(page.locator('#pm-title')).to_have_count(1)
+    page.uncheck('#st-time')
+    expect(page.locator('#st-drand')).to_have_value('')
+    page.click('#btn-st-make')
+    assert '_D' not in page.locator('#st-phrase').inner_text(), 'unticking left the fetched beacon in the postmark'
+    page.check('#st-time')
+    ok('unticking the box removes a beacon it had fetched')
     ctx.unroute(DRAND)
     ctx.route(DRAND, lambda r: r.fulfill(status=200, content_type='application/json', headers={'access-control-allow-origin': '*'},
                                          body=json.dumps({'round': beacon['round'], 'signature': beacon['signature'][:-2] + '00'})))
     page.click('#btn-st-make')
-    expect(page.locator('#st-time-msg')).to_contain_text("Couldn't reach the time service")
+    expect(page.locator('#st-time-msg')).to_contain_text("Couldn't get the current time")
     phrase = page.locator('#st-phrase').inner_text()
     assert '_D' not in phrase, phrase
     ok('a beacon that fails its signature check is never used; the postmark is still made, without the time')
+    ctx.unroute(DRAND)
+    ctx.route(DRAND, fake_drand)
+    page.evaluate("(() => { const n = Date.now; Date.now = () => n() + 600000; })()")  # the genuine beacon is now 10 minutes old
+    page.click('#btn-st-make')
+    expect(page.locator('#st-time-msg')).to_contain_text("Couldn't get the current time")
+    assert '_D' not in page.locator('#st-phrase').inner_text()
+    page.evaluate("(() => { const n = Date.now; Date.now = () => n() - 600000; })()")
+    ok('a genuine but old beacon (a stale or hostile relay) is never used')
     ctx.unroute(DRAND)
     ctx.route(DRAND, fake_drand)
     page.uncheck('#st-time')
@@ -620,7 +637,7 @@ with sync_playwright() as pw:
     p2.fill('#st-owner', fx['coinAddress'])
     phone.route(DRAND, lambda r: r.abort())  # offline, or drand unreachable
     p2.click('#btn-st-make')
-    expect(p2.locator('#st-time-msg')).to_contain_text("Couldn't reach the time service")
+    expect(p2.locator('#st-time-msg')).to_contain_text("Couldn't get the current time")
     expect(p2.locator('#st-phrase')).to_contain_text('BRCSTAMP1_')
     ok('with no connection the postmark still works, and says it has no exact time')
     assert p2.evaluate('document.documentElement.scrollWidth') <= 390, 'stamp tab scrolls sideways on a phone'

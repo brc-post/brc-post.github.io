@@ -5,7 +5,8 @@ Sign, verify and seal messages with BrowserCoin (BRC) addresses.
 One offline web page: dist/brc-post.html. Open it in Chrome or Safari.
 Nothing about you, your keys, letters or files is ever sent. Its one connection
 is fetching the public drand time beacon when you postmark a file (untick
-"Also prove when it was made" to skip it); the page can reach nothing else.
+"Also prove when it was made" to skip it; drand's servers see your IP address,
+like any website). The page can reach nothing else.
 
 BRC Works: Vault (backups, https://pb-hash.github.io/brc-vault/) · Pulse (the live
 BrowserCoin network dashboard, https://pb-hash.github.io/brc-pulse/) · Post.
