@@ -7,3 +7,5 @@ export * from '../src/stamp-core.js';
 export * from '../src/drand-core.js';
 export * from '../src/giveaway-core.js';
 export * from '../src/chain-core.js';
+export * from '../src/known-core.js';
+export * from '../src/release-core.js';

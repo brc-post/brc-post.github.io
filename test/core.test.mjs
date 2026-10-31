@@ -274,6 +274,9 @@ const FASTKDF = { kdf: { name: 'scrypt', logN: 14, r: 8, p: 1, dkLen: 32 } };
 const backup = await c.encryptWallet(c.walletFromPrivateKeyHex(rand()), 'correct horse battery staple', FASTKDF); // a coin backup: refused
 const mailboxKey = await c.encryptWallet(pageWallet, 'correct horse battery staple', { ...FASTKDF, purpose: 'mailbox' });
 const coinAddress = c.walletFromPrivateKeyHex(rand()).address;
+// A stand-in official list for the look-alike checks (the real one is empty until the wallets exist).
+const officialWallet = c.walletFromPrivateKeyHex(rand());
+writeFileSync('build/official-test.json', JSON.stringify([{ address: officialWallet.address, name: 'BRC Works test mailbox', role: 'mailbox' }]));
 // A giveaway mailbox export sealed to that wallet, and an eligible list, for "Open many letters".
 const people = Array.from({ length: 6 }, () => c.walletFromPrivateKeyHex(rand()).address);
 const eligibleFile = { v: 1, cutoff: 92500, count: 5, fingerprint: c.eligibleFingerprint(people.slice(0, 5)), addresses: [...people.slice(0, 5)].sort() };
@@ -290,6 +293,9 @@ writeFileSync('build/page-fixture.json', JSON.stringify({
   mailboxKey: JSON.stringify(mailboxKey, null, 2),
   mailboxCode: c.paperCodeText(c.backupToCompact(mailboxKey)),
   coinAddress,
+  officialAddress: officialWallet.address,
+  officialSigned: c.signMessage(officialWallet, 'Official notice.').armored,
+  lookalike: officialWallet.address.slice(0, 6) + rand().slice(6),
   password: 'correct horse battery staple',
   mailboxExport: JSON.stringify(mailboxExport),
   eligible: JSON.stringify(eligibleFile),

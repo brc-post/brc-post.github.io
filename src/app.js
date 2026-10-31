@@ -7,6 +7,7 @@ import * as stamp from './stamp-core.js';
 import * as drand from './drand-core.js';
 import * as giveaway from './giveaway-core.js';
 import * as chain from './chain-core.js';
+import * as known from './known-core.js';
 import { sha256 } from '@noble/hashes/sha2';
 
 const $ = (sel) => document.querySelector(sel);
@@ -84,7 +85,9 @@ function kv(rows) {
 
 function addressNode(address) {
   const name = nameFor(address);
-  return el('span', {}, el('span', { class: 'mono', text: address }), name ? el('span', { text: `  (${name})` }) : null);
+  const fake = lookalikeNote(address);
+  return el('span', {}, el('span', { class: 'mono', text: address }), name ? el('span', { text: `  (${name})` }) : null,
+    fake ? el('span', { class: 'bad-text lookalike', text: ` ${fake}` }) : null);
 }
 
 // ---------------------------------------------------------------------------
@@ -107,16 +110,20 @@ function randomWallet() {
   return w;
 }
 
-// Addresses BRC Seal recognises by name. The giveaway mailbox goes here once it exists,
-// so a letter sealed to anything else is plainly "not the known mailbox".
-const KNOWN = Object.freeze({});
+// Addresses BRC Seal recognises by name come from src/official.js (shared with BRC Pulse).
+// An address that imitates one of them is refused for sealing and flagged everywhere else.
+function lookalikeNote(address) {
+  const o = known.lookalikeOf(address);
+  return o ? `Careful: this address looks like the ${o.name} (${o.address.slice(0, 6)}…${o.address.slice(-6)}), but it isn't. Someone may be imitating it. Compare every character.` : '';
+}
 
 // Opened inside another page (a frame), or by another window: that page could watch the
 // keyboard or rewire buttons, so real wallets aren't loaded here. Test wallets still work.
 const EMBEDDED = (() => { try { return window.top !== window.self || !!window.opener; } catch { return true; } })();
 
 function nameFor(address) {
-  if (KNOWN[address]) return KNOWN[address];
+  const o = known.officialFor(address);
+  if (o) return o.name;
   if (testWallets) {
     if (address === testWallets.alice.address) return 'test key Alice';
     if (address === testWallets.bob.address) return 'test key Bob';
@@ -784,10 +791,20 @@ $('#seal-text').addEventListener('input', updateSealCount);
 /** The seal-to box takes an address or a pasted mailbox link. Returns the address to seal to. */
 function readSealTo() {
   const raw = $('#seal-to').value;
-  if (!chain.looksChainSigned(raw)) { say('#seal-to-note', ''); return raw; }
+  if (!chain.looksChainSigned(raw)) {
+    let a = null;
+    try { a = seal.parseAddress(raw); } catch { /* sealing explains a bad address */ }
+    const fake = a ? lookalikeNote(a) : '';
+    if (fake) throw new Error(fake);
+    const o = a ? known.officialFor(a) : null;
+    say('#seal-to-note', o ? `Sealing to the ${o.name}.` : '', 'info');
+    return raw;
+  }
   const p = chain.parseChainSigned(raw);
   if (!p.link) throw new Error("That's a message signed on the chain, not a mailbox link. Paste their mailbox link, or their mailbox address.");
   if (!p.link.valid) throw new Error(`That mailbox link isn't valid. ${p.link.reason}`);
+  const fake = lookalikeNote(p.link.mailbox) || lookalikeNote(p.link.coin);
+  if (fake) throw new Error(fake);
   say('#seal-to-note', `Sealing to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. The mailbox agreed to this link; check the coin address's side on BRC Pulse → Stamps if you haven't already.`, 'info');
   return p.link.mailbox;
 }

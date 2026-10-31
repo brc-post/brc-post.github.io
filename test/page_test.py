@@ -511,6 +511,27 @@ with sync_playwright() as pw:
     expect(page.locator('#seal-to')).to_have_value(fx['address'])
     ok('a #to= link fills the address once on opening; later address-bar changes cannot swap it')
 
+    # --- Official addresses by name, and look-alikes refused (test build with a stand-in list) ---
+    off = browser.new_context(viewport={'width': 1100, 'height': 900}).new_page()
+    off.on('pageerror', lambda e: errors.append('official: ' + str(e)))
+    off.goto(pathlib.Path('build/brc-seal-official-test.html').resolve().as_uri() + '#seal')
+    off.fill('#seal-to', fx['officialAddress'])
+    expect(off.locator('#seal-to-note')).to_contain_text('Sealing to the BRC Works test mailbox')
+    off.fill('#seal-text', 'Hello.')
+    off.click('#btn-seal')
+    expect(off.locator('#seal-out-title')).to_contain_text('BRC Works test mailbox')
+    off.fill('#seal-to', fx['lookalike'])
+    expect(off.locator('#seal-to-note')).to_contain_text('looks like the BRC Works test mailbox')
+    off.click('#btn-seal')
+    expect(off.locator('#seal-msg')).to_contain_text("but it isn't")
+    expect(off.locator('#seal-out')).to_be_hidden()
+    off.evaluate("location.hash = 'verify'")
+    off.fill('#verify-text', fx['officialSigned'])
+    off.click('#btn-verify')
+    expect(off.locator('#verify-out')).to_contain_text('(BRC Works test mailbox)')
+    off.close()
+    ok('official addresses show by name, and a look-alike address is refused for sealing')
+
     # --- Phone width ---
     phone = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     p2 = phone.new_page()

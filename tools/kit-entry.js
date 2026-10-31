@@ -2,3 +2,5 @@
 export * as drand from '../src/drand-core.js';
 export * as giveaway from '../src/giveaway-core.js';
 export * as chain from '../src/chain-core.js';
+export * as known from '../src/known-core.js';
+export * as release from '../src/release-core.js';

@@ -13,6 +13,14 @@ const result = await build({
   minify: false, // kept readable on purpose so anyone can review it
   legalComments: 'inline',
   write: false,
+  // Test builds only: BRC_OFFICIAL names a JSON list that stands in for src/official.js,
+  // so look-alike warnings can be tested before the real addresses exist.
+  plugins: process.env.BRC_OFFICIAL ? [{
+    name: 'test-official',
+    setup(b) {
+      b.onLoad({ filter: /src[\\/]official\.js$/ }, () => ({ contents: `export const OFFICIAL = Object.freeze(${JSON.stringify(JSON.parse(readFileSync(process.env.BRC_OFFICIAL, 'utf8')))});`, loader: 'js' }));
+    },
+  }] : [],
 });
 let js = result.outputFiles[0].text;
 if (/<\/script/i.test(js)) js = js.replace(/<\/script/gi, '<\\/script');
@@ -83,6 +91,12 @@ if (!/^\d+\.\d+\.\d+(-test\.\d+)?$/.test(version)) throw new Error(`package.json
 html = html.replace('/*__VERSION__*/', () => version);
 if ((html.match(/<script/g) || []).length !== 1) throw new Error('Expected exactly one script tag');
 
+if (process.env.BRC_OFFICIAL) {
+  // A test build never replaces the real one.
+  writeFileSync('build/brc-seal-official-test.html', html);
+  console.log('build/brc-seal-official-test.html (test official list)');
+  process.exit(0);
+}
 mkdirSync('dist', { recursive: true });
 writeFileSync('dist/brc-seal.html', html);
 const sha = createHash('sha256').update(html).digest('hex');
