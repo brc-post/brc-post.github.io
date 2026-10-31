@@ -6,6 +6,7 @@ import * as seal from './seal-core.js';
 import * as stamp from './stamp-core.js';
 import * as drand from './drand-core.js';
 import * as giveaway from './giveaway-core.js';
+import * as chain from './chain-core.js';
 import { sha256 } from '@noble/hashes/sha2';
 
 const $ = (sel) => document.querySelector(sel);
@@ -35,6 +36,7 @@ function say(id, text, tone = 'info') {
 const ICONS = {
   good: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle class="check-ring" pathLength="1" cx="12" cy="12" r="9" transform="rotate(-90 12 12)"/><path class="check-draw" pathLength="1" d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>',
   bad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
   warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4M12 17h.01"/></svg>',
 };
 
@@ -86,13 +88,15 @@ function addressNode(address) {
 }
 
 // ---------------------------------------------------------------------------
-// Wallet state. The private key lives only in memory and is wiped on forget.
+// Mailbox key state. BRC Seal holds only a mailbox key: a key made in BRC Vault
+// for letters and signing, which never holds coins. Coin keys are refused
+// outright (see readWalletText). The key lives only in memory and is wiped on forget.
+// (The code calls it `wallet` because it is the same kind of Ed25519 key.)
 // ---------------------------------------------------------------------------
 
-let wallet = null;          // { privateKey, address }
+let wallet = null;          // { privateKey, address }: the open mailbox key
 let testWallets = null;     // { alice, bob } while trying the page out
-let pendingBackup = null;   // a password-protected backup waiting for its password
-let pendingConfirm = null;  // a key with no typo check, waiting for "this is my address"
+let pendingBackup = null;   // a locked mailbox key waiting for its password
 let loadGen = 0;            // bumps on cancel/forget so a slow unlock can't load afterwards
 
 function randomWallet() {
@@ -114,10 +118,10 @@ const EMBEDDED = (() => { try { return window.top !== window.self || !!window.op
 function nameFor(address) {
   if (KNOWN[address]) return KNOWN[address];
   if (testWallets) {
-    if (address === testWallets.alice.address) return 'test wallet Alice';
-    if (address === testWallets.bob.address) return 'test wallet Bob';
+    if (address === testWallets.alice.address) return 'test key Alice';
+    if (address === testWallets.bob.address) return 'test key Bob';
   }
-  if (wallet && !testWallets && address === wallet.address) return 'your loaded wallet';
+  if (wallet && !testWallets && address === wallet.address) return 'your mailbox';
   return '';
 }
 
@@ -127,8 +131,6 @@ function forgetEverything() {
   wallet = null;
   testWallets = null;
   pendingBackup = null;
-  if (pendingConfirm) vault.wipeWallet(pendingConfirm.wallet);
-  pendingConfirm = null;
 }
 
 const shortAddr = (a) => `${a.slice(0, 4)} ${a.slice(4, 8)} … ${a.slice(-8, -4)} ${a.slice(-4)}`;
@@ -141,6 +143,7 @@ function renderWallet() {
   $('#btn-forget').hidden = !wallet;
   $('#btn-test').hidden = !!testWallets;
   $('#btn-load').hidden = !!wallet && !testWallets;
+  $('#btn-link').hidden = !wallet;
   $('#btn-sheet-done').hidden = !wallet;
   $('#who').hidden = !testWallets;
   $('#seal-quick').hidden = !testWallets;
@@ -148,37 +151,30 @@ function renderWallet() {
   $('#sign-quick').hidden = !testWallets;
   const testName = testWallets ? (wallet === testWallets.alice ? 'Alice' : 'Bob') : '';
   if (!wallet) {
-    title.textContent = 'No wallet loaded';
-    sub.textContent = 'You can check signatures and seal letters without one. Signing and opening need a wallet.';
+    title.textContent = 'No mailbox key open';
+    sub.textContent = 'You can sign on the chain, check and seal without one. Opening letters needs your mailbox key.';
   } else {
-    title.textContent = testWallets ? `Acting as test wallet ${testName}` : 'Your wallet is loaded';
+    title.textContent = testWallets ? `Acting as test key ${testName}` : 'Your mailbox key is open';
     sub.replaceChildren(el('span', { class: 'mono', text: wallet.address }));
   }
   // Every wallet chip on the page shows the same thing.
   for (const node of $$('[data-idc]')) paintIdenticon(node, wallet ? wallet.address : '');
-  for (const node of $$('[data-wallet-name]')) node.textContent = !wallet ? 'No wallet loaded' : testWallets ? `Test wallet ${testName}` : 'Your wallet';
+  for (const node of $$('[data-wallet-name]')) node.textContent = !wallet ? 'No mailbox key' : testWallets ? `Test key ${testName}` : 'Your mailbox';
   for (const node of $$('[data-wallet-sub]')) {
     if (wallet) node.replaceChildren(el('span', { class: 'mono', text: shortAddr(wallet.address) }));
-    else node.textContent = 'Needed to sign and to open letters';
+    else node.textContent = 'Needed to open letters';
   }
-  for (const node of $$('[data-wallet-act]')) node.textContent = wallet ? 'Switch' : 'Load';
-  for (const node of $$('[data-wallet-short]')) node.textContent = !wallet ? 'No wallet' : testWallets ? testName : `${wallet.address.slice(0, 4)}…${wallet.address.slice(-4)}`;
+  for (const node of $$('[data-wallet-act]')) node.textContent = wallet ? 'Switch' : 'Open';
+  for (const node of $$('[data-wallet-short]')) node.textContent = !wallet ? 'No key' : testWallets ? testName : `${wallet.address.slice(0, 4)}…${wallet.address.slice(-4)}`;
   for (const b of $$('#who button')) b.setAttribute('aria-pressed', String(!!testWallets && testWallets[b.dataset.who] === wallet));
-  // Stamp's "Your address" follows the loaded wallet, unless the person typed their own.
-  const ownerBox = $('#st-owner');
-  if (!ownerBox.value || ownerBox.value === ownerBox.dataset.auto) {
-    ownerBox.value = wallet ? wallet.address : '';
-    ownerBox.dataset.auto = ownerBox.value;
-    resetStampFrom(2);
-  }
   const canSign = !!wallet;
   const wrap = $('#seal-sign-wrap');
   $('#seal-sign').disabled = !canSign;
   if (!canSign) $('#seal-sign').checked = false;
   wrap.setAttribute('aria-disabled', String(!canSign));
   $('#seal-sign-label').textContent = canSign
-    ? `Sign it so they know it's from me (${wallet.address.slice(0, 10)}…${wallet.address.slice(-4)}).`
-    : "Sign it so they know it's from me. Load a wallet to use this.";
+    ? `Sign it with my mailbox key so they know it's from me (${wallet.address.slice(0, 10)}…${wallet.address.slice(-4)}).`
+    : "Sign it so they know it's from me. Open your mailbox key to use this.";
 }
 
 /** A quick pulse on the wallet chips, so a change of wallet is noticed. */
@@ -240,6 +236,7 @@ for (const b of $$('#who button')) {
 
 $('#btn-forget').addEventListener('click', () => {
   forgetEverything();
+  stopLinking();
   clearLoader();
   $('#loader').hidden = true;
   clearSecretsFromPage();
@@ -263,11 +260,7 @@ function clearLoader() {
   $('#wallet-password').value = '';
   $('#wallet-file').value = '';
   $('#password-field').hidden = true;
-  $('#confirm-field').hidden = true;
-  $('#confirm-mine').checked = false;
   pendingBackup = null;
-  if (pendingConfirm) vault.wipeWallet(pendingConfirm.wallet);
-  pendingConfirm = null;
   say('#load-msg', '');
 }
 
@@ -279,34 +272,30 @@ function clearSecretsFromPage() {
   say('#sign-msg', ''); say('#open-msg', '');
 }
 
+const NOT_A_MAILBOX_KEY = "This isn't a mailbox key. BRC Seal opens only mailbox keys made in BRC Vault: a brc-mailbox-key-….json file, or its BRCMBOX1 paper code.";
+const COIN_KEY = "That's a key that can hold coins. BRC Seal never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature → My coin address. To open letters, use a mailbox key from BRC Vault.";
+const COIN_BACKUP = "That's a BRC Vault backup of a coin wallet. BRC Seal never opens keys that can hold coins. Use a mailbox key: in BRC Vault, choose Make a new wallet, then Mailbox key for BRC Seal.";
+
+/** Only a locked mailbox key gets through. Anything that can hold coins is refused and wiped. */
 async function readWalletText(text) {
   say('#load-msg', '');
-  if (EMBEDDED) throw new Error('BRC Seal is open inside another page, so real wallets are turned off. Open it in its own tab.');
-  const id = vault.identifyInput(text);
-  if (id.kind === 'vault-backup' || id.kind === 'desktop-backup') {
+  if (EMBEDDED) throw new Error('BRC Seal is open inside another page, so real keys are turned off. Open it in its own tab.');
+  let id;
+  try { id = vault.identifyInput(text); } catch { throw new Error(NOT_A_MAILBOX_KEY); }
+  if (id.kind === 'vault-backup' && id.backup.type === vault.MAILBOX_TYPE) {
     pendingBackup = id.backup;
     $('#password-field').hidden = false;
     $('#wallet-password').focus();
-    say('#load-msg', 'Enter the backup password, then press Load wallet.', 'info');
+    say('#load-msg', 'Enter the password for this mailbox key, then press Open key.', 'info');
     return null;
   }
-  // A bare 64-character code could be a private key OR an address, and a key
-  // or recovery words have no typo check. Show the address it gives and ask.
-  if (id.kind === 'private-key' && (id.ambiguous || id.checked !== true)) {
-    pendingConfirm = { wallet: id.wallet, ambiguous: !!id.ambiguous };
-    $('#confirm-address').textContent = id.wallet.address;
-    $('#confirm-ambiguous').hidden = !id.ambiguous;
-    $('#confirm-field').hidden = false;
-    $('#confirm-mine').checked = false;
-    say('#load-msg', 'Check the address below, tick the box, then press Load wallet.', 'info');
-    return null;
-  }
-  return { wallet: id.wallet };
+  if (id.wallet) vault.wipeWallet(id.wallet);
+  $('#wallet-paste').value = '';
+  throw new Error(id.kind === 'vault-backup' ? COIN_BACKUP : COIN_KEY);
 }
 
 function useWallet(w) {
   const keep = w;
-  if (pendingConfirm && pendingConfirm.wallet === w) pendingConfirm = null; // hand over, don't wipe
   forgetEverything();
   wallet = keep;
   clearSecretsFromPage();
@@ -322,22 +311,18 @@ $('#btn-load-go').addEventListener('click', async () => {
   btn.disabled = true;
   const gen = loadGen;
   try {
-    if (pendingConfirm) {
-      if (!$('#confirm-mine').checked) { say('#load-msg', 'Tick the box to confirm this is your address, or press Cancel.', 'bad'); return; }
-      useWallet(pendingConfirm.wallet);
-      return;
-    }
     if (pendingBackup) {
       const pw = $('#wallet-password').value;
       if (!pw) { say('#load-msg', 'Enter the backup password.', 'bad'); return; }
       say('#load-msg', 'Unlocking. This takes a few seconds…', 'info');
       const w = await vault.unlockAny(pendingBackup, pw);
       if (gen !== loadGen) { vault.wipeWallet(w); return; } // cancelled while unlocking
+      if (w.purpose !== 'mailbox') { vault.wipeWallet(w); throw new Error(COIN_BACKUP); }
       useWallet(w);
       return;
     }
     const text = $('#wallet-paste').value;
-    if (!text.trim()) { say('#load-msg', 'Choose your wallet file or paste it first.', 'bad'); return; }
+    if (!text.trim()) { say('#load-msg', 'Choose your mailbox key file or paste it first.', 'bad'); return; }
     const r = await readWalletText(text);
     if (r) useWallet(r.wallet);
   } catch (e) {
@@ -349,7 +334,7 @@ $('#btn-load-go').addEventListener('click', async () => {
 
 async function loadFile(file) {
   if (!file) return;
-  if (file.size > vault.MAX_INPUT_LENGTH) { say('#load-msg', 'This file is far too large to be a wallet.', 'bad'); return; }
+  if (file.size > vault.MAX_INPUT_LENGTH) { say('#load-msg', 'This file is far too large to be a mailbox key.', 'bad'); return; }
   try {
     const text = await file.text();
     $('#wallet-paste').value = '';
@@ -363,7 +348,7 @@ async function loadFile(file) {
 // Editing the pasted text starts over: a pending password or confirmation
 // belonged to the old text.
 $('#wallet-paste').addEventListener('input', () => {
-  if (!pendingBackup && !pendingConfirm) return;
+  if (!pendingBackup) return;
   const keep = $('#wallet-paste').value;
   clearLoader();
   $('#wallet-paste').value = keep;
@@ -477,7 +462,7 @@ window.addEventListener('popstate', readHash);
 function routePaste(text) {
   const t = text || '';
   if (!t.trim()) { say('#rx-msg', ''); return; }
-  if (/BEGIN BRC SIGNED MESSAGE/i.test(t)) {
+  if (/BEGIN BRC SIGNED MESSAGE|BEGIN BRC CHAIN SIGNED MESSAGE/i.test(t)) {
     $('#verify-text').value = t;
     go('verify');
     $('#btn-verify').click();
@@ -485,7 +470,7 @@ function routePaste(text) {
     $('#open-text').value = t;
     go('open');
     if (wallet) $('#btn-open').click();
-    else say('#open-msg', 'This is a sealed letter. Load the wallet it was sealed to, then press Open the letter.', 'info');
+    else say('#open-msg', 'This is a sealed letter. Open the mailbox key it was sealed to, then press Open the letter.', 'info');
   } else if (/BEGIN BRC STAMP RECEIPT/i.test(t)) {
     $('#st-cmp-receipt').value = t;
     go('check');
@@ -508,7 +493,7 @@ $('#rx-text').addEventListener('input', () => { clearTimeout(rxTimer); rxTimer =
 
 const today = () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const FILLS = {
-  giveaway: () => seal.raffleEntryText(100000),
+  mine: () => `This address is mine. Signed on ${today()}.`,
   discord: () => `I'm ____ on the BrowserCoin Discord. Signed on ${today()}.`,
   pool: () => `This is my payout address for ____ pool. Signed on ${today()}.`,
 };
@@ -540,9 +525,9 @@ function renderSignMode() {
   note.dataset.mode = signMode;
   note.replaceChildren(el('strong', { text: PRIVACY[signMode][0] }), PRIVACY[signMode][1]);
   $('#sign-private').hidden = signMode !== 'private';
-  $('#btn-sign').textContent = signMode === 'private' ? 'Sign and seal for them' : 'Sign with my wallet';
   $('#sign-out').hidden = true;
   say('#sign-msg', '');
+  renderSignAs();
 }
 for (const b of $$('#sign-mode button')) b.addEventListener('click', () => { signMode = b.dataset.mode; renderSignMode(); });
 $('#sign-mode').addEventListener('keydown', (e) => {
@@ -553,11 +538,107 @@ $('#sign-mode').addEventListener('keydown', (e) => {
   $(`#sign-mode [data-mode="${signMode}"]`).focus();
 });
 for (const chip of $$('[data-sign-to]')) chip.addEventListener('click', () => { if (testWallets) $('#sign-to').value = testWallets[chip.dataset.signTo].address; });
+
+// Sign as: my coin address (on the chain, no key here) or my mailbox (instant, mailbox key).
+let signAs = 'chain';
+let scSig = null;        // the chain signature waiting for its lock
+let linking = null;      // { mailbox } while the message is a mailbox link
+const AS_NOTE = {
+  chain: ['No key needed here. ', 'You lock a tiny amount in the official app with a phrase made from your message. Your key signs that lock inside the app, and the chain becomes your signature. Check it on BRC Pulse once the lock is in a block.'],
+  mailbox: ['Signed by your mailbox key. ', 'Instant, and no coins involved. It proves your mailbox wrote it; link your mailbox to your coin address once, on the chain, so people know whose mailbox it is.'],
+};
+function renderSignAs() {
+  for (const b of $$('#sign-as button')) b.setAttribute('aria-checked', String(b.dataset.as === signAs));
+  const note = $('#sign-as-note');
+  note.dataset.mode = signAs;
+  note.replaceChildren(el('strong', { text: AS_NOTE[signAs][0] }), AS_NOTE[signAs][1]);
+  $('#sign-chain-part').hidden = signAs !== 'chain';
+  $('#sign-mailbox-part').hidden = signAs !== 'mailbox';
+  $('#btn-sign').textContent = signAs === 'chain' ? 'Make the phrase' : signMode === 'private' ? 'Sign and seal for them' : 'Sign with my mailbox key';
+  resetChainSig();
+}
+function resetChainSig() {
+  scSig = null;
+  $('#sc-recipe').hidden = true;
+  $('#sc-lockid').value = '';
+  tidyScLockId();
+  say('#sc-msg', '');
+}
+function setSignAs(as) {
+  if (signAs === as) return;
+  signAs = as;
+  if (as !== 'chain') stopLinking();
+  $('#sign-out').hidden = true;
+  say('#sign-msg', '');
+  renderSignAs();
+}
+for (const b of $$('#sign-as button')) b.addEventListener('click', () => setSignAs(b.dataset.as));
+$('#sign-as').addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  e.preventDefault();
+  setSignAs(signAs === 'chain' ? 'mailbox' : 'chain');
+  $(`#sign-as [data-as="${signAs}"]`).focus();
+});
+for (const id of ['#sc-address', '#sign-text']) $(id).addEventListener('input', () => { if (scSig) { resetChainSig(); $('#sign-out').hidden = true; } });
+
+function tidyScLockId() {
+  const box = $('#sc-lockid'), out = $('#sc-lockid-status');
+  const raw = box.value;
+  const found = raw.replace(/\s+/g, '').match(/(?<![0-9a-fA-F])(?:0x)?([0-9a-fA-F]{64})(?![0-9a-fA-F])/);
+  if (found && found[1].toLowerCase() !== raw) box.value = found[1].toLowerCase();
+  delete out.dataset.over; delete out.dataset.good;
+  const v = box.value.trim();
+  if (!v) out.textContent = 'optional';
+  else if (/^[0-9a-f]{64}$/.test(v)) { out.textContent = 'looks right'; out.dataset.good = ''; }
+  else { out.textContent = 'not a Lock ID'; out.dataset.over = ''; }
+}
+$('#sc-lockid').addEventListener('input', () => { tidyScLockId(); $('#sign-out').hidden = true; });
+
+// Linking a mailbox: the message is fixed, already signed by the mailbox key.
+function startLinking() {
+  if (!wallet) return;
+  linking = { mailbox: wallet.address };
+  closeSheet();
+  go('sign');
+  signAs = 'chain';
+  renderSignAs();
+  $('#sc-link-note').hidden = false;
+  $('#sc-link-mailbox').textContent = `${wallet.address.slice(0, 10)}…${wallet.address.slice(-4)}`;
+  $('#sign-text').value = '';
+  $('#sign-text').readOnly = true;
+  $('#sign-text').placeholder = 'Enter your coin address above. The link message appears here.';
+  $('#sign-fills').hidden = true;
+  updateLinkText();
+  $('#sc-address').focus();
+}
+function updateLinkText() {
+  if (!linking) return;
+  const a = $('#sc-address').value.trim();
+  let text = '';
+  try { if (a && wallet && wallet.address === linking.mailbox) text = chain.linkMessage(wallet, a); } catch { /* shown when making the phrase */ }
+  $('#sign-text').value = text;
+  updateSignCount();
+}
+function stopLinking() {
+  if (!linking) return;
+  linking = null;
+  $('#sc-link-note').hidden = true;
+  $('#sign-text').readOnly = false;
+  $('#sign-text').value = '';
+  $('#sign-text').placeholder = "I'm pb-hash on Discord. Today is Oct 31, 2026.";
+  $('#sign-fills').hidden = false;
+  updateSignCount();
+}
+$('#sc-address').addEventListener('input', updateLinkText);
+$('#btn-sc-unlink').addEventListener('click', () => { stopLinking(); resetChainSig(); $('#sign-text').focus(); });
+$('#btn-link').addEventListener('click', startLinking);
+
 renderSignMode();
 
 $('#btn-sign').addEventListener('click', () => {
   $('#sign-out').hidden = true;
-  if (!wallet) { say('#sign-msg', 'Load a wallet or use the test wallets first. Signing needs a private key.', 'bad'); openSheet(); return; }
+  if (signAs === 'chain') { makeChainPhrase(); return; }
+  if (!wallet) { say('#sign-msg', 'Open your mailbox key, or use the test keys, first. Or sign as your coin address, on the chain.', 'bad'); openSheet(); return; }
   try {
     const s = seal.signMessage(wallet, $('#sign-text').value);
     if (signMode === 'private') {
@@ -569,12 +650,12 @@ $('#btn-sign').addEventListener('click', () => {
       $('#sign-to').value = n.to;
       const who = nameFor(n.to);
       $('#sign-block').textContent = n.armored;
-      $('#sign-out-title').textContent = `Signed and sealed for ${who ? who.replace('test wallet ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}`;
+      $('#sign-out-title').textContent = `Signed and sealed for ${who ? who.replace('test key ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}`;
       $('#sign-out-sub').textContent = 'Send this whole block. Only they can open it and check your signature.';
       $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = 'Copy the sealed letter';
     } else {
       $('#sign-block').textContent = s.armored;
-      $('#sign-out-title').textContent = 'Signed';
+      $('#sign-out-title').textContent = 'Signed by your mailbox';
       $('#sign-out-sub').textContent = 'Share this whole block. Anyone can check it.';
       $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = 'Copy the signed message';
     }
@@ -586,9 +667,76 @@ $('#btn-sign').addEventListener('click', () => {
   }
 });
 
+function makeChainPhrase() {
+  resetChainSig();
+  say('#sign-msg', '');
+  try {
+    if (linking && (!wallet || wallet.address !== linking.mailbox)) throw new Error('Your mailbox key was closed. Open it again to link it.');
+    if (linking) updateLinkText();
+    const cs = chain.newChainSignature({ address: $('#sc-address').value, text: $('#sign-text').value });
+    $('#sc-address').value = cs.address;
+    scSig = cs;
+    $('#sc-amount').textContent = stamp.SUGGESTED_AMOUNT;
+    $('#sc-owner-copy').textContent = cs.address;
+    $('#sc-phrase').textContent = chain.chainPhrase(cs);
+    const scriptHex = chain.chainScriptHex(cs);
+    // The app's preview prints each push as "PUSH(32) <first 20 hex>…" (src/chain/scriptDisasm.ts).
+    $('#sc-check').textContent = `PUSH(32) ${scriptHex.slice(4, 24)}…`;
+    $('#sc-check-owner').textContent = `PUSH(32) ${cs.address.slice(0, 20)}…`;
+    $('#sc-recipe').hidden = false;
+    play($('#sc-recipe'));
+    $('#sc-recipe').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  } catch (e) {
+    say('#sign-msg', e.message, 'bad');
+    play($('#sign-msg'), 'anim-shake');
+  }
+}
+
+$('#btn-sc-done').addEventListener('click', () => {
+  say('#sc-msg', '');
+  if (!scSig) return;
+  try {
+    const text = chain.chainSignedText(scSig, { lockId: $('#sc-lockid').value.trim() || null });
+    $('#sign-block').textContent = text;
+    $('#sign-out-title').textContent = linking ? 'Mailbox link signed on the chain' : 'Signed on the chain';
+    $('#sign-out-sub').textContent = linking
+      ? 'Share this link with anyone who should write to you: BRC Seal seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Stamps once the lock is in a block.'
+      : 'Share this whole block. Anyone can check it on BRC Pulse → Stamps once the lock is in a block, usually within a few minutes.';
+    $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = linking ? 'Copy the mailbox link' : 'Copy the signed message';
+    $('#sign-out').hidden = false;
+    play($('#sign-out'));
+    $('#sign-out').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  } catch (e) {
+    say('#sc-msg', e.message, 'bad');
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Verify
 // ---------------------------------------------------------------------------
+
+const PULSE_STAMPS = 'https://pb-hash.github.io/brc-pulse/#stamps';
+
+/** A chain-signed message: everything that can be checked offline, and where to check the rest. */
+function showChainSigned(text, out) {
+  let p;
+  try { p = chain.parseChainSigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
+  const where = el('p', {}, 'BRC Seal works offline, so it can\'t look at the chain. To finish the check, paste this block into ',
+    el('a', { href: PULSE_STAMPS, target: '_blank', rel: 'noopener noreferrer', text: 'BRC Pulse → Stamps' }), ', which finds the lock and checks your address made it.');
+  const rows = [['Signed by', addressNode(p.address)], ['Message', el('div', { class: 'message-box', text: p.message })]];
+  if (p.lockId) rows.push(['Lock ID', el('span', { class: 'mono', text: `${p.lockId.slice(0, 16)}…` })]);
+  if (p.link && !p.link.valid) {
+    out.append(verdict('bad', 'Not a valid mailbox link', el('p', { text: p.link.reason }), kv([['Claims to be', addressNode(p.address)]])));
+    return;
+  }
+  if (p.link) {
+    out.append(verdict('info', 'A mailbox link, signed by both sides', el('p', { text: 'The mailbox key\'s own signature checks out here. The coin address\'s side is on the chain.' }), where,
+      kv([['Coin address', addressNode(p.link.coin)], ['Mailbox', addressNode(p.link.mailbox)]])));
+    return;
+  }
+  out.append(verdict(p.hidden ? 'warn' : 'info', p.hidden ? 'Signed on the chain, but the message has hidden characters' : 'Signed on the chain: complete and well-formed',
+    p.hidden ? el('p', { text: 'It contains invisible or direction-changing characters, so it may not read the way it looks.' }) : null, where, kv(rows)));
+}
 
 $('#btn-verify').addEventListener('click', () => {
   const out = $('#verify-out');
@@ -596,6 +744,7 @@ $('#btn-verify').addEventListener('click', () => {
   say('#verify-msg', '');
   const text = $('#verify-text').value;
   if (!text.trim()) { say('#verify-msg', 'Paste a signed message first.', 'bad'); return; }
+  if (chain.looksChainSigned(text)) { showChainSigned(text, out); return; }
   let v;
   try { v = seal.verifySigned(text); } catch (e) { say('#verify-msg', e.message, 'bad'); play($('#verify-msg'), 'anim-shake'); return; }
   if (v.valid && v.hidden) {
@@ -604,7 +753,7 @@ $('#btn-verify').addEventListener('click', () => {
       kv([['Signed by', addressNode(v.address)], ['Message', el('div', { class: 'message-box', text: v.message })]])));
   } else if (v.valid) {
     out.append(verdict('good', 'Valid signature',
-      el('p', { text: 'This exact message was signed by the wallet that controls this address.' }),
+      el('p', { text: 'This exact message was signed by the key that controls this address. It is usually a mailbox: check for a mailbox link to see whose.' }),
       kv([['Signed by', addressNode(v.address)], ['Message', el('div', { class: 'message-box', text: v.message })]])));
   } else {
     out.append(verdict('bad', 'Not valid',
@@ -632,16 +781,29 @@ function updateSealCount() {
 }
 $('#seal-text').addEventListener('input', updateSealCount);
 
+/** The seal-to box takes an address or a pasted mailbox link. Returns the address to seal to. */
+function readSealTo() {
+  const raw = $('#seal-to').value;
+  if (!chain.looksChainSigned(raw)) { say('#seal-to-note', ''); return raw; }
+  const p = chain.parseChainSigned(raw);
+  if (!p.link) throw new Error("That's a message signed on the chain, not a mailbox link. Paste their mailbox link, or their mailbox address.");
+  if (!p.link.valid) throw new Error(`That mailbox link isn't valid. ${p.link.reason}`);
+  say('#seal-to-note', `Sealing to the mailbox of coin address ${p.link.coin.slice(0, 10)}…${p.link.coin.slice(-4)}. The mailbox agreed to this link; check the coin address's side on BRC Pulse → Stamps if you haven't already.`, 'info');
+  return p.link.mailbox;
+}
+$('#seal-to').addEventListener('input', () => { try { readSealTo(); } catch (e) { say('#seal-to-note', e.message, 'bad'); } });
+
 $('#btn-seal').addEventListener('click', () => {
   $('#seal-out').hidden = true;
   say('#seal-msg', '');
   try {
     const signIt = $('#seal-sign').checked && !!wallet;
-    const n = seal.sealNote($('#seal-to').value, $('#seal-text').value, signIt ? wallet : null);
-    $('#seal-to').value = n.to;
+    const to = readSealTo();
+    const n = seal.sealNote(to, $('#seal-text').value, signIt ? wallet : null);
+    if (!chain.looksChainSigned($('#seal-to').value)) $('#seal-to').value = n.to;
     $('#seal-block').textContent = n.armored;
     const who = nameFor(n.to);
-    $('#seal-out-title').textContent = `Sealed to ${who ? who.replace('test wallet ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}${n.signed ? ', signed by you' : ', anonymous'}`;
+    $('#seal-out-title').textContent = `Sealed to ${who ? who.replace('test key ', '') : `${n.to.slice(0, 6)}…${n.to.slice(-4)}`}${n.signed ? ', signed by your mailbox' : ', anonymous'}`;
     const len = $('#seal-len');
     if (n.length > seal.DISCORD_LIMIT) {
       len.dataset.tone = 'warn';
@@ -668,7 +830,7 @@ $('#btn-open').addEventListener('click', () => {
   say('#open-msg', '');
   const text = $('#open-text').value;
   if (!text.trim()) { say('#open-msg', 'Paste a sealed letter first.', 'bad'); return; }
-  if (!wallet) { say('#open-msg', 'Load the wallet this letter was sealed to. Opening needs its private key.', 'bad'); openSheet(); return; }
+  if (!wallet) { say('#open-msg', 'Open the mailbox key this letter was sealed to. Opening needs it.', 'bad'); openSheet(); return; }
   let o;
   try {
     o = seal.openNote(text, wallet);
@@ -677,7 +839,7 @@ $('#btn-open').addEventListener('click', () => {
     try {
       const { to } = seal.parseSealed(text);
       const name = nameFor(to);
-      if (testWallets && name) hint = ` It's for ${name.replace('test wallet ', '')}: switch to ${name.replace('test wallet ', '')} in your wallet (top right).`;
+      if (testWallets && name) hint = ` It's for ${name.replace('test key ', '')}: switch to ${name.replace('test key ', '')} in your mailbox key (top right).`;
     } catch { /* the original error says enough */ }
     say('#open-msg', e.message + hint, 'bad');
     play($('#open-msg'), 'anim-shake');
@@ -686,7 +848,7 @@ $('#btn-open').addEventListener('click', () => {
   let fromRow;
   let tone = 'good';
   let title = 'Opened';
-  let lede = 'Only your wallet could open this letter.';
+  let lede = 'Only your mailbox key could open this letter.';
   if (!o.signed) {
     fromRow = el('span', { text: "Anonymous. The sender didn't sign it, so it could be from anyone." });
   } else if (o.signatureValid) {
@@ -925,7 +1087,7 @@ function renderPostmark(st, file) {
   $('#pm-sub').textContent = 'Your receipt is ready. The date is set by the block your lock lands in.';
   $('#pm-by').replaceChildren(document.createTextNode('The lock’s block'), el('small', { text: 'shown on BRC Pulse, usually within minutes' }));
   const who = nameFor(st.owner);
-  $('#pm-from').replaceChildren(document.createTextNode(wallet && wallet.address === st.owner ? 'You' : who || 'This address'),
+  $('#pm-from').replaceChildren(document.createTextNode(who || 'Your address'),
     el('small', { class: 'mono', text: `${st.owner.slice(0, 6)}…${st.owner.slice(-4)}` }));
 }
 
@@ -1061,8 +1223,8 @@ $('#ib-elig').addEventListener('change', async (e) => {
 $('#btn-ib-open').addEventListener('click', () => {
   $('#ib-out').hidden = true; say('#ib-msg', '');
   if (!ibExport) { say('#ib-msg', 'Choose the letters file first.', 'bad'); play($('#ib-msg'), 'anim-shake'); return; }
-  if (!wallet) { say('#ib-msg', "Load the mailbox's wallet first. Opening needs its key.", 'bad'); openSheet(); return; }
-  if (ibExport.mailbox && ibExport.mailbox !== wallet.address) { say('#ib-msg', `These letters are for mailbox ${ibExport.mailbox.slice(0, 10)}…, not the wallet you loaded. Load that mailbox's wallet.`, 'bad'); return; }
+  if (!wallet) { say('#ib-msg', 'Open the mailbox key first. Opening needs it.', 'bad'); openSheet(); return; }
+  if (ibExport.mailbox && ibExport.mailbox !== wallet.address) { say('#ib-msg', `These letters are for mailbox ${ibExport.mailbox.slice(0, 10)}…, not the key you opened. Open that mailbox's key.`, 'bad'); return; }
   const r = giveaway.readEntries(ibExport.letters.map((l) => l.letter), wallet, ibEligible ? ibEligible.set : null);
   ibResult = { ...r, letters: ibExport.letters.length, setAside: r.rejected.map((x) => ({ seq: ibExport.letters[x.index].seq, reason: x.reason })) };
   const rows = $('#ib-rows'); rows.replaceChildren();
@@ -1157,7 +1319,8 @@ function idleCheck() {
     clearLoader();
     clearSecretsFromPage();
     renderWallet();
-    $('#wallet-sub').textContent = 'Your wallet was forgotten after 10 minutes without use. Load it again when you need it.';
+    stopLinking();
+    $('#wallet-sub').textContent = 'Your mailbox key was closed after 10 minutes without use. Open it again when you need it.';
     for (const node of $$('[data-wallet-sub]')) node.textContent = 'Forgotten after 10 minutes idle';
   }
 }

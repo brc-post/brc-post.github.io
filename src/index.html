@@ -230,6 +230,9 @@ a { color: var(--brand-deep); }
 .verdict[data-tone="good"] { background: var(--good-tint); border-color: #c9e6db; }
 .verdict[data-tone="bad"] { background: var(--danger-tint); border-color: #f0cdc5; }
 .verdict[data-tone="warn"] { background: var(--caution-tint); border-color: #eedcb5; }
+.verdict[data-tone="info"] { background: var(--brand-tint); border-color: #d6d5ff; }
+.verdict[data-tone="info"] .verdict-title { color: #2c2a8f; }
+.verdict a { color: var(--brand-deep); font-weight: 500; }
 .verdict-title { display: flex; align-items: center; gap: 0.55rem; font-weight: 650; font-size: 1.05rem; letter-spacing: -0.015em; }
 .verdict[data-tone="good"] .verdict-title { color: var(--good); }
 .verdict[data-tone="bad"] .verdict-title { color: var(--danger); }
@@ -252,6 +255,12 @@ a { color: var(--brand-deep); }
 .msg[data-tone="info"] { color: var(--muted); }
 .notice { margin-top: 1rem; padding: 0.75rem 0.9rem; border-radius: var(--radius-sm); background: var(--sunken); font-size: 0.86rem; color: var(--ink-2); }
 .notice strong { font-weight: 600; }
+.privacy[data-mode="chain"] { background: var(--sunken); color: var(--ink-2); }
+.privacy[data-mode="mailbox"] { background: var(--brand-tint); color: #2c2a8f; }
+textarea.to-box { min-height: 3rem; height: 3rem; resize: vertical; }
+.link-btn { appearance: none; border: 0; background: none; padding: 0; font: inherit; font-weight: 500; color: var(--brand-deep); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.sheet-note a { color: var(--brand-deep); font-weight: 500; }
+#sc-recipe { margin-top: 1rem; }
 
 /* Success headers: a small animated picture above a result */
 .done-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.9rem; }
@@ -458,8 +467,8 @@ footer b { font-weight: 600; color: var(--ink-2); }
   </header>
 
   <main class="wrap">
-    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Loading a real wallet is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your wallet. Test wallets still work.</p>
-    <p class="test-banner"><strong>Test build, not published.</strong> Use the test wallets to try everything. Don't load a wallet that holds real coins until this has had an outside security review.</p>
+    <p class="frame-warning" id="frame-warning" hidden><strong>BRC Seal is open inside another page.</strong> Opening a real mailbox key is turned off here, because the outer page could watch what you type. Open BRC Seal in its own tab to use your key. Test keys still work.</p>
+    <p class="test-banner"><strong>Test build, not published.</strong> Use the test keys to try everything. BRC Seal never takes a key that holds coins: no wallet files, private keys or recovery words, ever.</p>
 
     <!-- ================= HOME ================= -->
     <section class="screen" id="s-home" data-screen="home" tabindex="-1" aria-label="BRC Seal home">
@@ -473,13 +482,13 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <span class="wordmark" role="img" aria-label="BRC Seal"><span class="wm-light">BRC</span><span class="wm-bold">Seal</span></span>
         </div>
         <h1><span class="w">Sign it.</span> <span class="w accent">Seal it.</span> <span class="w">Postmark it.</span></h1>
-        <p>Your BrowserCoin wallet is your signature, your envelope and your postmark. Everything happens on your device. Nothing is uploaded.</p>
+        <p>Your BrowserCoin address is your signature, your envelope and your postmark, and your coin keys never come near this page. Everything happens on your device. Nothing is uploaded.</p>
       </div>
 
       <nav class="tiles" aria-label="What do you want to do?">
         <a class="tile" href="#sign" id="go-sign">
           <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span>
-          <span class="tile-text"><strong>Add my signature</strong><span>Prove a message is from you</span></span>
+          <span class="tile-text"><strong>Add my signature</strong><span>Prove a message is from your address</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </a>
         <a class="tile" href="#seal" id="go-seal">
@@ -494,30 +503,41 @@ footer b { font-weight: 600; color: var(--ink-2); }
         </a>
         <a class="tile ghost" href="#received" id="go-received">
           <span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span>
-          <span class="tile-text"><strong>I received something</strong><span>Check a signature, open a letter, check a postmark</span></span>
+          <span class="tile-text"><strong>I received something</strong><span>Check a signature or a link, open a letter, check a postmark</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </a>
       </nav>
 
       <button type="button" class="wallet-chip" data-wallet aria-haspopup="dialog">
         <span class="idc empty" data-idc aria-hidden="true"></span>
-        <span class="wc-text"><strong data-wallet-name>No wallet loaded</strong><span data-wallet-sub>Needed to sign and to open letters</span></span>
+        <span class="wc-text"><strong data-wallet-name>No mailbox key</strong><span data-wallet-sub>Needed to open letters</span></span>
         <span class="wc-act" data-wallet-act>Load</span>
       </button>
       <ul class="trust">
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Works offline</li>
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Nothing leaves this page</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Your key is never saved</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Never asks for a coin key</li>
       </ul>
     </section>
 
     <!-- ================= SIGN ================= -->
     <section class="screen" id="p-sign" data-screen="sign" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17c3-1 4-9 7-9s1 7 4 7 3-3 5-3"/><path d="M4 21h16"/></svg></span><h2 tabindex="-1">Add my signature</h2></div>
-      <p class="lede"><strong>Prove an address is yours.</strong> Your wallet signs a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
+      <p class="lede"><strong>Prove an address is yours.</strong> Sign a short statement. Anyone can check it, and nobody can fake it or change a word.</p>
       <div class="card">
-        <div class="field" style="margin-top:0"><span>Who will see it?</span>
+        <div class="field" style="margin-top:0"><span>Sign as</span>
+          <div class="seg" role="radiogroup" aria-label="Sign as" id="sign-as">
+            <button type="button" role="radio" aria-checked="true" data-as="chain"><strong>My coin address</strong><small>On the chain, with the official app</small></button>
+            <button type="button" role="radio" aria-checked="false" data-as="mailbox"><strong>My mailbox</strong><small>Instant, with your mailbox key</small></button>
+          </div>
+        </div>
+        <p class="privacy" id="sign-as-note"></p>
+        <div id="sign-chain-part">
+          <label class="field"><span>Your coin address</span><input id="sc-address" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address the official app shows for your wallet"></label>
+        </div>
+        <div id="sign-mailbox-part" hidden>
+        <div class="field"><span>Who will see it?</span>
           <div class="seg" role="radiogroup" aria-label="Who will see it?" id="sign-mode">
             <button type="button" role="radio" aria-checked="true" data-mode="public"><strong>Anyone</strong><small>Post it publicly</small></button>
             <button type="button" role="radio" aria-checked="false" data-mode="private"><strong>One person</strong><small>Sealed so only they can check it</small></button>
@@ -528,14 +548,34 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Their address</span><input id="sign-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address of the person checking it"></label>
           <div class="chips" id="sign-quick" hidden><button type="button" class="chip" data-sign-to="alice">Alice's address</button><button type="button" class="chip" data-sign-to="bob">Bob's address</button></div>
         </div>
-        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 30, 2026."></textarea></label>
-        <div class="chips" aria-label="Examples">
-          <button type="button" class="chip" data-fill="giveaway">Block 100,000 giveaway entry</button>
+        </div>
+        <p class="notice" id="sc-link-note" hidden><strong>Linking your mailbox.</strong> This message says your mailbox <span class="mono" id="sc-link-mailbox"></span> belongs to the coin address above, and your mailbox key has already signed it. Sign it on the chain to finish. <button type="button" class="link-btn" id="btn-sc-unlink">Write my own message instead</button></p>
+        <label class="field"><span>Message <span class="count" id="sign-count"></span></span><textarea id="sign-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="I'm pb-hash on Discord. Today is Oct 31, 2026."></textarea></label>
+        <div class="chips" aria-label="Examples" id="sign-fills">
+          <button type="button" class="chip" data-fill="mine">This address is mine</button>
           <button type="button" class="chip" data-fill="discord">Prove my Discord name</button>
           <button type="button" class="chip" data-fill="pool">Prove a pool payout address</button>
         </div>
-        <div class="actions"><button class="btn btn-primary btn-block" id="btn-sign" type="button">Sign with my wallet</button></div>
+        <div class="actions"><button class="btn btn-primary btn-block" id="btn-sign" type="button">Make the phrase</button></div>
         <p class="msg" id="sign-msg" role="status" aria-live="polite"></p>
+        <div id="sc-recipe" hidden>
+          <div class="recipe">
+            <ol>
+              <li>Open <strong>browsercoin.org/app</strong> → <strong>Scripts</strong> → <strong>Create a hash-locked payment</strong>.</li>
+              <li><strong>Amount:</strong> <span class="mono" id="sc-amount"></span> BRC. You can take it back later.</li>
+              <li><strong>Recipient address:</strong> your coin address
+                <div class="inline-copy"><span class="mono" id="sc-owner-copy"></span><button class="btn btn-secondary btn-small" type="button" data-copy="sc-owner-copy"><span class="lbl">Copy</span></button></div></li>
+              <li><strong>Secret phrase:</strong> paste exactly this, with no spaces added
+                <div class="inline-copy"><span class="mono" id="sc-phrase"></span><button class="btn btn-secondary btn-small" type="button" data-copy="sc-phrase"><span class="lbl">Copy</span></button></div></li>
+              <li>Leave the fee as it is and press <strong>Lock coins</strong>. Your key signs the lock inside the official app, where it already lives.</li>
+            </ol>
+            <p class="field-help">Check before locking: in the app's script preview, the line after OP_SHA256 should read <span class="mono" id="sc-check"></span>, and the line after OP_EQUALVERIFY should read <span class="mono" id="sc-check-owner"></span>.</p>
+          </div>
+          <label class="field"><span>Lock ID <span class="count" id="sc-lockid-status">optional</span></span>
+            <input id="sc-lockid" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste it from the app, or leave empty"></label>
+          <div class="actions"><button class="btn btn-primary btn-block" id="btn-sc-done" type="button">I've locked it: make my signed message</button></div>
+          <p class="msg" id="sc-msg" role="status" aria-live="polite"></p>
+        </div>
         <div class="out" id="sign-out" hidden>
           <div class="done-head">
             <span class="done-art" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path class="sig-line" pathLength="1" d="M3 16c3-1 4-9 7-9s1 7 4 7 3-3 7-3"/><path d="M3 20.5h18" opacity=".35"/></svg></span>
@@ -548,29 +588,30 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <details class="how">
         <summary>How signing works</summary>
         <div class="how-body">
-          <p>Your BrowserCoin address is a public key. Your wallet's private key can make a <strong>signature</strong>: a 128-character code that only that key can produce, and that fits only this exact message.</p>
+          <p><strong>On the chain, for your coin address.</strong> BRC Seal never sees your coin key. It turns your message and your address into a phrase. You lock a tiny amount with that phrase in the official app, which signs the lock with your key, the way it signs any payment. Only your key could have made that lock, so the chain itself is the signature.</p>
           <ol>
-            <li>The page signs your message together with your address and a fixed label, <code>BrowserCoin Signed Message v1</code>.</li>
-            <li>Anyone who pastes the block into BRC Seal → I received something can check the signature against the address. No wallet needed.</li>
-            <li>Change one letter of the message and the check fails.</li>
+            <li>The phrase is a fingerprint of <code>BrowserCoin Chain-Signed Message v1</code>, your address and your message, plus a random salt.</li>
+            <li>Anyone with the signed message can rebuild the phrase and find the lock on <strong>BRC Pulse → Stamps</strong>, which checks it was made by your address. Change one letter and it no longer matches.</li>
+            <li>It costs the app's small fee plus the amount you lock, which you can take back later with Redeem.</li>
           </ol>
-          <p><strong>It can't move your coins.</strong> Coin transfers sign a completely different layout of bytes, which starts with BrowserCoin's chain number. A message signature can never be used as a payment.</p>
-          <p><strong>Your privacy:</strong> BrowserCoin's chain is public. Anyone can see every address's balance, payments and mining rewards. A public signature ties your address to whatever the message says, for good, and can't be taken back. Use an address that holds little for public signing, and keep your coins in another wallet. Or choose <strong>One person</strong>: your signed message is sealed so only that address can open and check it. They could still show it to others, so choose someone you trust.</p>
-          <p><strong>Uses:</strong> claiming a Discord role as a real miner, entering the block 100,000 giveaway, proving a pool payout address is yours, settling "that's my address" arguments.</p>
+          <p><strong>With your mailbox, instantly.</strong> A mailbox key is a separate key made in BRC Vault for letters and signing. It never holds coins, so loading it here risks nothing you own. Link it to your coin address once, on the chain, and everything it signs shows as your mailbox.</p>
+          <p><strong>Your privacy:</strong> BrowserCoin's chain is public. A public signature ties your address to whatever the message says, for good. Or choose <strong>One person</strong> when signing with your mailbox: the signed message is sealed so only they can open and check it.</p>
+          <p><strong>Uses:</strong> claiming a Discord role as a real miner, proving a pool payout address is yours, settling "that's my address" arguments.</p>
         </div>
       </details>
     </section>
 
     <!-- ================= SEAL ================= -->
     <section class="screen" id="p-seal" data-screen="seal" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="m3.5 7.5 8.5 6 8.5-6"/><circle cx="12" cy="14" r="2.3" fill="currentColor" stroke="none"/></svg></span><h2 tabindex="-1">Seal a letter</h2></div>
-      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the wallet you seal it to can read it.</p>
+      <p class="lede"><strong>Only the person you choose can open it.</strong> You can post a sealed letter anywhere, even a public channel. Only the key you seal it to can read it.</p>
       <div class="card">
-        <label class="field"><span>Seal to address</span><input id="seal-to" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="64-character BrowserCoin address"></label>
+        <label class="field"><span>Seal to</span><textarea id="seal-to" class="mono-input to-box" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Their mailbox address, or paste their mailbox link"></textarea></label>
+        <p class="msg" id="seal-to-note" role="status" aria-live="polite"></p>
         <div class="chips" id="seal-quick" hidden><button type="button" class="chip" data-to="alice">Alice's address</button><button type="button" class="chip" data-to="bob">Bob's address</button></div>
         <label class="field"><span>Letter <span class="count" id="seal-count"></span></span><textarea id="seal-text" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Hi, I saw your address found a lot of blocks today. Would you consider…"></textarea></label>
-        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Load a wallet to use this.</span></label>
+        <label class="check" id="seal-sign-wrap" aria-disabled="true"><input type="checkbox" id="seal-sign" disabled><span id="seal-sign-label">Sign it so they know it's from me. Open your mailbox key to use this.</span></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-seal" type="button">Seal the letter</button></div>
         <p class="msg" id="seal-msg" role="status" aria-live="polite"></p>
         <div class="out" id="seal-out" hidden>
@@ -586,14 +627,15 @@ footer b { font-weight: 600; color: var(--ink-2); }
       <details class="how">
         <summary>How sealing works, and its one limit</summary>
         <div class="how-body">
-          <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching wallet can unlock it.</p>
+          <p>Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching key can unlock it.</p>
           <ol>
             <li>The page makes a one-time key just for this letter and combines it with the recipient's address (X25519).</li>
             <li>The letter is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.</li>
-            <li>If you tick "sign it", your signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.</li>
+            <li>If you tick "sign it", your mailbox key's signature goes <strong>inside</strong> the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.</li>
             <li>Signed and anonymous letters are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.</li>
           </ol>
-          <p><strong>The limit:</strong> there are no rotating keys. If the recipient's wallet key is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.</p>
+          <p><strong>The limit:</strong> there are no rotating keys. If the recipient's mailbox key is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.</p>
+          <p><strong>Seal to a mailbox, not a coin address.</strong> A coin address's key lives in the official app, which can't open letters. Paste the person's mailbox link and BRC Seal seals to their mailbox.</p>
           <p><strong>Visible to everyone:</strong> who the letter is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.</p>
         </div>
       </details>
@@ -601,7 +643,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= POSTMARK ================= -->
     <section class="screen" id="p-stamp" data-screen="postmark" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="M15.5 9.5c1.5-1 3-1 4.5 0M15.5 12c1.5-1 3-1 4.5 0M15.5 14.5c1.5-1 3-1 4.5 0"/></svg></span><h2 tabindex="-1">Postmark a file</h2></div>
       <p class="lede"><strong>Prove a file existed by a date.</strong> The file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.</p>
       <ol class="steps">
@@ -698,7 +740,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= RECEIVED ================= -->
     <section class="screen" id="s-received" data-screen="received" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5.5 6.5 4 13v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5l-1.5-6.5a1 1 0 0 0-1-.8h-11a1 1 0 0 0-1 .8z"/></svg></span><h2 tabindex="-1">I received something</h2></div>
       <p class="lede">Paste it here and BRC Seal will work out what it is.</p>
       <div class="card">
@@ -707,8 +749,8 @@ footer b { font-weight: 600; color: var(--ink-2); }
       </div>
       <p class="or">or choose</p>
       <div class="route-list">
-        <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
-        <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your wallet</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#verify" id="go-verify"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a signature</strong><span>See who signed a message, or whose mailbox a link is</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <a class="tile" href="#open" id="go-open"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><span class="tile-text"><strong>Open a letter</strong><span>Read a letter sealed to your mailbox</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
         <a class="tile" href="#check" id="go-check"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><span class="tile-text"><strong>Check a postmark</strong><span>Match a file to its receipt</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
         <a class="tile" href="#inbox" id="go-inbox"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><span class="tile-text"><strong>Open many letters</strong><span>For a mailbox owner: open a whole mailbox at once</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
       </div>
@@ -716,9 +758,9 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= VERIFY ================= -->
     <section class="screen" id="p-verify" data-screen="verify" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c3-1 4-8 7-8s1 6 4 6"/><path d="m15 18 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a signature</h2></div>
-      <p class="lede">Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No wallet needed.</p>
+      <p class="lede">Paste the whole block, from <span class="mono">-----BEGIN</span> to <span class="mono">-----END</span>. No key needed.</p>
       <div class="card">
         <label class="field"><span>Signed message</span><textarea id="verify-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-verify" type="button">Check signature</button></div>
@@ -730,6 +772,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <div class="how-body">
           <p>A valid result proves that <strong>whoever controls this address</strong> signed <strong>exactly this message</strong>.</p>
           <ul>
+            <li>A message signed on the chain is checked in full on <strong>BRC Pulse → Stamps</strong>, which reads the chain. Here, offline, BRC Seal can only check it is complete and well-formed.</li>
             <li>It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.</li>
             <li>BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.</li>
             <li>Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.</li>
@@ -740,9 +783,9 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= OPEN ================= -->
     <section class="screen" id="p-open" data-screen="open" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19z"/><path d="m3.5 11 8.5 6 8.5-6"/></svg></span><h2 tabindex="-1">Open a letter</h2></div>
-      <p class="lede">Paste the whole block. Opening needs the wallet it was sealed to.</p>
+      <p class="lede">Paste the whole block. Opening needs the mailbox key it was sealed to.</p>
       <div class="card">
         <label class="field"><span>Sealed letter</span><textarea id="open-text" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea></label>
         <div class="actions"><button class="btn btn-primary btn-block" id="btn-open" type="button">Open the letter</button></div>
@@ -755,7 +798,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <ul>
             <li>An anonymous letter could be from anyone. Treat its claims the way you'd treat an unsigned letter in the post.</li>
             <li>A signed letter shows the sender's address, checked. It still only proves the address, not the person.</li>
-            <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a letter asks. Nobody legitimate needs them.</li>
+            <li><strong>Never send your wallet file, private key or recovery words to anyone</strong>, however a letter asks, and never paste them into any page. Nobody legitimate needs them. BRC Seal never will.</li>
           </ul>
         </div>
       </details>
@@ -763,7 +806,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= CHECK A POSTMARK ================= -->
     <section class="screen" id="p-check" data-screen="check" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="12" r="6.5"/><circle cx="9.5" cy="12" r="4"/><path d="m15.5 17 2 2 4-4.5"/></svg></span><h2 tabindex="-1">Check a postmark</h2></div>
       <p class="lede">Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on <strong>BRC Pulse → Stamps</strong>, which reads the chain.</p>
       <div class="card">
@@ -776,9 +819,9 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
     <!-- ================= OPEN MANY LETTERS ================= -->
     <section class="screen" id="p-inbox" data-screen="inbox" hidden>
-      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No wallet</span></button></div>
+      <div class="screen-head"><button type="button" class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span class="spacer"></span><button type="button" class="wallet-mini" data-wallet aria-haspopup="dialog"><span class="idc empty" data-idc aria-hidden="true"></span><span class="wm-name" data-wallet-short>No key</span></button></div>
       <div class="screen-title"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="14" height="11" rx="2"/><path d="m3.5 9.5 6.5 4.5 6.5-4.5"/><path d="M7 5h12a2 2 0 0 1 2 2v9"/></svg></span><h2 tabindex="-1">Open many letters</h2></div>
-      <p class="lede">For a mailbox owner. Open every letter from a BRC Mailbox at once, here and offline, with the mailbox's wallet. For a giveaway, this counts the entries and makes the list to publish.</p>
+      <p class="lede">For a mailbox owner. Open every letter from a BRC Mailbox at once, here and offline, with the mailbox key. For a giveaway, this counts the entries and makes the list to publish.</p>
       <div class="card">
         <label class="drop" id="ib-drop"><input type="file" id="ib-file" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="drop-text"><strong id="ib-file-title">Choose the letters file</strong><span id="ib-file-sub">From BRC Pulse → Giveaway → Download every letter</span></span></label>
         <label class="drop" id="ib-elig-drop" style="margin-top:0.7rem"><input type="file" id="ib-elig" accept=".json,application/json"><span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="drop-text"><strong id="ib-elig-title">Eligible list (optional)</strong><span id="ib-elig-sub">The giveaway's eligible.json, to set aside addresses that can't enter</span></span></label>
@@ -806,41 +849,39 @@ footer b { font-weight: 600; color: var(--ink-2); }
   <dialog class="sheet" id="wallet-sheet" aria-labelledby="sheet-title">
     <div class="sheet-inner">
       <div class="grabber" aria-hidden="true"></div>
-      <div class="sheet-head"><h2 id="sheet-title">Your wallet</h2><button type="button" class="x" id="btn-sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <div class="sheet-head"><h2 id="sheet-title">Your mailbox key</h2><button type="button" class="x" id="btn-sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
       <section id="wallet" data-state="empty" aria-labelledby="wallet-title">
         <div class="wallet-row">
           <span class="idc empty" data-idc aria-hidden="true"></span>
           <div class="wallet-text">
-            <strong id="wallet-title">No wallet loaded</strong>
-            <span id="wallet-sub">You can check signatures and seal letters without one. Signing and opening need a wallet.</span>
+            <strong id="wallet-title">No mailbox key open</strong>
+            <span id="wallet-sub">You can sign on the chain, check and seal without one. Opening letters needs your mailbox key.</span>
           </div>
         </div>
-        <div class="who" id="who" role="group" aria-label="Act as test wallet" hidden>
+        <div class="who" id="who" role="group" aria-label="Act as test key" hidden>
           <button type="button" data-who="alice" aria-pressed="true">Alice</button>
           <button type="button" data-who="bob" aria-pressed="false">Bob</button>
         </div>
         <div class="wallet-actions" id="wallet-actions">
-          <button class="btn btn-secondary" id="btn-test" type="button">Use test wallets</button>
-          <button class="btn btn-secondary" id="btn-load" type="button">Load my wallet</button>
-          <button class="btn btn-secondary" id="btn-forget" type="button" hidden>Forget wallet</button>
+          <button class="btn btn-secondary" id="btn-test" type="button">Use test keys</button>
+          <button class="btn btn-secondary" id="btn-load" type="button">Open my mailbox key</button>
+          <button class="btn btn-secondary" id="btn-link" type="button" hidden>Link to my coin address</button>
+          <button class="btn btn-secondary" id="btn-forget" type="button" hidden>Forget key</button>
           <button class="btn btn-primary" id="btn-sheet-done" type="button" hidden>Done</button>
         </div>
         <div class="loader" id="loader" hidden>
           <label class="drop" id="drop">
             <input type="file" id="wallet-file" accept=".json,.txt,application/json,text/plain">
             <span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M16 12.5h2M3 9.5h18M7 6V4.8A1.8 1.8 0 0 1 9.2 3l8.3 1.6"/></svg></span>
-            <span class="drop-text"><strong>Choose your wallet file</strong>From browsercoin.org/app → Settings → Export key…, or a BRC Vault backup</span>
+            <span class="drop-text"><strong>Choose your mailbox key file</strong>brc-mailbox-key-….json, made in BRC Vault</span>
           </label>
-          <label class="field"><span>Or paste a wallet file, private key, key code or 24 recovery words</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
-          <div id="confirm-field" hidden>
-            <p class="notice" id="confirm-ambiguous" hidden><strong>Is this a private key or an address?</strong> They look alike. If you pasted your address by mistake, press Cancel: an address can't sign or open anything.</p>
-            <label class="check"><input type="checkbox" id="confirm-mine"><span>This is my wallet's address: <span class="mono" id="confirm-address"></span></span></label>
-          </div>
-          <label class="field" id="password-field" hidden><span>This backup is password-protected. Enter its password</span><input id="wallet-password" type="password" autocomplete="off"></label>
-          <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Load wallet</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
+          <label class="field"><span>Or paste the file, or its paper code (BRCMBOX1…)</span><textarea id="wallet-paste" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" rows="3"></textarea></label>
+          <label class="field" id="password-field" hidden><span>Enter the mailbox key's password</span><input id="wallet-password" type="password" autocomplete="off"></label>
+          <div class="actions"><button class="btn btn-primary" id="btn-load-go" type="button">Open key</button><button class="btn btn-secondary" id="btn-load-cancel" type="button">Cancel</button></div>
           <p class="msg" id="load-msg" role="status" aria-live="polite"></p>
         </div>
-        <p class="sheet-note">Your key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page.</p>
+        <p class="sheet-note"><strong>No coin keys, ever.</strong> BRC Seal refuses wallet files, private keys and recovery words, so nobody can talk you into pasting one here. A mailbox key holds no coins. Don't have one? <a href="https://pb-hash.github.io/brc-vault/#new-mailbox" target="_blank" rel="noopener noreferrer">Make one in BRC Vault</a>.</p>
+        <p class="sheet-note">An open key stays in this page's memory only. It is never saved, and it's gone when you close or reload the page, or after 10 minutes untouched.</p>
       </section>
     </div>
   </dialog>

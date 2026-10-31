@@ -270,7 +270,10 @@ console.log(`\n${passed} core tests passed`);
 
 // A BRC Vault backup and a wallet file for the page test (fast scrypt setting so the test is quick).
 const pageWallet = c.walletFromPrivateKeyHex(rand());
-const backup = await c.encryptWallet(pageWallet, 'correct horse battery staple', { kdf: { name: 'scrypt', logN: 14, r: 8, p: 1, dkLen: 32 } });
+const FASTKDF = { kdf: { name: 'scrypt', logN: 14, r: 8, p: 1, dkLen: 32 } };
+const backup = await c.encryptWallet(c.walletFromPrivateKeyHex(rand()), 'correct horse battery staple', FASTKDF); // a coin backup: refused
+const mailboxKey = await c.encryptWallet(pageWallet, 'correct horse battery staple', { ...FASTKDF, purpose: 'mailbox' });
+const coinAddress = c.walletFromPrivateKeyHex(rand()).address;
 // A giveaway mailbox export sealed to that wallet, and an eligible list, for "Open many letters".
 const people = Array.from({ length: 6 }, () => c.walletFromPrivateKeyHex(rand()).address);
 const eligibleFile = { v: 1, cutoff: 92500, count: 5, fingerprint: c.eligibleFingerprint(people.slice(0, 5)), addresses: [...people.slice(0, 5)].sort() };
@@ -284,6 +287,9 @@ writeFileSync('build/page-fixture.json', JSON.stringify({
   walletFile: JSON.stringify({ type: 'browsercoin-wallet', version: 1, address: pageWallet.address, privateKeyHex: c.bytesToHex(pageWallet.privateKey), warning: 'Anyone with the private key controls the wallet. Keep this safe.' }, null, 2),
   address: pageWallet.address,
   backup: JSON.stringify(backup, null, 2),
+  mailboxKey: JSON.stringify(mailboxKey, null, 2),
+  mailboxCode: c.paperCodeText(c.backupToCompact(mailboxKey)),
+  coinAddress,
   password: 'correct horse battery staple',
   mailboxExport: JSON.stringify(mailboxExport),
   eligible: JSON.stringify(eligibleFile),
