@@ -5,3 +5,4 @@ export { encryptWallet } from '../src/vault-core.js';
 export { ed25519 } from '@noble/curves/ed25519';
 export * from '../src/stamp-core.js';
 export * from '../src/drand-core.js';
+export * from '../src/giveaway-core.js';
