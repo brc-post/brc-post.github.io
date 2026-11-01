@@ -1,6 +1,6 @@
 // Test data for BRC Pulse's giveaway page: a mailbox wallet, a prize pool, an
 // eligible list, an entry list, and settings for two phases (entries open; winner drawn).
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
 import * as c from '../build/seal-core.mjs';
 import { makeChain } from './chain-block.mjs';
 
@@ -36,7 +36,8 @@ const openLaunch = launchFor(open), drawnLaunch = launchFor(drawn);
 const commitText = c.listCommitMessage({ count: entries.length, fingerprint: entriesFile.fingerprint, round: beacon.round });
 const goodCs = c.newChainSignature({ address: rel.address, text: commitText });
 const lateCs = c.newChainSignature({ address: rel.address, text: commitText });
-const L = { openLaunch: ch.lock(rel, c.chainScriptHash(openLaunch)), drawnLaunch: ch.lock(rel, c.chainScriptHash(drawnLaunch)), good: ch.lock(rel, c.chainScriptHash(goodCs)), late: ch.lock(rel, c.chainScriptHash(lateCs)), extra: ch.lock(rel, c.chainScriptHash(c.newChainSignature({ address: rel.address, text: 'Another list, just in case.' }))) };
+const relCs = c.newChainSignature({ address: rel.address, text: c.releaseMessage({ tool: 'BRC Vault', version: '9.9.9', file: 'brc-vault.html', sha256: 'ab'.repeat(32) }) });
+const L = { openLaunch: ch.lock(rel, c.chainScriptHash(openLaunch)), drawnLaunch: ch.lock(rel, c.chainScriptHash(drawnLaunch)), good: ch.lock(rel, c.chainScriptHash(goodCs)), late: ch.lock(rel, c.chainScriptHash(lateCs)), extra: ch.lock(rel, c.chainScriptHash(c.newChainSignature({ address: rel.address, text: 'Another list, just in case.' }))), release: ch.lock(rel, c.chainScriptHash(relCs)) };
 const ts = (h) => (h <= 92615 ? roundT - 3 * 86400 + (h - 92600) * 600 : h <= 92632 ? roundT - 86400 + (h - 92616) * 600 : roundT - 3600 + (h - 92633) * 600);
 function chainWith(extra) {
   const blocks = {};
@@ -47,6 +48,7 @@ writeFileSync('build/giveaway-chain.json', JSON.stringify({
   good: chainWith({ 92618: [L.good] }),
   double: chainWith({ 92618: [L.good], 92622: [L.extra] }),
   late: chainWith({ 92634: [L.late] }),
+  release: chainWith({ 92618: [L.good], 92625: [L.release] }),
 }));
 writeFileSync('build/giveaway-official.json', JSON.stringify([{ address: rel.address, name: 'BRC Works release address', role: 'release' }]));
 const signed = (cs, lock, block) => c.chainSignedText(cs, { lockId: c.fingerprint(lock), block });
@@ -57,6 +59,8 @@ writeFileSync('build/giveaway-open-nolaunch.json', JSON.stringify(open));
 writeFileSync('build/giveaway-drawn.json', JSON.stringify({ ...drawn, launch: launchDrawn, commitment }));
 writeFileSync('build/giveaway-drawn-nocommit.json', JSON.stringify({ ...drawn, launch: launchDrawn }));
 writeFileSync('build/giveaway-drawn-late.json', JSON.stringify({ ...drawn, launch: launchDrawn, commitment: lateCommitment }));
+mkdirSync('build/giveaway-releases', { recursive: true });
+writeFileSync('build/giveaway-releases/brc-vault-9.9.9.txt', signed(relCs, L.release, 92625) + '\n');
 writeFileSync('build/giveaway-drawn-moved.json', JSON.stringify({ ...drawn, drawAt: new Date((roundT + 60) * 1000).toISOString(), launch: launchDrawn, commitment }));
 writeFileSync('build/giveaway-fixture.json', JSON.stringify({ mailboxKey: c.bytesToHex(mailbox.privateKey), mailbox: mailbox.address, pool, eligible: eligibleFile, entries: entriesFile, notEligible, beacon, expected }));
 console.log(`giveaway fixture: ${eligible.length} eligible, ${entries.length} entries, winner index ${expected.index}`);
