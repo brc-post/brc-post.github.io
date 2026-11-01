@@ -929,6 +929,20 @@ function stopLinking() {
   updateSignCount();
 }
 $('#sc-address').addEventListener('input', updateLinkText);
+function showScWho() {
+  const a = $('#sc-address').value.replace(/\s+/g, '').toLowerCase().replace(/^0x/, '');
+  const ok = /^[0-9a-f]{64}$/.test(a), off = ok ? known.officialFor(a) : null;
+  paintIdenticon($('#sc-idc'), ok ? a : null);
+  $('#sc-who').textContent = off ? `\u2713 ${off.name}` : '';
+}
+$('#sc-address').addEventListener('input', showScWho);
+$('#btn-sign-another').addEventListener('click', () => {
+  stopLinking(); stopCommit(); resetChainSig();
+  $('#sign-out').hidden = true; $('#sign-pulse').hidden = true;
+  $('#sign-text').value = ''; updateSignCount(); say('#sign-msg', '');
+  $('[data-screen="sign"]').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  $('#sign-text').focus({ preventScroll: true });
+});
 $('#btn-sc-unlink').addEventListener('click', () => { stopLinking(); resetChainSig(); $('#sign-text').focus(); });
 $('#btn-link').addEventListener('click', startLinking);
 
@@ -1000,7 +1014,7 @@ function makeChainPhrase() {
     if (linking && (!wallet || wallet.address !== linking.mailbox)) throw new Error('Your mailbox was closed. Open it again to link it.');
     if (linking) updateLinkText();
     const cs = chain.newChainSignature({ address: $('#sc-address').value, text: $('#sign-text').value });
-    $('#sc-address').value = cs.address;
+    $('#sc-address').value = cs.address; showScWho();
     scSig = cs;
     $('#sc-amount').textContent = stamp.SUGGESTED_AMOUNT;
     $('#sc-owner-copy').textContent = cs.address;
@@ -1029,6 +1043,7 @@ $('#btn-sc-done').addEventListener('click', () => {
       ? 'Share this link with anyone who should write to you: BRC Post seals letters to your mailbox from it. Anyone can check it on BRC Pulse → Check it once the lock is in a block.'
       : 'Share this whole block. Anyone can check it on BRC Pulse → Check it once the lock is in a block, usually within a few minutes.';
     $('#btn-sign-copy').querySelector('.lbl').textContent = $('#btn-sign-copy').dataset.label = linking ? 'Copy the mailbox link' : 'Copy the signed message';
+    $('#sign-pulse').href = pulseCheckUrl(text);
     $('#sign-pulse').hidden = false;
     $('#sign-out').hidden = false;
     play($('#sign-out'));

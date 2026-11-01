@@ -141,6 +141,8 @@ a { color: var(--brand-deep); }
 
 .idc { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; width: 2.1rem; height: 2.1rem; padding: 4px; border-radius: 10px; background: var(--brand-tint); }
 .idc i { border-radius: 2px; }
+.addr-row { display: flex; align-items: center; gap: 0.6rem; }
+.addr-row input { flex: 1; min-width: 0; }
 .wallet-mini .idc { width: 1.6rem; height: 1.6rem; padding: 3px; border-radius: 999px; gap: 1px; }
 .idc.empty { background: var(--sunken); border: 1.5px dashed var(--hairline-strong); }
 
@@ -561,7 +563,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         </div>
         <p class="privacy" id="sign-as-note"></p>
         <div id="sign-chain-part">
-          <label class="field"><span>Your coin address</span><input id="sc-address" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address the official app shows for your wallet"></label>
+          <label class="field"><span>Your coin address <span class="count" id="sc-who"></span></span><span class="addr-row"><span class="idc empty" id="sc-idc" aria-hidden="true" title="The same picture appears for this address in BRC Vault and BRC Pulse"></span><input id="sc-address" class="mono-input" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="The address the official app shows for your wallet"></span></label>
         </div>
         <div id="sign-mailbox-part" hidden>
         <div class="field"><span>Who will see it?</span>
@@ -612,7 +614,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
             <div><h3 id="sign-out-title">Signed</h3><p id="sign-out-sub">Share this whole block. Anyone can check it.</p></div>
           </div>
           <pre class="block" id="sign-block"></pre>
-          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button><a class="btn btn-secondary" id="sign-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" hidden>Check it on BRC Pulse</a></div>
+          <div class="actions"><button class="btn btn-primary" type="button" data-copy="sign-block" id="btn-sign-copy"><span class="lbl">Copy the signed message</span></button><a class="btn btn-secondary" id="sign-pulse" href="https://pb-hash.github.io/brc-pulse/#stamp" target="_blank" rel="noopener noreferrer" hidden>Check it on BRC Pulse</a><button class="btn btn-secondary" type="button" id="btn-sign-another">Sign another message</button></div>
         </div>
       </div>
       <details class="how">
@@ -878,7 +880,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     <footer>
       <p>BRC Post <span id="app-version">/*__VERSION__*/</span>, build <span class="mono">/*__BUILD__*/</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
-      <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
+      <p><b>The BRC Works rule:</b> only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
     </footer>
   </main>

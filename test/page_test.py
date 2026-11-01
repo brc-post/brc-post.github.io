@@ -110,7 +110,10 @@ with sync_playwright() as pw:
     assert chain_block.startswith('-----BEGIN BRC CHAIN SIGNED MESSAGE-----') and fx['coinAddress'] in chain_block and 'Lock ID: ' + 'ef' * 32 in chain_block, chain_block
     expect(page.locator('#sign-out-title')).to_have_text('Signed on the chain')
     expect(page.locator('#sign-pulse')).to_be_visible()
-    assert page.locator('#sign-pulse').get_attribute('href').endswith('/brc-pulse/#stamp')
+    from urllib.parse import unquote
+    href = page.locator('#sign-pulse').get_attribute('href')
+    assert href.startswith('https://pb-hash.github.io/brc-pulse/#check=') and unquote(href.split('#check=', 1)[1]) == chain_block.strip(), href
+    expect(page.locator('#sc-idc i')).to_have_count(9)
     got = json.loads(node(f"const p = c.parseChainSigned({json.dumps(chain_block)}); process.stdout.write(JSON.stringify({{ m: p.message, a: p.address, h: c.chainScriptHash(p) }}))"))
     assert got['m'] == msg and got['a'] == fx['coinAddress'] and got['h'] == hashlib.sha256(script).hexdigest(), got
     # Editing the message afterwards drops the phrase, so a stale one can't be used.
@@ -118,6 +121,20 @@ with sync_playwright() as pw:
     expect(page.locator('#sc-recipe')).to_be_hidden()
     expect(page.locator('#sign-out')).to_be_hidden()
     ok('signs on the chain as a coin address: the exact phrase and script the app will lock, and a block that reads back')
+    page.click('#btn-sign')
+    page.fill('#sc-lockid', 'ef' * 32); page.click('#btn-sc-done')
+    expect(page.locator('#sign-out')).to_be_visible()
+    page.click('#btn-sign-another')
+    expect(page.locator('#sign-out')).to_be_hidden()
+    expect(page.locator('#sc-recipe')).to_be_hidden()
+    expect(page.locator('#sign-text')).to_have_value('')
+    expect(page.locator('#sign-text')).to_be_focused()
+    expect(page.locator('#sc-address')).to_have_value(fx['coinAddress'])
+    page.fill('#sc-address', '7ccb496c7bb6e78a169fdd3c2441772bc98730f3da43c3ee52046ee5e90caa00')
+    expect(page.locator('#sc-who')).to_contain_text('BRC Works release address')
+    page.fill('#sc-address', fx['coinAddress'])
+    expect(page.locator('#sc-who')).to_have_text('')
+    ok('"Check it on BRC Pulse" carries the signed block; "Sign another message" starts over with the address kept; the address shows its picture and BRC Works name')
 
     goto(page, 'received')
     page.fill('#rx-text', chain_block)

@@ -4,6 +4,14 @@ Version numbers: last number for fixes and wording, middle number for new
 features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published.
 
+0.6.1 (Oct 31, 2026)
+  - Found while signing the first BRC Works release with Patrick: after
+    signing on the chain, "Check it on BRC Pulse" now carries the signed
+    block (it opened an empty Check it); a "Sign another message" button
+    starts over without reloading, keeping the address; "Your coin address"
+    shows the address picture, and the BRC Works name for an official one.
+    The footer rule reads the same as Pulse's.
+
 0.6.0 (Oct 31, 2026): the first public release
   - Release: the test banner and the "noindex" request come off; BRC Post
     is public at https://brc-post.github.io/.
