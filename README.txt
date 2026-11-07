@@ -7,6 +7,8 @@ Nothing about you, your keys, letters or files is ever sent. Its one connection
 is fetching the public drand time beacon when you postmark a file (untick
 "Also prove when it was made" to skip it; drand's servers see your IP address,
 like any website). The page can reach nothing else.
+English / 中文: the button in the top bar switches the page to Simplified Chinese.
+It changes only the words shown, never keys, addresses, codes or what you type.
 
 BRC Works: Vault (backups, https://pb-hash.github.io/brc-vault/) · Pulse (the live
 BrowserCoin network dashboard, https://pb-hash.github.io/brc-pulse/) · Post.

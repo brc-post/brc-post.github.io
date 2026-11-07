@@ -4,6 +4,16 @@ Version numbers: last number for fixes and wording, middle number for new
 features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published.
 
+0.7.0 (Nov 7, 2026)
+  - 中文: an English / 中文 button in the top bar shows BRC Post in
+    Simplified Chinese. A browser set to Chinese opens in Chinese; the choice
+    is remembered on this device (?lang=en or ?lang=zh also works).
+  - It only changes words, never what is signed, sealed or opened: messages,
+    letters, signed blocks, addresses and anything you type are shown exactly
+    as they are, even when they are the same words as a button (tested in
+    Chinese: signing, verifying and opening a letter whose text is "Seal a
+    letter" / "Back up"). Signed and sealed formats are unchanged.
+
 0.6.1 (Oct 31, 2026)
   - Found while signing the first BRC Works release with Patrick: after
     signing on the chain, "Check it on BRC Pulse" now carries the signed

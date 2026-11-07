@@ -9,6 +9,8 @@ import * as giveaway from './giveaway-core.js';
 import * as chain from './chain-core.js';
 import * as known from './known-core.js';
 import { sha256 } from '@noble/hashes/sha2';
+import { createI18n } from './i18n.js';
+import zh from './zh.json';
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -1800,3 +1802,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) idle
 if (EMBEDDED) { $('#frame-warning').hidden = false; $('#btn-load').title = 'Turned off inside another page'; }
 renderWallet();
 readHash();
+
+// English / 中文 switch (top bar). Changes only the words on the page, never keys, letters, signed text or files.
+const i18n = createI18n({ dict: zh });
+i18n.start();
