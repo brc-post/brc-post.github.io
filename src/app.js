@@ -19,6 +19,14 @@ const $$ = (sel) => [...document.querySelectorAll(sel)];
 // Small DOM helpers. User-supplied text is only ever set with textContent.
 // ---------------------------------------------------------------------------
 
+// A file's own name is shown exactly as it is, in any language (the 中文 switch skips translate="no").
+function showName(node, name) {
+  const span = document.createElement('span');
+  span.textContent = name;
+  span.translate = false;
+  node.replaceChildren(span);
+}
+
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -1375,8 +1383,8 @@ $('#st-file').addEventListener('change', async (e) => {
   delete $('#st-step1').dataset.done;
   const drop = $('#st-drop');
   if (!file) { dropState(drop, ''); return; }
-  if (file.size > 2 * 1024 ** 3) { dropState(drop, ''); $('#st-file-title').textContent = file.name; $('#st-file-sub').textContent = 'Files over 2 GB are too large to postmark here.'; return; }
-  $('#st-file-title').textContent = file.name;
+  if (file.size > 2 * 1024 ** 3) { dropState(drop, ''); showName($('#st-file-title'), file.name); $('#st-file-sub').textContent = 'Files over 2 GB are too large to postmark here.'; return; }
+  showName($('#st-file-title'), file.name);
   $('#st-file-sub').textContent = 'Reading…';
   dropState(drop, 'reading', 0);
   try {
@@ -1525,7 +1533,7 @@ $('#btn-st-make').addEventListener('click', async () => {
 /** The postmark card: what the receipt proves now, and what BRC Pulse will add once the lock is in a block. */
 function renderPostmark(st, file) {
   $('#pm-ext').textContent = extOf(file.name);
-  $('#pm-name').textContent = file.name;
+  showName($('#pm-name'), file.name);
   $('#pm-size').textContent = `${fmtBytes(file.size)} · stayed on your device`;
   const t = stamp.stampDrandTime(st);
   const pm = $('#pm');
@@ -1637,7 +1645,7 @@ $('#st-cmp-file').addEventListener('change', async (e) => {
     const fp = await hashFile(file, (f) => { if (gen === cmpGen) dropState(drop, 'reading', f); });
     if (gen !== cmpGen) return;
     cmpFp = fp;
-    $('#st-cmp-file-title').textContent = file.name;
+    showName($('#st-cmp-file-title'), file.name);
     dropState(drop, 'done', 1);
   } catch {
     if (gen !== cmpGen) return;
@@ -1669,7 +1677,7 @@ $('#ib-file').addEventListener('change', async (e) => {
     const d = await readJsonFile(f);
     if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === 'string')) throw new Error("This isn't a letters file from the BRC Mailbox.");
     ibExport = { mailbox: String(d.mailbox || ''), pool: /^[0-9a-f]{64}$/.test(String(d.pool)) ? d.pool : null, round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
-    $('#ib-file-title').textContent = f.name;
+    showName($('#ib-file-title'), f.name);
     $('#ib-file-sub').textContent = `${ibExport.letters.length.toLocaleString('en-US')} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}…${ibExport.mailbox.slice(-4)}` : 'an unnamed mailbox'}`;
     dropState($('#ib-drop'), 'done', 1);
   } catch (err) { say('#ib-msg', err.message, 'bad'); dropState($('#ib-drop'), ''); }
@@ -1683,7 +1691,7 @@ $('#ib-elig').addEventListener('change', async (e) => {
     const fp = giveaway.eligibleFingerprint(d.addresses);
     if (d.fingerprint && d.fingerprint !== fp) throw new Error("This eligible list doesn't match its own fingerprint. It was changed after it was made.");
     ibEligible = { set: new Set(d.addresses), fingerprint: fp, count: new Set(d.addresses).size };
-    $('#ib-elig-title').textContent = f.name;
+    showName($('#ib-elig-title'), f.name);
     $('#ib-elig-sub').textContent = `${ibEligible.count.toLocaleString('en-US')} addresses · fingerprint ${fp.slice(0, 16)}…`;
     dropState($('#ib-elig-drop'), 'done', 1);
   } catch (err) { say('#ib-msg', err.message, 'bad'); dropState($('#ib-elig-drop'), ''); }

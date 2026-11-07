@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ohPvlXwE5ek+lhkM5qxWwZwKFUDdTZ2A+HM3i9m4x2A='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-cCJ7DQ3yfX+alACyeeoepciY7iDMFsdsXV2KsiWnjEI='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -77,6 +77,12 @@ a { color: var(--brand-deep); }
 .family .cur .wordmark { color: var(--logo-ink); }
 .family a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.6); }
 @media (max-width: 36rem) { .family a .wordmark { display: none; } .family a, .family .cur { padding: 0 8px; } }
+.topbar .lang-toggle { margin-left: auto; margin-right: 0.5rem; }
+.lang-toggle { display: inline-flex; align-items: center; justify-content: center; height: 2rem; min-width: 2.75rem; padding: 0 0.7rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font: 600 0.8rem/1 var(--sans); color: var(--ink-2); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.lang-toggle:hover { color: var(--ink); border-color: var(--hairline-strong); }
+.lang-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+html[lang="zh-CN"] { --sans: "Geist", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", ui-sans-serif, system-ui, sans-serif; }
+html[lang="zh-CN"] h1, html[lang="zh-CN"] h2, html[lang="zh-CN"] h3 { letter-spacing: 0; word-break: keep-all; overflow-wrap: anywhere; }
 .status-pill { display: inline-flex; align-items: center; gap: 0.45rem; height: 2rem; padding: 0 0.8rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font-size: 0.82rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .status-pill .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--good-bright); box-shadow: 0 0 0 3px var(--good-tint); }
 @media (max-width: 30rem) { .status-pill .pill-word { display: none; } .status-pill { padding: 0 0.6rem; } }
@@ -488,6 +494,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
         <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Vault, offline wallet backups"><svg viewBox="307.6 90 1316 1316" aria-hidden="true"><rect x="361.5" y="143.9" width="1208.2" height="1208.2" rx="198.7" fill="none" stroke="currentColor" stroke-width="107.8"/><path fill="currentColor" d="M544.8 415.0L868.2 1150.0L1063.0 1150.0L1386.4 415.0L1121.0 415.0A185.7 185.7 0 0 1 1134.1 594.6L965.6 958.7L797.1 594.6A185.7 185.7 0 0 1 810.2 415.0Z"/><circle cx="965.6" cy="516.6" r="114.0" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Vault</span></span></a>
         <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer" aria-label="Open BRC Pulse, the live network dashboard"><svg aria-hidden="true" viewBox="307.6 90 1316 1316"><defs><mask id="pvd" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="pvf" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><g mask="url(#pvf)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#pvd)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg><span class="wordmark"><span class="wm-light">BRC</span><span class="wm-bold">Pulse</span></span></a>
       </nav>
+      <button type="button" class="lang-toggle" data-lang-toggle lang="zh-CN" aria-label="切换到中文" title="中文（简体）">中文</button>
       <span class="status-pill" role="status" title="This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file; drand's servers see your IP address, like any website."><span class="dot" aria-hidden="true"></span><span>Private<span class="pill-word">, works offline</span></span></span>
     </div>
   </header>
@@ -879,7 +886,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.6.1</span>, build <span class="mono">a213ef95</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
+      <p>BRC Post <span id="app-version">0.7.0</span>, build <span class="mono">70227b0d</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -2719,11 +2726,11 @@ footer b { font-weight: 600; color: var(--ink-2); }
     return str.normalize("NFKD");
   }
   function normalize(str) {
-    const norm = nfkd(str);
-    const words = norm.split(" ");
+    const norm2 = nfkd(str);
+    const words = norm2.split(" ");
     if (![12, 15, 18, 21, 24].includes(words.length))
       throw new Error("Invalid mnemonic");
-    return { nfkd: norm, words };
+    return { nfkd: norm2, words };
   }
   function aentropy(ent) {
     abytes2(ent, 16, 20, 24, 28, 32);
@@ -5132,8 +5139,8 @@ zoo`.split("\n");
     });
   }
   function lineCheck(content) {
-    const norm = String(content).replace(/\s+/g, "").toUpperCase();
-    return bytesToHex3(sha256(new TextEncoder().encode(norm))).slice(0, 4).toUpperCase();
+    const norm2 = String(content).replace(/\s+/g, "").toUpperCase();
+    return bytesToHex3(sha256(new TextEncoder().encode(norm2))).slice(0, 4).toUpperCase();
   }
   function stripPaperChecks(text) {
     const t = String(text);
@@ -10930,9 +10937,1272 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     return { colors };
   }
 
+  // src/i18n.js
+  var SKIP_TAGS = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "SELECT", "CODE", "PRE", "KBD", "SAMP", "NOSCRIPT", "TEMPLATE"]);
+  var INLINE = /* @__PURE__ */ new Set(["BUTTON", "A", "B", "STRONG", "EM", "I", "SPAN", "CODE", "KBD", "BR", "SMALL", "ABBR", "MARK", "U", "S", "SUB", "SUP", "TIME", "Q", "CITE", "DFN", "VAR", "SAMP", "WBR", "BDI", "BDO"]);
+  var ATTRS = ["placeholder", "title", "aria-label", "alt", "data-tip"];
+  var SKIP_CLASS = /(^|\s)(mono|ps-mono|addr|no-i18n|message-box|signed-box|unsigned-box|signed-msg|words|ps-wordgrid|ps-codeline|ps-check|wordmark)(\s|$)/;
+  var LETTER = /[A-Za-z]/;
+  var KEY = "brcworks:lang";
+  var norm = (s) => s.replace(/\s+/g, " ").trim();
+  function createI18n({ dict } = {}) {
+    const C2 = typeof window !== "undefined" && typeof window.__brcI18nCollect === "function" ? window.__brcI18nCollect : null;
+    const T = new Map(Object.entries(dict.t || {}));
+    const R = /* @__PURE__ */ new Map();
+    for (const [en, zh] of T) if (!R.has(zh)) R.set(zh, en);
+    const P2 = (dict.p || []).map(([src, zh]) => {
+      const parts = src.split(/(%[NR]?\d)/);
+      let re = "^", lit = "";
+      const order = [];
+      for (const part of parts) {
+        const m = /^%([NR]?\d)$/.exec(part);
+        if (m) {
+          re += m[1][0] === "N" ? "(-?\\d[\\d,.]*)" : "([\\s\\S]*?)";
+          order.push(m[1]);
+        } else {
+          re += part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          if (part.length > lit.length) lit = part;
+        }
+      }
+      return { re: new RegExp(re + "$"), zh, order, lit };
+    });
+    let lang = "en";
+    const orig = /* @__PURE__ */ new WeakMap();
+    const mine = /* @__PURE__ */ new WeakMap();
+    const tplKids = /* @__PURE__ */ new WeakMap();
+    const tplMade = /* @__PURE__ */ new WeakMap();
+    const attrOrig = /* @__PURE__ */ new WeakMap();
+    let observer = null, busy = false;
+    function lookup(s, depth2 = 0) {
+      const k = norm(s);
+      if (!k || !LETTER.test(k)) return null;
+      const hit = T.get(k);
+      if (hit !== void 0) return hit;
+      const r = match(k, depth2);
+      if (r == null && C2 && depth2 === 0) C2(k);
+      return r;
+    }
+    function match(k, depth2) {
+      if (depth2 > 2) return null;
+      for (const p of P2) {
+        if (p.lit && !k.includes(p.lit)) continue;
+        const m = p.re.exec(k);
+        if (!m) continue;
+        return p.zh.replace(/%([NR]?\d)/g, (_, n) => {
+          const v = m[p.order.indexOf(n) + 1] ?? "";
+          return n[0] === "R" ? v : lookup(v, depth2 + 1) ?? v;
+        });
+      }
+      return null;
+    }
+    const back = (s) => R.get(norm(s)) ?? null;
+    function skipped(el2) {
+      for (let e = el2; e && e.nodeType === 1; e = e.parentElement) {
+        if (SKIP_TAGS.has(e.tagName)) return true;
+        if (e.getAttribute("translate") === "no" || e.isContentEditable) return true;
+        const c = e.getAttribute("class");
+        if (c && SKIP_CLASS.test(c)) return true;
+      }
+      return false;
+    }
+    function setText(node, value) {
+      const lead = /^\s*/.exec(node.data)[0], trail = /\s*$/.exec(node.data)[0];
+      node.data = lead + value + trail;
+    }
+    function doText(node) {
+      const cur = node.data;
+      if (lang === "zh") {
+        if (mine.get(node) === cur) return;
+        const zh = lookup(cur);
+        if (zh == null) return;
+        orig.set(node, cur);
+        setText(node, zh);
+        mine.set(node, node.data);
+      } else {
+        if (C2) lookup(cur);
+        if (mine.get(node) === cur && orig.has(node)) {
+          node.data = orig.get(node);
+          mine.delete(node);
+          return;
+        }
+        const en = back(cur);
+        if (en != null) setText(node, en);
+      }
+    }
+    function sentence(el2) {
+      let text = false;
+      const kids = [];
+      for (const n of el2.childNodes) {
+        if (n.nodeType === 3) {
+          if (LETTER.test(n.data)) text = true;
+        } else if (n.nodeType === 1) {
+          if (!INLINE.has(n.tagName)) return null;
+          if (n.tagName !== "BR" && !norm(n.textContent)) continue;
+          kids.push(n);
+        }
+      }
+      if (!text || !kids.length) return null;
+      let key = "";
+      for (const n of el2.childNodes) {
+        if (n.nodeType === 3) key += n.data;
+        else if (n.nodeType === 1 && kids.includes(n)) key += `{${kids.indexOf(n)}}`;
+      }
+      return { key: norm(key), kids };
+    }
+    function doSentence(el2) {
+      const made = tplMade.get(el2);
+      if (made) {
+        const same = made.length === el2.childNodes.length && made.every((n, i) => n === el2.childNodes[i]);
+        if (!same) {
+          tplMade.delete(el2);
+          tplKids.delete(el2);
+        } else if (lang === "zh") return true;
+        else {
+          el2.replaceChildren(...tplKids.get(el2));
+          tplMade.delete(el2);
+          tplKids.delete(el2);
+          return false;
+        }
+      }
+      if (lang !== "zh") {
+        if (C2) {
+          const c = sentence(el2);
+          if (c) {
+            lookup(c.key);
+            return true;
+          }
+        }
+        return false;
+      }
+      const s = sentence(el2);
+      if (!s) return false;
+      const zh = lookup(s.key);
+      if (zh == null) return false;
+      const before = [...el2.childNodes];
+      const out = [];
+      const after = /* @__PURE__ */ new Map(), lead = [];
+      let prev = null;
+      for (const n of before) {
+        if (s.kids.includes(n)) prev = n;
+        else if (n.nodeType === 1) (prev ? after.get(prev) || after.set(prev, []).get(prev) : lead).push(n);
+      }
+      out.push(...lead);
+      for (const part of zh.split(/(\{\d+\})/)) {
+        const m = /^\{(\d+)\}$/.exec(part);
+        if (m && s.kids[+m[1]]) {
+          out.push(s.kids[+m[1]]);
+          out.push(...after.get(s.kids[+m[1]]) || []);
+        } else if (part) out.push(document.createTextNode(part));
+      }
+      for (const k of s.kids) if (!out.includes(k)) {
+        out.push(k);
+        out.push(...after.get(k) || []);
+      }
+      el2.replaceChildren(...out);
+      tplKids.set(el2, before);
+      tplMade.set(el2, out);
+      return true;
+    }
+    function doAttrs(el2) {
+      for (const a of ATTRS) {
+        if (!el2.hasAttribute(a)) continue;
+        const v = el2.getAttribute(a);
+        let store = attrOrig.get(el2);
+        if (lang === "zh") {
+          if (store && store[a] && store[a].zh === v) continue;
+          const zh = lookup(v);
+          if (zh == null) continue;
+          if (!store) attrOrig.set(el2, store = {});
+          store[a] = { en: v, zh };
+          el2.setAttribute(a, zh);
+        } else if (C2 && !(store && store[a])) {
+          lookup(v);
+        } else if (store && store[a]) {
+          if (store[a].zh === v) el2.setAttribute(a, store[a].en);
+          delete store[a];
+        } else {
+          const en = back(v);
+          if (en != null) el2.setAttribute(a, en);
+        }
+      }
+      if (el2.tagName === "INPUT" && (el2.type === "button" || el2.type === "submit") && el2.value) {
+        const zh = lang === "zh" ? lookup(el2.value) : back(el2.value);
+        if (zh != null) el2.value = zh;
+      }
+    }
+    function walk(root) {
+      if (root.nodeType === 3) {
+        if (root.parentElement && !skipped(root.parentElement)) doText(root);
+        return;
+      }
+      if (root.nodeType === 1 && fieldHint(root)) {
+        if (!skipped(root.parentElement)) doAttrs(root);
+        return;
+      }
+      if (root.nodeType !== 1 || skipped(root)) return;
+      const stack = [root];
+      while (stack.length) {
+        const el2 = stack.pop();
+        doAttrs(el2);
+        if (doSentence(el2)) {
+          for (const n of el2.childNodes) if (n.nodeType === 1 && !skipped(n)) stack.push(n);
+          continue;
+        }
+        for (const n of el2.childNodes) {
+          if (n.nodeType === 3) doText(n);
+          else if (n.nodeType === 1 && fieldHint(n)) doAttrs(n);
+          else if (n.nodeType === 1 && !SKIP_TAGS.has(n.tagName) && n.getAttribute("translate") !== "no" && !SKIP_CLASS.test(n.getAttribute("class") || "")) stack.push(n);
+        }
+      }
+    }
+    function fieldHint(el2) {
+      return (el2.tagName === "INPUT" || el2.tagName === "TEXTAREA") && el2.getAttribute("translate") !== "no" && !el2.isContentEditable;
+    }
+    function run(fn) {
+      busy = true;
+      try {
+        fn();
+      } finally {
+        if (observer) observer.takeRecords();
+        busy = false;
+      }
+    }
+    function onMutations(list) {
+      if (busy || lang === "en" && !hasZh && !C2) return;
+      run(() => {
+        const seen = /* @__PURE__ */ new Set();
+        for (const m of list) {
+          if (m.type === "characterData") {
+            if (!seen.has(m.target)) {
+              seen.add(m.target);
+              walk(m.target);
+            }
+            continue;
+          }
+          const t = m.target;
+          if (m.type === "attributes") {
+            if (t.nodeType === 1 && (fieldHint(t) ? !skipped(t.parentElement) : !skipped(t))) doAttrs(t);
+            continue;
+          }
+          if (t.nodeType === 1 && !seen.has(t) && !skipped(t)) {
+            seen.add(t);
+            doSentence(t) || null;
+          }
+          for (const n of m.addedNodes) if (!seen.has(n)) {
+            seen.add(n);
+            walk(n);
+          }
+        }
+        if (document.title !== lastTitle) title();
+      });
+    }
+    let titleEn = document.title, lastTitle = document.title, hasZh = false;
+    function title() {
+      if (document.title !== lastTitle) titleEn = document.title;
+      const t = lang === "zh" ? lookup(titleEn) ?? titleEn : titleEn;
+      if (document.title !== t) document.title = t;
+      lastTitle = document.title;
+    }
+    function paintToggle() {
+      for (const b of document.querySelectorAll("[data-lang-toggle]")) {
+        b.textContent = lang === "zh" ? "EN" : "\u4E2D\u6587";
+        b.setAttribute("lang", lang === "zh" ? "en" : "zh-CN");
+        b.setAttribute("aria-label", lang === "zh" ? "Switch to English" : "\u5207\u6362\u5230\u4E2D\u6587");
+        b.title = lang === "zh" ? "English" : "\u4E2D\u6587\uFF08\u7B80\u4F53\uFF09";
+      }
+    }
+    function set(next, { save = true } = {}) {
+      lang = next === "zh" ? "zh" : "en";
+      if (lang === "zh") hasZh = true;
+      document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+      document.documentElement.dataset.lang = lang;
+      if (save) {
+        try {
+          localStorage.setItem(KEY, lang);
+        } catch {
+        }
+      }
+      run(() => {
+        walk(document.body);
+        title();
+        paintToggle();
+      });
+      for (const fn of listeners) {
+        try {
+          fn(lang);
+        } catch {
+        }
+      }
+    }
+    function initial() {
+      try {
+        const q = new URLSearchParams(location.search).get("lang");
+        if (q === "zh" || q === "en") return q;
+      } catch {
+      }
+      try {
+        const s = localStorage.getItem(KEY);
+        if (s === "zh" || s === "en") return s;
+      } catch {
+      }
+      const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
+      return /^zh\b/i.test(langs[0] || "") ? "zh" : "en";
+    }
+    const listeners = [];
+    function start() {
+      observer = new MutationObserver(onMutations);
+      observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest && e.target.closest("[data-lang-toggle]");
+        if (b) {
+          e.preventDefault();
+          set(lang === "zh" ? "en" : "zh");
+        }
+      });
+      const first = initial();
+      if (first === "zh") set("zh", { save: false });
+      else {
+        paintToggle();
+        if (C2) run(() => walk(document.body));
+      }
+    }
+    return {
+      start,
+      set,
+      get lang() {
+        return lang;
+      },
+      /** Translate a phrase for code that shows text outside the page (alerts, share sheets). */
+      t: (s) => lang === "zh" ? lookup(s) ?? s : s,
+      onChange: (fn) => listeners.push(fn)
+    };
+  }
+
+  // src/zh.json
+  var zh_default = {
+    t: {
+      "A BrowserCoin private key is exactly 32 bytes (64 hex characters).": "BrowserCoin \u79C1\u94A5\u6B63\u597D\u662F 32 \u5B57\u8282\uFF0864 \u4E2A\u5341\u516D\u8FDB\u5236\u5B57\u7B26\uFF09\u3002",
+      Address: "\u5730\u5740",
+      "Anyone with the private key controls the wallet. Keep this safe.": "\u4EFB\u4F55\u62FF\u5230\u79C1\u94A5\u7684\u4EBA\u90FD\u80FD\u63A7\u5236\u8FD9\u4E2A\u94B1\u5305\u3002\u8BF7\u59A5\u5584\u4FDD\u7BA1\u3002",
+      Block: "\u533A\u5757",
+      Cancel: "\u53D6\u6D88",
+      Careful: "\u6CE8\u610F",
+      Check: "\u68C0\u67E5",
+      "Choose a password": "\u8BBE\u7F6E\u5BC6\u7801",
+      Close: "\u5173\u95ED",
+      Copied: "\u5DF2\u590D\u5236",
+      Copy: "\u590D\u5236",
+      "Copy address": "\u590D\u5236\u5730\u5740",
+      "Copy both": "\u5168\u90E8\u590D\u5236",
+      "Could not recognise this. Use a BrowserCoin wallet file, a BRC Vault backup, a private key, or 24 recovery words.": "\u65E0\u6CD5\u8BC6\u522B\u3002\u8BF7\u4F7F\u7528 BrowserCoin \u94B1\u5305\u6587\u4EF6\u3001BRC Vault \u5907\u4EFD\u3001\u79C1\u94A5\u6216 24 \u4E2A\u52A9\u8BB0\u8BCD\u3002",
+      Enter: "\u53C2\u4E0E",
+      File: "\u6587\u4EF6",
+      Fingerprint: "\u6307\u7EB9",
+      "I already have a mailbox": "\u6211\u5DF2\u7ECF\u6709\u4FE1\u7BB1\u4E86",
+      "Independent tools by {0}. Not part of the official BrowserCoin project. \xB7 {1}": "{0} \u5236\u4F5C\u7684\u72EC\u7ACB\u5DE5\u5177\u3002\u4E0D\u5C5E\u4E8E BrowserCoin \u5B98\u65B9\u9879\u76EE\u3002 \xB7 {1}",
+      "Lock ID": "\u9501\u5B9A ID",
+      'Locked BRC Vault backup. The private key is encrypted inside "ciphertext" and can only be unlocked with your password in BRC Vault. The address is public and safe to share.': '\u5DF2\u7528\u5BC6\u7801\u52A0\u5BC6\u7684 BRC Vault \u5907\u4EFD\u3002\u79C1\u94A5\u52A0\u5BC6\u4FDD\u5B58\u5728 "ciphertext" \u4E2D\uFF0C\u53EA\u80FD\u5728 BRC Vault \u91CC\u7528\u4F60\u7684\u5BC6\u7801\u89E3\u9501\u3002\u5730\u5740\u662F\u516C\u5F00\u7684\uFF0C\u53EF\u4EE5\u653E\u5FC3\u5206\u4EAB\u3002',
+      'Locked BRC mailbox key. It opens sealed letters and signs in BRC Post; it is not for holding coins. The key is encrypted inside "ciphertext" and only your password unlocks it, in BRC Post or BRC Vault. The address is public and safe to share.': '\u5DF2\u7528\u5BC6\u7801\u52A0\u5BC6\u7684 BRC \u4FE1\u7BB1\u5BC6\u94A5\u3002\u5B83\u7528\u4E8E\u5728 BRC Post \u4E2D\u6253\u5F00\u5BC6\u5C01\u4FE1\u548C\u7B7E\u540D\uFF0C\u4E0D\u7528\u4E8E\u5B58\u653E\u5E01\u3002\u5BC6\u94A5\u52A0\u5BC6\u4FDD\u5B58\u5728 "ciphertext" \u4E2D\uFF0C\u53EA\u6709\u4F60\u7684\u5BC6\u7801\u80FD\u5728 BRC Post \u6216 BRC Vault \u4E2D\u89E3\u9501\u5B83\u3002\u5730\u5740\u662F\u516C\u5F00\u7684\uFF0C\u53EF\u4EE5\u653E\u5FC3\u5206\u4EAB\u3002',
+      Message: "\u6D88\u606F",
+      "Not valid hex.": "\u4E0D\u662F\u6709\u6548\u7684\u5341\u516D\u8FDB\u5236\u3002",
+      "Nothing to read yet.": "\u8FD8\u6CA1\u6709\u53EF\u8BFB\u53D6\u7684\u5185\u5BB9\u3002",
+      "Open BRC Post": "\u6253\u5F00 BRC Post",
+      "Open BRC Pulse, the live network dashboard": "\u6253\u5F00 BRC Pulse \u5B9E\u65F6\u7F51\u7EDC\u9762\u677F",
+      Owner: "\u6240\u6709\u8005",
+      "Part of the code is missing its check in brackets. Copy every line, including the [XXXX] at the end.": "\u4EE3\u7801\u6709\u4E00\u90E8\u5206\u7F3A\u5C11\u65B9\u62EC\u53F7\u91CC\u7684\u6821\u9A8C\u3002\u8BF7\u590D\u5236\u6BCF\u4E00\u884C\uFF0C\u5305\u62EC\u672B\u5C3E\u7684 [XXXX]\u3002",
+      Password: "\u5BC6\u7801",
+      "Passwords match.": "\u4E24\u6B21\u5BC6\u7801\u4E00\u81F4\u3002",
+      "Post seals it": "Post \u8D1F\u8D23\u5BC6\u5C01",
+      "Private:": "\u9690\u79C1\uFF1A",
+      "Pulse checks it": "Pulse \u8D1F\u8D23\u9A8C\u8BC1",
+      Scripts: "\u811A\u672C",
+      "Sealed letter": "\u5BC6\u5C01\u4FE1",
+      Signature: "\u7B7E\u540D",
+      "Signed by": "\u7B7E\u540D\u8005",
+      "Signed message": "\u7B7E\u540D\u6D88\u606F",
+      "Signed on the chain": "\u5DF2\u5728\u94FE\u4E0A\u7B7E\u540D",
+      "Some words are numbered and some aren't, or a number is missing or used twice. Number every word 1 to 24, or leave all the numbers out and type the words in order.": "\u6709\u4E9B\u8BCD\u5E26\u7F16\u53F7\u3001\u6709\u4E9B\u6CA1\u6709\uFF0C\u6216\u8005\u67D0\u4E2A\u7F16\u53F7\u7F3A\u5931\u6216\u91CD\u590D\u3002\u8BF7\u7ED9\u6BCF\u4E2A\u8BCD\u6807\u4E0A 1 \u5230 24 \u7684\u7F16\u53F7\uFF0C\u6216\u8005\u5168\u90E8\u4E0D\u5199\u7F16\u53F7\u3001\u6309\u987A\u5E8F\u8F93\u5165\u3002",
+      Source: "\u6765\u6E90",
+      "That is 12 words. BrowserCoin wallets use 24 recovery words.": "\u8FD9\u662F 12 \u4E2A\u8BCD\u3002BrowserCoin \u94B1\u5305\u4F7F\u7528 24 \u4E2A\u52A9\u8BB0\u8BCD\u3002",
+      "That password is too repetitive. Use a mix of words or characters.": "\u8FD9\u4E2A\u5BC6\u7801\u91CD\u590D\u592A\u591A\u3002\u8BF7\u6DF7\u5408\u4F7F\u7528\u4E0D\u540C\u7684\u8BCD\u6216\u5B57\u7B26\u3002",
+      "The BRC Works rule:": "BRC Works \u7684\u89C4\u5219\uFF1A",
+      "The address written in this file does not match its private key. The file may be damaged.": "\u6B64\u6587\u4EF6\u4E2D\u5199\u7684\u5730\u5740\u4E0E\u5B83\u7684\u79C1\u94A5\u4E0D\u5339\u914D\u3002\u6587\u4EF6\u53EF\u80FD\u5DF2\u635F\u574F\u3002",
+      "The decrypted key does not match the address in the backup.": "\u89E3\u5BC6\u51FA\u7684\u79C1\u94A5\u4E0E\u5907\u4EFD\u4E2D\u7684\u5730\u5740\u4E0D\u5339\u914D\u3002",
+      "The last line of the code, the address check after the final colon, is missing.": "\u4EE3\u7801\u7684\u6700\u540E\u4E00\u884C\uFF08\u6700\u540E\u4E00\u4E2A\u5192\u53F7\u4E4B\u540E\u7684\u5730\u5740\u6821\u9A8C\uFF09\u7F3A\u5931\u4E86\u3002",
+      "The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.": "\u7F3A\u5C11\u6700\u540E\u4E00\u884C -----END BRC STAMP RECEIPT-----\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u56DE\u6267\u3002",
+      "The mailbox's own signature doesn't match, so the mailbox never agreed to this link.": "\u4FE1\u7BB1\u81EA\u5DF1\u7684\u7B7E\u540D\u4E0D\u5339\u914D\uFF0C\u8BF4\u660E\u8FD9\u4E2A\u4FE1\u7BB1\u4ECE\u672A\u8BA4\u53EF\u8FC7\u8FD9\u4E2A\u94FE\u63A5\u3002",
+      'The receipt\'s "After:" line should be a block number and a block ID.': '\u56DE\u6267\u4E2D\u7684 "After:" \u884C\u5E94\u4E3A\u4E00\u4E2A\u533A\u5757\u7F16\u53F7\u548C\u4E00\u4E2A\u533A\u5757 ID\u3002',
+      'The receipt\'s "Block:" line should be a block number.': '\u56DE\u6267\u4E2D\u7684 "Block:" \u884C\u5E94\u4E3A\u4E00\u4E2A\u533A\u5757\u7F16\u53F7\u3002',
+      'The receipt\'s "Drand:" line should be a round number and a 96-character signature.': '\u56DE\u6267\u4E2D\u7684 "Drand:" \u884C\u5E94\u4E3A\u4E00\u4E2A\u8F6E\u6B21\u7F16\u53F7\u548C\u4E00\u4E2A 96 \u4E2A\u5B57\u7B26\u7684\u7B7E\u540D\u3002',
+      "The signature does not match. Either the message was changed after it was signed, or this address did not sign it.": "\u7B7E\u540D\u4E0D\u5339\u914D\u3002\u8981\u4E48\u6D88\u606F\u5728\u7B7E\u540D\u540E\u88AB\u6539\u52A8\u8FC7\uFF0C\u8981\u4E48\u8FD9\u4E2A\u5730\u5740\u5E76\u6CA1\u6709\u7B7E\u8FC7\u5B83\u3002",
+      "The two passwords do not match.": "\u4E24\u6B21\u8F93\u5165\u7684\u5BC6\u7801\u4E0D\u4E00\u81F4\u3002",
+      "The unlocked key does not match the address in the wallet file.": "\u89E3\u9501\u51FA\u7684\u79C1\u94A5\u4E0E\u94B1\u5305\u6587\u4EF6\u4E2D\u7684\u5730\u5740\u4E0D\u5339\u914D\u3002",
+      "The wallet file has no private key in it.": "\u8FD9\u4E2A\u94B1\u5305\u6587\u4EF6\u91CC\u6CA1\u6709\u79C1\u94A5\u3002",
+      "These words don't pass their built-in check, so one of them is wrong or two are swapped. Compare them with the paper, word by word.": "\u8FD9\u4E9B\u8BCD\u6CA1\u6709\u901A\u8FC7\u5185\u7F6E\u6821\u9A8C\uFF0C\u8BF4\u660E\u5176\u4E2D\u6709\u4E00\u4E2A\u8BCD\u5199\u9519\u4E86\uFF0C\u6216\u6709\u4E24\u4E2A\u8BCD\u987A\u5E8F\u98A0\u5012\u3002\u8BF7\u9010\u8BCD\u548C\u7EB8\u4E0A\u7684\u5185\u5BB9\u5BF9\u7167\u3002",
+      "This backup code has the wrong number of parts. Check that every line, including the colons, was copied.": "\u8FD9\u4E2A\u5907\u4EFD\u7801\u7684\u6BB5\u6570\u4E0D\u5BF9\u3002\u8BF7\u786E\u8BA4\u6BCF\u4E00\u884C\uFF08\u5305\u62EC\u5192\u53F7\uFF09\u90FD\u5DF2\u590D\u5236\u3002",
+      "This backup has invalid or unsafe key-stretching settings.": "\u8FD9\u4E2A\u5907\u4EFD\u7684\u5BC6\u94A5\u62C9\u4F38\u8BBE\u7F6E\u65E0\u6548\u6216\u4E0D\u5B89\u5168\u3002",
+      "This block contains a transaction type this page does not know.": "\u8FD9\u4E2A\u533A\u5757\u5305\u542B\u672C\u9875\u9762\u65E0\u6CD5\u8BC6\u522B\u7684\u4EA4\u6613\u7C7B\u578B\u3002",
+      "This contains more than one different wallet or backup. Use just one.": "\u8FD9\u91CC\u5305\u542B\u4E0D\u6B62\u4E00\u4E2A\u4E0D\u540C\u7684\u94B1\u5305\u6216\u5907\u4EFD\u3002\u8BF7\u53EA\u4F7F\u7528\u4E00\u4E2A\u3002",
+      "This file is incomplete or was changed by another app, so it can't be read. Use the original file BrowserCoin downloaded (named browsercoin-wallet-\u2026json), not a copy opened and saved in a text editor.": "\u8FD9\u4E2A\u6587\u4EF6\u4E0D\u5B8C\u6574\u6216\u5DF2\u88AB\u5176\u4ED6\u5E94\u7528\u6539\u52A8\uFF0C\u65E0\u6CD5\u8BFB\u53D6\u3002\u8BF7\u4F7F\u7528 BrowserCoin \u4E0B\u8F7D\u7684\u539F\u59CB\u6587\u4EF6\uFF08\u6587\u4EF6\u540D\u4E3A browsercoin-wallet-\u2026json\uFF09\uFF0C\u800C\u4E0D\u662F\u5728\u6587\u672C\u7F16\u8F91\u5668\u91CC\u6253\u5F00\u5E76\u4FDD\u5B58\u8FC7\u7684\u526F\u672C\u3002",
+      "This file is neither a BrowserCoin wallet nor a BRC Vault backup.": "\u8FD9\u4E2A\u6587\u4EF6\u65E2\u4E0D\u662F BrowserCoin \u94B1\u5305\uFF0C\u4E5F\u4E0D\u662F BRC Vault \u5907\u4EFD\u3002",
+      "This file is not valid JSON.": "\u8FD9\u4E2A\u6587\u4EF6\u4E0D\u662F\u6709\u6548\u7684 JSON\u3002",
+      "This file was re-saved by a word processor such as TextEdit, which changed its format, and the key could not be recovered from it. Use the original file BrowserCoin downloaded.": "\u8FD9\u4E2A\u6587\u4EF6\u88AB TextEdit \u4E4B\u7C7B\u7684\u6587\u5B57\u5904\u7406\u8F6F\u4EF6\u91CD\u65B0\u4FDD\u5B58\u8FC7\uFF0C\u683C\u5F0F\u5DF2\u88AB\u6539\u53D8\uFF0C\u65E0\u6CD5\u4ECE\u4E2D\u6062\u590D\u79C1\u94A5\u3002\u8BF7\u4F7F\u7528 BrowserCoin \u4E0B\u8F7D\u7684\u539F\u59CB\u6587\u4EF6\u3002",
+      "This is a well-known example key that is published online, so anyone can take coins sent to it. Use your own wallet's key or words.": "\u8FD9\u662F\u4E00\u4E2A\u5728\u7F51\u4E0A\u516C\u5F00\u7684\u77E5\u540D\u793A\u4F8B\u79C1\u94A5\uFF0C\u4EFB\u4F55\u4EBA\u90FD\u80FD\u62FF\u8D70\u53D1\u5230\u5B83\u4E0A\u9762\u7684\u5E01\u3002\u8BF7\u4F7F\u7528\u4F60\u81EA\u5DF1\u94B1\u5305\u7684\u79C1\u94A5\u6216\u52A9\u8BB0\u8BCD\u3002",
+      "This is far too long to be a wallet, a backup or a key.": "\u8FD9\u6BB5\u5185\u5BB9\u592A\u957F\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F\u94B1\u5305\u3001\u5907\u4EFD\u6216\u79C1\u94A5\u3002",
+      "This is not a BRC Vault backup code.": "\u8FD9\u4E0D\u662F BRC Vault \u5907\u4EFD\u7801\u3002",
+      "This is not a BRC Vault backup.": "\u8FD9\u4E0D\u662F BRC Vault \u5907\u4EFD\u3002",
+      "This is not a BrowserCoin wallet file (it should come from BrowserCoin Settings \u2192 Export key).": "\u8FD9\u4E0D\u662F BrowserCoin \u94B1\u5305\u6587\u4EF6\uFF08\u5B83\u5E94\u8BE5\u6765\u81EA BrowserCoin \u7684 Settings \u2192 Export key\uFF09\u3002",
+      "This is not a password-protected BRC Wallet file.": "\u8FD9\u4E0D\u662F\u5DF2\u7528\u5BC6\u7801\u52A0\u5BC6\u7684 BRC Wallet \u6587\u4EF6\u3002",
+      "This password-protected BRC Wallet file was changed by another app, such as a text editor, and can't be read. Use the original file the BRC Wallet desktop app saved.": "\u8FD9\u4E2A\u5DF2\u7528\u5BC6\u7801\u52A0\u5BC6\u7684 BRC Wallet \u6587\u4EF6\u88AB\u5176\u4ED6\u5E94\u7528\uFF08\u4F8B\u5982\u6587\u672C\u7F16\u8F91\u5668\uFF09\u6539\u52A8\u8FC7\uFF0C\u65E0\u6CD5\u8BFB\u53D6\u3002\u8BF7\u4F7F\u7528 BRC Wallet \u684C\u9762\u5E94\u7528\u4FDD\u5B58\u7684\u539F\u59CB\u6587\u4EF6\u3002",
+      "This private key code is damaged. It should have 64 characters after BRCKEY1:.": "\u8FD9\u4E2A\u79C1\u94A5\u4EE3\u7801\u5DF2\u635F\u574F\u3002BRCKEY1: \u540E\u9762\u5E94\u6709 64 \u4E2A\u5B57\u7B26\u3002",
+      "This private key has a typo: it doesn't match the address check at the end of the code. Compare it with the paper, watching for 0/D and 8/B.": "\u8FD9\u4E2A\u79C1\u94A5\u6709\u8F93\u5165\u9519\u8BEF\uFF1A\u4E0E\u4EE3\u7801\u672B\u5C3E\u7684\u5730\u5740\u6821\u9A8C\u4E0D\u7B26\u3002\u8BF7\u548C\u7EB8\u4E0A\u7684\u5185\u5BB9\u5BF9\u7167\uFF0C\u7559\u610F 0/D \u548C 8/B\u3002",
+      "This wallet file is password-protected by the BRC Wallet desktop app. Open it in Restore.": "\u8FD9\u4E2A\u94B1\u5305\u6587\u4EF6\u5DF2\u7531 BRC Wallet \u684C\u9762\u5E94\u7528\u7528\u5BC6\u7801\u52A0\u5BC6\u3002\u8BF7\u5728\u300C\u6062\u590D\u300D\u4E2D\u6253\u5F00\u5B83\u3002",
+      "This wallet file uses an encryption method BRC Vault does not know.": "\u8FD9\u4E2A\u94B1\u5305\u6587\u4EF6\u4F7F\u7528\u4E86 BRC Vault \u65E0\u6CD5\u8BC6\u522B\u7684\u52A0\u5BC6\u65B9\u5F0F\u3002",
+      "Unsupported encryption method in this backup.": "\u8FD9\u4E2A\u5907\u4EFD\u4F7F\u7528\u4E86\u4E0D\u652F\u6301\u7684\u52A0\u5BC6\u65B9\u5F0F\u3002",
+      "Unsupported key-stretching method in this backup.": "\u8FD9\u4E2A\u5907\u4EFD\u4F7F\u7528\u4E86\u4E0D\u652F\u6301\u7684\u5BC6\u94A5\u62C9\u4F38\u65B9\u5F0F\u3002",
+      "Vault keeps it": "Vault \u8D1F\u8D23\u4FDD\u7BA1",
+      "What do you want to do?": "\u4F60\u60F3\u505A\u4EC0\u4E48\uFF1F",
+      "Works offline": "\u53EF\u79BB\u7EBF\u4F7F\u7528",
+      "Wrong password, or the backup has been changed or damaged.": "\u5BC6\u7801\u9519\u8BEF\uFF0C\u6216\u8005\u5907\u4EFD\u5DF2\u88AB\u6539\u52A8\u6216\u635F\u574F\u3002",
+      "Wrong password, or the wallet file has been changed or damaged.": "\u5BC6\u7801\u9519\u8BEF\uFF0C\u6216\u8005\u94B1\u5305\u6587\u4EF6\u5DF2\u88AB\u6539\u52A8\u6216\u635F\u574F\u3002",
+      "Your address": "\u4F60\u7684\u5730\u5740",
+      "Your mailbox": "\u4F60\u7684\u4FE1\u7BB1",
+      "check code": "\u6821\u9A8C\u7801",
+      "locked key": "\u5DF2\u52A0\u5BC6\u7684\u79C1\u94A5",
+      "strength settings": "\u5F3A\u5EA6\u8BBE\u7F6E",
+      "{0} only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.": "{0}\u53EA\u6709 BRC Vault \u4F1A\u5411\u4F60\u7D22\u8981\u5B58\u6709\u5E01\u7684\u79C1\u94A5\uFF0C\u800C\u4E14\u53EA\u662F\u4E3A\u4E86\u5728\u4F60\u7684\u8BBE\u5907\u4E0A\u5907\u4EFD\u5B83\u3002\u5982\u679C\u6709\u5176\u4ED6\u4EFB\u4F55\u4E1C\u897F\u5411\u4F60\u7D22\u8981\u79C1\u94A5\uFF0C\u90A3\u5C31\u4E0D\u662F\u6211\u4EEC\u3002",
+      "(BRC Works test mailbox)": "\uFF08BRC Works \u6D4B\u8BD5\u4FE1\u7BB1\uFF09",
+      "(test mailbox Alice)": "\uFF08\u6D4B\u8BD5\u4FE1\u7BB1 Alice\uFF09",
+      "(your mailbox)": "\uFF08\u4F60\u7684\u4FE1\u7BB1\uFF09",
+      ", and the line after OP_EQUALVERIFY should read": "\uFF0COP_EQUALVERIFY \u540E\u9762\u90A3\u4E00\u884C\u5E94\u4E3A",
+      ", signed by your mailbox": "\uFF0C\u5E76\u7531\u4F60\u7684\u4FE1\u7BB1\u7B7E\u540D",
+      ", works offline": "\uFF0C\u53EF\u79BB\u7EBF\u4F7F\u7528",
+      ". If either doesn't, the phrase or the recipient address was pasted wrong.": "\u3002\u5982\u679C\u6709\u4EFB\u610F\u4E00\u884C\u5BF9\u4E0D\u4E0A\uFF0C\u8BF4\u660E\u77ED\u8BED\u6216\u6536\u4EF6\u4EBA\u5730\u5740\u7C98\u8D34\u9519\u4E86\u3002",
+      ": it finds the lock and checks the address made it.": "\uFF1A\u5B83\u4F1A\u627E\u5230\u8FD9\u4E2A\u9501\u5B9A\uFF0C\u5E76\u68C0\u67E5\u662F\u5426\u786E\u5B9E\u7531\u8BE5\u5730\u5740\u521B\u5EFA\u3002",
+      "A BrowserCoin address only uses the characters 0\u20139 and a\u2013f.": "BrowserCoin \u5730\u5740\u53EA\u4F7F\u7528 0\u20139 \u548C a\u2013f \u8FD9\u4E9B\u5B57\u7B26\u3002",
+      "A block hash is 64 characters, 0\u20139 and a\u2013f.": "\u533A\u5757\u54C8\u5E0C\u662F 64 \u4E2A\u5B57\u7B26\uFF0C\u53EA\u542B 0\u20139 \u548C a\u2013f\u3002",
+      "A contract, a photo, a design, a draft. It's read here and never uploaded.": "\u5408\u540C\u3001\u7167\u7247\u3001\u8BBE\u8BA1\u7A3F\u3001\u8349\u7A3F\u90FD\u53EF\u4EE5\u3002\u6587\u4EF6\u53EA\u5728\u8FD9\u91CC\u8BFB\u53D6\uFF0C\u7EDD\u4E0D\u4F1A\u4E0A\u4F20\u3002",
+      'A drand beacon is a round number and a signature, like "33522523 a6aeb7\u2026". Copy it from BRC Pulse \u2192 Check it.': "drand \u4FE1\u6807\u7531\u8F6E\u6B21\u7F16\u53F7\u548C\u7B7E\u540D\u7EC4\u6210\uFF0C\u4F8B\u5982\u300C33522523 a6aeb7\u2026\u300D\u3002\u53EF\u4EE5\u4ECE BRC Pulse \u2192\u300C\u9A8C\u8BC1\u4E00\u4E0B\u300D\u590D\u5236\u3002",
+      "A drand beacon, if you'd rather paste one yourself (BRC Pulse \u2192 Check it shows the latest). It proves the postmark was made after that moment, to within 3 seconds.": "\u5982\u679C\u4F60\u60F3\u81EA\u5DF1\u7C98\u8D34 drand \u4FE1\u6807\uFF0C\u53EF\u4EE5\u586B\u5728\u8FD9\u91CC\uFF08BRC Pulse \u2192\u300C\u9A8C\u8BC1\u4E00\u4E0B\u300D\u4F1A\u663E\u793A\u6700\u65B0\u7684\uFF09\u3002\u5B83\u80FD\u8BC1\u660E\u90AE\u6233\u662F\u5728\u90A3\u4E00\u523B\u4E4B\u540E\u76D6\u7684\uFF0C\u8BEF\u5DEE\u5728 3 \u79D2\u4EE5\u5185\u3002",
+      "A link tried to fill in the address, but BRC Post is open inside another page, so it was ignored. Paste the address yourself.": "\u6709\u4E2A\u94FE\u63A5\u60F3\u81EA\u52A8\u586B\u5165\u5730\u5740\uFF0C\u4F46 BRC Post \u662F\u5728\u53E6\u4E00\u4E2A\u7F51\u9875\u91CC\u6253\u5F00\u7684\uFF0C\u6240\u4EE5\u5DF2\u5FFD\u7565\u3002\u8BF7\u81EA\u5DF1\u7C98\u8D34\u5730\u5740\u3002",
+      "A lock in this block is cut short.": "\u8FD9\u6BB5\u5185\u5BB9\u91CC\u6709\u4E00\u4E2A\u9501\u5B9A\u88AB\u622A\u65AD\u4E86\u3002",
+      "A lock with this ID exists, but it does not hold this stamp. The fingerprint, salt or owner on the receipt is different from what was stamped.": "\u8FD9\u4E2A ID \u7684\u9501\u5B9A\u786E\u5B9E\u5B58\u5728\uFF0C\u4F46\u91CC\u9762\u4E0D\u662F\u8FD9\u4E2A\u90AE\u6233\u3002\u56DE\u6267\u4E0A\u7684\u6307\u7EB9\u3001salt \u6216\u6240\u6709\u8005\u4E0E\u5F53\u521D\u76D6\u6233\u65F6\u7684\u4E0D\u4E00\u81F4\u3002",
+      "A lock with this ID exists, but it holds something else. The message, address or salt was changed after it was signed.": "\u8FD9\u4E2A ID \u7684\u9501\u5B9A\u786E\u5B9E\u5B58\u5728\uFF0C\u4F46\u91CC\u9762\u662F\u522B\u7684\u5185\u5BB9\u3002\u6D88\u606F\u3001\u5730\u5740\u6216 salt \u5728\u7B7E\u540D\u540E\u88AB\u6539\u52A8\u8FC7\u3002",
+      "A mailbox lets people send you sealed letters that only you can open.": "\u6709\u4E86\u4FE1\u7BB1\uFF0C\u522B\u4EBA\u5C31\u80FD\u7ED9\u4F60\u5BC4\u5BC6\u5C01\u4FE1\uFF0C\u800C\u4E14\u53EA\u6709\u4F60\u80FD\u6253\u5F00\u3002",
+      "A mailbox link: only the mailbox's side is checked here": "\u4FE1\u7BB1\u94FE\u63A5\uFF1A\u8FD9\u91CC\u53EA\u68C0\u67E5\u4FE1\u7BB1\u8FD9\u4E00\u4FA7",
+      "A message signed on the chain is checked in full on {0}, which reads the chain. Here, offline, BRC Post can only check it is complete and well-formed.": "\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\u6D88\u606F\u8981\u5230\u80FD\u8BFB\u53D6\u533A\u5757\u94FE\u7684{0}\u4E0A\u624D\u80FD\u5B8C\u6574\u9A8C\u8BC1\u3002\u5728\u8FD9\u91CC\u79BB\u7EBF\u65F6\uFF0CBRC Post \u53EA\u80FD\u68C0\u67E5\u5B83\u662F\u5426\u5B8C\u6574\u3001\u683C\u5F0F\u662F\u5426\u6B63\u786E\u3002",
+      "A raffle needs the list of eligible addresses (for example, everyone who mined a block before the snapshot).": "\u62BD\u5956\u9700\u8981\u4E00\u4EFD\u6709\u8D44\u683C\u7684\u5730\u5740\u540D\u5355\uFF08\u4F8B\u5982\u5728\u5FEB\u7167\u524D\u6316\u5230\u8FC7\u533A\u5757\u7684\u6240\u6709\u4EBA\uFF09\u3002",
+      "A release version looks like 1.2.3 (test builds are never released).": "\u53D1\u5E03\u7248\u672C\u53F7\u7684\u683C\u5F0F\u7C7B\u4F3C 1.2.3\uFF08\u6D4B\u8BD5\u7248\u672C\u4ECE\u4E0D\u53D1\u5E03\uFF09\u3002",
+      "A signed letter shows the sender's address, checked. It still only proves the address, not the person.": "\u7B7E\u540D\u7684\u4FE1\u4EF6\u4F1A\u663E\u793A\u5BC4\u4EF6\u4EBA\u7684\u5730\u5740\uFF0C\u5E76\u5DF2\u9A8C\u8BC1\u3002\u4F46\u5B83\u53EA\u80FD\u8BC1\u660E\u5730\u5740\uFF0C\u4E0D\u80FD\u8BC1\u660E\u662F\u8C01\u672C\u4EBA\u3002",
+      'A signed message cannot contain BRC Post markers such as "BEGIN BRC".': "\u7B7E\u540D\u6D88\u606F\u91CC\u4E0D\u80FD\u5305\u542B BRC Post \u7684\u6807\u8BB0\uFF0C\u4F8B\u5982\u300CBEGIN BRC\u300D\u3002",
+      "A valid result proves that {0} signed {1}.": "\u9A8C\u8BC1\u901A\u8FC7\u5373\u53EF\u8BC1\u660E{0}\u7B7E\u7F72\u4E86{1}\u3002",
+      "Act as test mailbox": "\u5207\u6362\u4E3A\u6D4B\u8BD5\u4FE1\u7BB1",
+      "Acting as test mailbox Alice": "\u5F53\u524D\u8EAB\u4EFD\uFF1A\u6D4B\u8BD5\u4FE1\u7BB1 Alice",
+      "Acting as test mailbox Bob": "\u5F53\u524D\u8EAB\u4EFD\uFF1A\u6D4B\u8BD5\u4FE1\u7BB1 Bob",
+      "Add my signature": "\u52A0\u4E0A\u6211\u7684\u7B7E\u540D",
+      "Adds the public time beacon from drand, run by a group of independent organisations. Nothing about you or your file is sent; like any website, drand's servers see your IP address.": "\u52A0\u5165 drand \u7684\u516C\u5171\u65F6\u95F4\u4FE1\u6807\uFF0Cdrand \u7531\u591A\u5BB6\u72EC\u7ACB\u673A\u6784\u5171\u540C\u8FD0\u884C\u3002\u4E0D\u4F1A\u53D1\u9001\u4EFB\u4F55\u5173\u4E8E\u4F60\u6216\u4F60\u6587\u4EF6\u7684\u5185\u5BB9\uFF1B\u548C\u4EFB\u4F55\u7F51\u7AD9\u4E00\u6837\uFF0Cdrand \u7684\u670D\u52A1\u5668\u80FD\u770B\u5230\u4F60\u7684 IP \u5730\u5740\u3002",
+      "Advanced: add a time by hand": "\u9AD8\u7EA7\uFF1A\u624B\u52A8\u6DFB\u52A0\u65F6\u95F4",
+      "Alice's address": "Alice \u7684\u5730\u5740",
+      "Also prove when it was made": "\u540C\u65F6\u8BC1\u660E\u521B\u5EFA\u65F6\u95F4",
+      "An anonymous letter could be from anyone. Treat its claims the way you'd treat an unsigned letter in the post.": "\u533F\u540D\u4FE1\u53EF\u80FD\u6765\u81EA\u4EFB\u4F55\u4EBA\u3002\u5BF9\u5F85\u4FE1\u91CC\u7684\u8BF4\u6CD5\uFF0C\u8981\u50CF\u5BF9\u5F85\u4E00\u5C01\u6CA1\u6709\u7F72\u540D\u7684\u666E\u901A\u4FE1\u4EF6\u4E00\u6837\u3002",
+      "Anonymous. The sender didn't sign it, so it could be from anyone.": "\u533F\u540D\u3002\u5BC4\u4EF6\u4EBA\u6CA1\u6709\u7B7E\u540D\uFF0C\u6240\u4EE5\u53EF\u80FD\u6765\u81EA\u4EFB\u4F55\u4EBA\u3002",
+      Anyone: "\u4EFB\u4F55\u4EBA",
+      "Anyone can write a block like this for any address. It only counts once BRC Pulse finds the lock and confirms that address made it.": "\u4EFB\u4F55\u4EBA\u90FD\u80FD\u4E3A\u4EFB\u610F\u5730\u5740\u5199\u51FA\u8FD9\u6837\u4E00\u6BB5\u5185\u5BB9\u3002\u53EA\u6709 BRC Pulse \u627E\u5230\u9501\u5B9A\u5E76\u786E\u8BA4\u662F\u8BE5\u5730\u5740\u521B\u5EFA\u7684\uFF0C\u5B83\u624D\u7B97\u6570\u3002",
+      "Anyone with the signed message can rebuild the phrase and find the lock on {0}, which checks it was made by your address. Change one letter and it no longer matches.": "\u62FF\u5230\u7B7E\u540D\u6D88\u606F\u7684\u4EFB\u4F55\u4EBA\u90FD\u80FD\u91CD\u5EFA\u77ED\u8BED\uFF0C\u5E76\u5728{0}\u4E0A\u627E\u5230\u9501\u5B9A\uFF0C\u90A3\u91CC\u4F1A\u68C0\u67E5\u5B83\u662F\u5426\u7531\u4F60\u7684\u5730\u5740\u521B\u5EFA\u3002\u6539\u52A8\u4E00\u4E2A\u5B57\u6BCD\u5C31\u5BF9\u4E0D\u4E0A\u4E86\u3002",
+      "Ask for their mailbox": "\u5411\u5BF9\u65B9\u8981\u4FE1\u7BB1",
+      "BRC Post home": "BRC Post \u9996\u9875",
+      "BRC Post is open inside another page, so real keys are turned off. Open it in its own tab.": "BRC Post \u662F\u5728\u53E6\u4E00\u4E2A\u7F51\u9875\u91CC\u6253\u5F00\u7684\uFF0C\u6240\u4EE5\u771F\u5B9E\u5BC6\u94A5\u5DF2\u88AB\u5173\u95ED\u3002\u8BF7\u5728\u5355\u72EC\u7684\u6807\u7B7E\u9875\u4E2D\u6253\u5F00\u3002",
+      "BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab to read this letter.": "BRC Post \u662F\u5728\u53E6\u4E00\u4E2A\u7F51\u9875\u91CC\u6253\u5F00\u7684\uFF0C\u6240\u4EE5\u771F\u5B9E\u4FE1\u7BB1\u5DF2\u88AB\u5173\u95ED\u3002\u8BF7\u5728\u5355\u72EC\u7684\u6807\u7B7E\u9875\u4E2D\u6253\u5F00\u6765\u9605\u8BFB\u8FD9\u5C01\u4FE1\u3002",
+      "BRC Post is open inside another page, so real mailboxes are turned off. Open it in its own tab.": "BRC Post \u662F\u5728\u53E6\u4E00\u4E2A\u7F51\u9875\u91CC\u6253\u5F00\u7684\uFF0C\u6240\u4EE5\u771F\u5B9E\u4FE1\u7BB1\u5DF2\u88AB\u5173\u95ED\u3002\u8BF7\u5728\u5355\u72EC\u7684\u6807\u7B7E\u9875\u4E2D\u6253\u5F00\u3002",
+      "BRC Post is open inside another page.": "BRC Post \u662F\u5728\u53E6\u4E00\u4E2A\u7F51\u9875\u91CC\u6253\u5F00\u7684\u3002",
+      "BRC Post works offline, so it can't look at the chain. To finish the check,": "BRC Post \u79BB\u7EBF\u8FD0\u884C\uFF0C\u65E0\u6CD5\u67E5\u770B\u533A\u5757\u94FE\u3002\u8981\u5B8C\u6210\u9A8C\u8BC1\uFF0C",
+      "BRC Post works offline, so it can't look at the chain. To finish the check, {0}: it finds the lock and checks the address made it.": "BRC Post \u79BB\u7EBF\u8FD0\u884C\uFF0C\u65E0\u6CD5\u67E5\u770B\u533A\u5757\u94FE\u3002\u8981\u5B8C\u6210\u9A8C\u8BC1\uFF0C\u8BF7{0}\uFF1A\u5B83\u4F1A\u627E\u5230\u8FD9\u4E2A\u9501\u5B9A\uFF0C\u5E76\u68C0\u67E5\u662F\u5426\u786E\u5B9E\u7531\u8BE5\u5730\u5740\u521B\u5EFA\u3002",
+      "BRC Post {0}, build {1}. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).": "BRC Post {0}\uFF0C\u6784\u5EFA {1}\u3002\u53EF\u79BB\u7EBF\u4F7F\u7528\u3002\u7EDD\u4E0D\u4F1A\u53D1\u9001\u4EFB\u4F55\u5173\u4E8E\u4F60\u6216\u4F60\u6587\u4EF6\u7684\u5185\u5BB9\uFF1B\u5B83\u552F\u4E00\u83B7\u53D6\u7684\u662F\u516C\u5171\u7684 drand \u65F6\u95F4\u4FE1\u6807\uFF0C\u4EC5\u5728\u4F60\u7ED9\u6587\u4EF6\u76D6\u90AE\u6233\u65F6\u4F7F\u7528\uFF08\u548C\u4EFB\u4F55\u7F51\u7AD9\u4E00\u6837\uFF0Cdrand \u7684\u670D\u52A1\u5668\u80FD\u770B\u5230\u4F60\u7684 IP \u5730\u5740\uFF09\u3002",
+      "BRC Pulse \u2192 Check it": "BRC Pulse \u2192\u300C\u9A8C\u8BC1\u4E00\u4E0B\u300D",
+      Back: "\u8FD4\u56DE",
+      "Because a BrowserCoin address is a public key, it can be turned into an encryption key. Anyone can lock a letter with it. Only the matching key can unlock it.": "BrowserCoin \u5730\u5740\u672C\u8EAB\u5C31\u662F\u516C\u94A5\uFF0C\u6240\u4EE5\u53EF\u4EE5\u8F6C\u6362\u6210\u52A0\u5BC6\u5BC6\u94A5\u3002\u4EFB\u4F55\u4EBA\u90FD\u80FD\u7528\u5B83\u628A\u4FE1\u9501\u4E0A\uFF0C\u53EA\u6709\u5BF9\u5E94\u7684\u79C1\u94A5\u624D\u80FD\u89E3\u5F00\u3002",
+      "Bob's address": "Bob \u7684\u5730\u5740",
+      "BrowserCoin addresses have no built-in typo check, so compare the whole address, not just the first few characters.": "BrowserCoin \u5730\u5740\u6CA1\u6709\u5185\u7F6E\u7684\u8F93\u9519\u68C0\u67E5\uFF0C\u6240\u4EE5\u8BF7\u6838\u5BF9\u5B8C\u6574\u5730\u5740\uFF0C\u4E0D\u8981\u53EA\u770B\u5F00\u5934\u51E0\u4E2A\u5B57\u7B26\u3002",
+      "Check a postmark": "\u9A8C\u8BC1\u90AE\u6233",
+      "Check a signature": "\u9A8C\u8BC1\u7B7E\u540D",
+      "Check a signature or a link, open a letter, check a postmark": "\u9A8C\u8BC1\u7B7E\u540D\u6216\u94FE\u63A5\u3001\u6253\u5F00\u4FE1\u4EF6\u3001\u9A8C\u8BC1\u90AE\u6233",
+      "Check before locking: in the app's script preview, the line after OP_SHA256 should read": "\u9501\u5B9A\u524D\u8BF7\u68C0\u67E5\uFF1A\u5728\u5E94\u7528\u7684\u811A\u672C\u9884\u89C8\u4E2D\uFF0COP_SHA256 \u540E\u9762\u90A3\u4E00\u884C\u5E94\u4E3A",
+      "Check it on BRC Pulse": "\u5728 BRC Pulse \u4E0A\u9A8C\u8BC1",
+      "Check signature": "\u9A8C\u8BC1\u7B7E\u540D",
+      "Check the mailbox link on BRC Pulse \u2192 Check it first, then tick the box. An unchecked link could send this letter to someone pretending to be them.": "\u8BF7\u5148\u5728 BRC Pulse \u2192\u300C\u9A8C\u8BC1\u4E00\u4E0B\u300D\u4E0A\u68C0\u67E5\u4FE1\u7BB1\u94FE\u63A5\uFF0C\u7136\u540E\u518D\u52FE\u9009\u3002\u672A\u7ECF\u68C0\u67E5\u7684\u94FE\u63A5\u53EF\u80FD\u4F1A\u628A\u8FD9\u5C01\u4FE1\u5BC4\u7ED9\u5192\u5145\u5BF9\u65B9\u7684\u4EBA\u3002",
+      "Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on {0}, which reads the chain.": "\u5728\u8FD9\u91CC\u79BB\u7EBF\u68C0\u67E5\u6587\u4EF6\u662F\u5426\u5C31\u662F\u56DE\u6267\u6240\u63CF\u8FF0\u7684\u90A3\u4E2A\u3002\u8981\u67E5\u770B\u65E5\u671F\uFF0C\u8BF7\u5728\u80FD\u8BFB\u53D6\u533A\u5757\u94FE\u7684{0}\u4E0A\u9A8C\u8BC1\u56DE\u6267\u3002",
+      "Choose a file first.": "\u8BF7\u5148\u9009\u62E9\u4E00\u4E2A\u6587\u4EF6\u3002",
+      "Choose a file to postmark": "\u9009\u62E9\u8981\u76D6\u90AE\u6233\u7684\u6587\u4EF6",
+      "Choose the file": "\u9009\u62E9\u6587\u4EF6",
+      "Choose the letters file": "\u9009\u62E9\u4FE1\u4EF6\u6587\u4EF6",
+      "Choose the letters file first.": "\u8BF7\u5148\u9009\u62E9\u4FE1\u4EF6\u6587\u4EF6\u3002",
+      "Choose your mailbox backup": "\u9009\u62E9\u4F60\u7684\u4FE1\u7BB1\u5907\u4EFD",
+      "Choose your mailbox backup file first.": "\u8BF7\u5148\u9009\u62E9\u4F60\u7684\u4FE1\u7BB1\u5907\u4EFD\u6587\u4EF6\u3002",
+      "Claims to be": "\u81EA\u79F0\u662F",
+      "Claims to be signed by": "\u81EA\u79F0\u7B7E\u540D\u8005",
+      "Close mailbox": "\u5173\u95ED\u4FE1\u7BB1",
+      "Closed after 10 minutes idle": "\u95F2\u7F6E 10 \u5206\u949F\u540E\u81EA\u52A8\u5173\u95ED",
+      "Coin address": "\u5E01\u5730\u5740",
+      "Copied a message asking for their mailbox link. Paste it to them in Discord, a text or email.": "\u5DF2\u590D\u5236\u4E00\u6761\u7D22\u8981\u5BF9\u65B9\u4FE1\u7BB1\u94FE\u63A5\u7684\u6D88\u606F\u3002\u901A\u8FC7 Discord\u3001\u77ED\u4FE1\u6216\u90AE\u4EF6\u7C98\u8D34\u53D1\u7ED9\u5BF9\u65B9\u3002",
+      "Copy fingerprint": "\u590D\u5236\u6307\u7EB9",
+      "Copy link": "\u590D\u5236\u94FE\u63A5",
+      "Copy the mailbox link": "\u590D\u5236\u4FE1\u7BB1\u94FE\u63A5",
+      "Copy the sealed letter": "\u590D\u5236\u5BC6\u5C01\u4FE1",
+      "Copy the signed message": "\u590D\u5236\u7B7E\u540D\u6D88\u606F",
+      "Cost:": "\u8D39\u7528\uFF1A",
+      "Couldn't get the current time from the time service (or this device's clock is off), so this postmark has no exact time. It still proves the file existed by the block it lands in. Press the button again to retry.": "\u65E0\u6CD5\u4ECE\u65F6\u95F4\u670D\u52A1\u83B7\u53D6\u5F53\u524D\u65F6\u95F4\uFF08\u6216\u8005\u8FD9\u53F0\u8BBE\u5907\u7684\u65F6\u949F\u4E0D\u51C6\uFF09\uFF0C\u6240\u4EE5\u8FD9\u4E2A\u90AE\u6233\u6CA1\u6709\u7CBE\u786E\u65F6\u95F4\u3002\u5B83\u4ECD\u80FD\u8BC1\u660E\u8BE5\u6587\u4EF6\u5728\u5B83\u88AB\u5199\u5165\u7684\u90A3\u4E2A\u533A\u5757\u65F6\u5DF2\u7ECF\u5B58\u5728\u3002\u518D\u6309\u4E00\u6B21\u6309\u94AE\u91CD\u8BD5\u3002",
+      "Create a hash-locked payment": "\u521B\u5EFA\u54C8\u5E0C\u9501\u5B9A\u4ED8\u6B3E",
+      "Create my mailbox": "\u521B\u5EFA\u6211\u7684\u4FE1\u7BB1",
+      "Doesn't prove:": "\u4E0D\u80FD\u8BC1\u660E\uFF1A",
+      "Don't trust who this letter claims to be from.": "\u4E0D\u8981\u8F7B\u4FE1\u8FD9\u5C01\u4FE1\u81EA\u79F0\u7684\u53D1\u4EF6\u4EBA\u3002",
+      Done: "\u5B8C\u6210",
+      "Eligible list (optional)": "\u6709\u8D44\u683C\u7684\u5730\u5740\u540D\u5355\uFF08\u53EF\u9009\uFF09",
+      "Enter a BrowserCoin address.": "\u8BF7\u8F93\u5165\u4E00\u4E2A BrowserCoin \u5730\u5740\u3002",
+      "Enter the backup password.": "\u8BF7\u8F93\u5165\u5907\u4EFD\u5BC6\u7801\u3002",
+      "Enter your coin address above. The link message appears here.": "\u5728\u4E0A\u65B9\u8F93\u5165\u4F60\u7684\u5E01\u5730\u5740\uFF0C\u94FE\u63A5\u6D88\u606F\u4F1A\u663E\u793A\u5728\u8FD9\u91CC\u3002",
+      "Entries close should be an exact UTC time, like 2026-11-11T23:59:00Z.": "\u622A\u6B62\u62A5\u540D\u65F6\u95F4\u5E94\u4E3A\u7CBE\u786E\u7684 UTC \u65F6\u95F4\uFF0C\u4F8B\u5982 2026-11-11T23:59:00Z\u3002",
+      "Every address must be 64 characters, 0\u20139 and a\u2013f.": "\u6BCF\u4E2A\u5730\u5740\u5FC5\u987B\u662F 64 \u4E2A\u5B57\u7B26\uFF0C\u53EA\u80FD\u5305\u542B 0\u20139 \u548C a\u2013f\u3002",
+      Examples: "\u793A\u4F8B",
+      "Existed by": "\u5B58\u5728\u65F6\u95F4\u4E0D\u665A\u4E8E",
+      FILE: "\u6587\u4EF6",
+      "Files over 2 GB are too large to postmark here.": "\u8D85\u8FC7 2 GB \u7684\u6587\u4EF6\u592A\u5927\uFF0C\u65E0\u6CD5\u5728\u8FD9\u91CC\u52A0\u76D6\u90AE\u6233\u3002",
+      "Fill a test Lock ID": "\u586B\u5165\u6D4B\u8BD5\u9501\u5B9A ID",
+      "Fixing the giveaway list before the draw.": "\u5728\u5F00\u5956\u524D\u9501\u5B9A\u62BD\u5956\u540D\u5355\u3002",
+      'For "after a recent block", fill in both the block number and its ID, or leave both empty.': "\u5BF9\u4E8E\u300C\u5728\u67D0\u4E2A\u6700\u8FD1\u533A\u5757\u4E4B\u540E\u300D\uFF0C\u8BF7\u540C\u65F6\u586B\u5199\u533A\u5757\u7F16\u53F7\u548C\u5B83\u7684 ID\uFF0C\u6216\u8005\u4E24\u4E2A\u90FD\u7559\u7A7A\u3002",
+      "For a mailbox owner. Open every letter from a BRC Mailbox at once, here and offline, with the mailbox. For a giveaway, this counts the entries and makes the list to publish.": "\u7ED9\u4FE1\u7BB1\u4E3B\u4EBA\u7528\u3002\u7528\u4FE1\u7BB1\u5728\u8FD9\u91CC\u79BB\u7EBF\u4E00\u6B21\u6027\u6253\u5F00 BRC Mailbox \u91CC\u7684\u6240\u6709\u4FE1\u4EF6\u3002\u5982\u679C\u662F\u62BD\u5956\uFF0C\u5B83\u4F1A\u7EDF\u8BA1\u62A5\u540D\u6570\u91CF\u5E76\u751F\u6210\u8981\u516C\u5E03\u7684\u540D\u5355\u3002",
+      "For a mailbox owner: open a whole mailbox at once": "\u7ED9\u4FE1\u7BB1\u4E3B\u4EBA\uFF1A\u4E00\u6B21\u6253\u5F00\u6574\u4E2A\u4FE1\u7BB1",
+      From: "\u53D1\u4EF6\u4EBA",
+      "From BRC Pulse \u2192 Giveaway \u2192 Download every letter": "\u6765\u81EA BRC Pulse \u2192 \u62BD\u5956 \u2192 \u4E0B\u8F7D\u6240\u6709\u4FE1\u4EF6",
+      "From their mailbox link.": "\u6765\u81EA\u5BF9\u65B9\u7684\u4FE1\u7BB1\u94FE\u63A5\u3002",
+      Get: "\u83B7\u53D6",
+      "Get a mailbox": "\u83B7\u53D6\u4FE1\u7BB1",
+      "Get your receipt": "\u83B7\u53D6\u4F60\u7684\u56DE\u6267",
+      "Getting the coins back:": "\u53D6\u56DE\u5E01\uFF1A",
+      "Getting the current time beacon\u2026": "\u6B63\u5728\u83B7\u53D6\u5F53\u524D\u65F6\u95F4\u4FE1\u6807\u2026",
+      "Giveaway list signed on the chain": "\u5DF2\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\u62BD\u5956\u540D\u5355",
+      "Got something? Paste it here": "\u6536\u5230\u4E1C\u897F\u4E86\uFF1F\u7C98\u8D34\u5230\u8FD9\u91CC",
+      "Guess who.": "\u731C\u731C\u6211\u662F\u8C01\u3002",
+      "How sealing works, and its one limit": "\u5BC6\u5C01\u7684\u539F\u7406\uFF0C\u4EE5\u53CA\u5B83\u552F\u4E00\u7684\u9650\u5236",
+      "How signing works": "\u7B7E\u540D\u7684\u539F\u7406",
+      "I checked this link on {0}, and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)": "\u6211\u5DF2\u5728{0}\u4E0A\u68C0\u67E5\u8FC7\u8FD9\u4E2A\u94FE\u63A5\uFF0C\u663E\u793A\u5B83\u786E\u5B9E\u7531\u8BE5\u5E01\u5730\u5740\u521B\u5EFA\u3002\uFF08\u672A\u7ECF\u68C0\u67E5\u7684\u94FE\u63A5\u53EF\u80FD\u4F1A\u628A\u8FD9\u5C01\u4FE1\u53D1\u7ED9\u5192\u5145\u5BF9\u65B9\u7684\u4EBA\u3002\uFF09",
+      "I have the printed paper code instead": "\u6211\u624B\u4E0A\u53EA\u6709\u6253\u5370\u7684\u7EB8\u8D28\u4EE3\u7801",
+      "I received something": "\u6211\u6536\u5230\u4E86\u4E1C\u897F",
+      "I understand: without this password my mailbox can't be opened, and nobody can reset it.": "\u6211\u660E\u767D\uFF1A\u6CA1\u6709\u8FD9\u4E2A\u5BC6\u7801\uFF0C\u6211\u7684\u4FE1\u7BB1\u5C31\u65E0\u6CD5\u6253\u5F00\uFF0C\u800C\u4E14\u6CA1\u6709\u4EBA\u80FD\u91CD\u7F6E\u5B83\u3002",
+      "I'd like to send you a private letter that only you can open. Get a free BRC Post mailbox in a few seconds at https://brc-post.github.io (tap Get a mailbox), then send me your mailbox link.": "\u6211\u60F3\u7ED9\u4F60\u53D1\u4E00\u5C01\u53EA\u6709\u4F60\u80FD\u6253\u5F00\u7684\u79C1\u5BC6\u4FE1\u4EF6\u3002\u5230 https://brc-post.github.io \u51E0\u79D2\u949F\u5C31\u80FD\u514D\u8D39\u83B7\u53D6\u4E00\u4E2A BRC Post \u4FE1\u7BB1\uFF08\u70B9\u300C\u83B7\u53D6\u4FE1\u7BB1\u300D\uFF09\uFF0C\u7136\u540E\u628A\u4F60\u7684\u4FE1\u7BB1\u94FE\u63A5\u53D1\u7ED9\u6211\u3002",
+      "I've locked it: make my signed message": "\u6211\u5DF2\u9501\u5B9A\uFF1A\u751F\u6210\u6211\u7684\u7B7E\u540D\u6D88\u606F",
+      "If you tick \"sign it\", your mailbox's signature goes {0} the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.": "\u5982\u679C\u4F60\u52FE\u9009\u300C\u7B7E\u540D\u300D\uFF0C\u4F60\u7684\u4FE1\u7BB1\u7B7E\u540D\u4F1A\u88AB\u653E\u8FDB\u52A0\u5BC6\u5185\u5BB9\u7684{0}\uFF0C\u6240\u4EE5\u5916\u4EBA\u770B\u4E0D\u51FA\u662F\u4F60\u53D1\u7684\u3002\u6536\u4EF6\u4EBA\u80FD\u770B\u5230\uFF0C\u4E4B\u540E\u4E5F\u80FD\u5411\u522B\u4EBA\u8BC1\u660E\u662F\u4F60\u5199\u7684\u3002\u5426\u5219\u8FD9\u5C01\u4FE1\u5C31\u662F\u533F\u540D\u7684\u3002",
+      "Independent tools by {0}. Not part of the official BrowserCoin project.": "{0} \u5236\u4F5C\u7684\u72EC\u7ACB\u5DE5\u5177\u3002\u4E0D\u5C5E\u4E8E BrowserCoin \u5B98\u65B9\u9879\u76EE\u3002",
+      "Instant, and no coins involved. It proves your mailbox wrote it; link your mailbox to your coin address once, on the chain, so people know whose mailbox it is.": "\u5373\u65F6\u5B8C\u6210\uFF0C\u4E0D\u6D89\u53CA\u4EFB\u4F55\u5E01\u3002\u5B83\u8BC1\u660E\u8FD9\u6761\u6D88\u606F\u662F\u4F60\u7684\u4FE1\u7BB1\u5199\u7684\uFF1B\u53EA\u9700\u5728\u94FE\u4E0A\u628A\u4F60\u7684\u4FE1\u7BB1\u548C\u5E01\u5730\u5740\u5173\u8054\u4E00\u6B21\uFF0C\u5927\u5BB6\u5C31\u77E5\u9053\u8FD9\u662F\u8C01\u7684\u4FE1\u7BB1\u3002",
+      "Instant, with your mailbox": "\u5373\u65F6\u5B8C\u6210\uFF0C\u7528\u4F60\u7684\u4FE1\u7BB1",
+      "Is this a BRC Post mailbox? Only a mailbox can open letters, and a coin address looks exactly the same. Tick the box if they gave you this as their mailbox, or tap Ask for their mailbox.": "\u8FD9\u662F BRC Post \u4FE1\u7BB1\u5417\uFF1F\u53EA\u6709\u4FE1\u7BB1\u624D\u80FD\u6253\u5F00\u4FE1\u4EF6\uFF0C\u800C\u5E01\u5730\u5740\u770B\u8D77\u6765\u4E00\u6A21\u4E00\u6837\u3002\u5982\u679C\u5BF9\u65B9\u662F\u628A\u5B83\u4F5C\u4E3A\u4FE1\u7BB1\u7ED9\u4F60\u7684\uFF0C\u5C31\u52FE\u9009\u6B64\u6846\uFF1B\u6216\u8005\u70B9\u300C\u7D22\u8981\u5BF9\u65B9\u7684\u4FE1\u7BB1\u300D\u3002",
+      "It also contains invisible or direction-changing characters, so it may not read the way it looks.": "\u5B83\u8FD8\u5305\u542B\u4E0D\u53EF\u89C1\u5B57\u7B26\u6216\u6539\u53D8\u6587\u5B57\u65B9\u5411\u7684\u5B57\u7B26\uFF0C\u6240\u4EE5\u5B9E\u9645\u5185\u5BB9\u53EF\u80FD\u548C\u770B\u8D77\u6765\u4E0D\u4E00\u6837\u3002",
+      "It contains invisible or direction-changing characters, so it may not read the way it looks. Ask the signer for a plain version.": "\u5B83\u5305\u542B\u4E0D\u53EF\u89C1\u5B57\u7B26\u6216\u6539\u53D8\u6587\u5B57\u65B9\u5411\u7684\u5B57\u7B26\uFF0C\u6240\u4EE5\u5B9E\u9645\u5185\u5BB9\u53EF\u80FD\u548C\u770B\u8D77\u6765\u4E0D\u4E00\u6837\u3002\u8BF7\u8BA9\u7B7E\u540D\u8005\u63D0\u4F9B\u4E00\u4E2A\u7EAF\u6587\u672C\u7248\u672C\u3002",
+      "It costs the app's small fee plus the amount you lock, which you can take back later with Redeem.": "\u8D39\u7528\u662F\u5B98\u65B9\u5E94\u7528\u7684\u5C11\u91CF\u624B\u7EED\u8D39\uFF0C\u52A0\u4E0A\u4F60\u9501\u5B9A\u7684\u91D1\u989D\uFF1B\u9501\u5B9A\u7684\u91D1\u989D\u4E4B\u540E\u53EF\u4EE5\u7528\u300CRedeem\u300D\uFF08\u8D4E\u56DE\uFF09\u53D6\u56DE\u3002",
+      "It doesn't prove who that person is. Compare the address with one you already trust, for example from BRC Pulse or a past payment.": "\u5B83\u4E0D\u80FD\u8BC1\u660E\u90A3\u4E2A\u4EBA\u662F\u8C01\u3002\u8BF7\u628A\u8FD9\u4E2A\u5730\u5740\u548C\u4F60\u5DF2\u7ECF\u4FE1\u4EFB\u7684\u5730\u5740\u6BD4\u5BF9\uFF0C\u4F8B\u5982\u6765\u81EA BRC Pulse \u6216\u4EE5\u524D\u7684\u4E00\u7B14\u4ED8\u6B3E\u3002",
+      "It's only posted once you press Lock coins in the BrowserCoin app (step 3). Then this receipt proves it; check it on BRC Pulse.": "\u53EA\u6709\u5728 BrowserCoin \u5E94\u7528\u4E2D\u6309\u4E0B\u300CLock coins\u300D\u540E\uFF08\u7B2C 3 \u6B65\uFF09\uFF0C\u5B83\u624D\u4F1A\u88AB\u53D1\u5E03\u3002\u4E4B\u540E\u8FD9\u5F20\u56DE\u6267\u5C31\u80FD\u8BC1\u660E\u5B83\uFF1B\u53EF\u4EE5\u5728 BRC Pulse \u4E0A\u9A8C\u8BC1\u3002",
+      "Just looking? Try it with test mailboxes": "\u53EA\u662F\u770B\u770B\uFF1F\u7528\u6D4B\u8BD5\u4FE1\u7BB1\u8BD5\u4E00\u8BD5",
+      "Keep the file somewhere safe: it's how you get back in on another device, or if this browser is cleared.": "\u628A\u8FD9\u4E2A\u6587\u4EF6\u5B58\u653E\u5728\u5B89\u5168\u7684\u5730\u65B9\uFF1A\u6362\u5230\u53E6\u4E00\u53F0\u8BBE\u5907\uFF0C\u6216\u8005\u8FD9\u4E2A\u6D4F\u89C8\u5668\u7684\u6570\u636E\u88AB\u6E05\u9664\u540E\uFF0C\u4F60\u8981\u9760\u5B83\u624D\u80FD\u91CD\u65B0\u8FDB\u5165\u3002",
+      "Keep the receipt with the file, like a tracking slip. Anyone with both can check the postmark on BRC Pulse \u2192 Check it.": "\u628A\u56DE\u6267\u548C\u6587\u4EF6\u653E\u5728\u4E00\u8D77\uFF0C\u5C31\u50CF\u5FEB\u9012\u5355\u4E00\u6837\u3002\u4EFB\u4F55\u540C\u65F6\u62E5\u6709\u4E24\u8005\u7684\u4EBA\u90FD\u53EF\u4EE5\u5728 BRC Pulse \u2192 \u9A8C\u8BC1 \u4E2D\u68C0\u67E5\u90AE\u6233\u3002",
+      "Keep the receipt.": "\u4FDD\u7BA1\u597D\u56DE\u6267\u3002",
+      "Leave the fee as it is and press {0}. Your key signs the lock inside the official app, where it already lives.": "\u624B\u7EED\u8D39\u4FDD\u6301\u4E0D\u53D8\uFF0C\u6309\u4E0B{0}\u3002\u4F60\u7684\u79C1\u94A5\u4F1A\u5728\u5B98\u65B9\u5E94\u7528\u5185\u4E3A\u8FD9\u6B21\u9501\u5B9A\u7B7E\u540D\uFF0C\u79C1\u94A5\u672C\u6765\u5C31\u5B58\u653E\u5728\u90A3\u91CC\u3002",
+      "Leave the fee as it is, press {0}, and copy the {1} it shows.": "\u624B\u7EED\u8D39\u4FDD\u6301\u4E0D\u53D8\uFF0C\u6309\u4E0B{0}\uFF0C\u7136\u540E\u590D\u5236\u5B83\u663E\u793A\u7684{1}\u3002",
+      Letter: "\u4FE1\u4EF6",
+      Letters: "\u4FE1\u4EF6",
+      "Lines cannot start with > or ```. Chat apps change those lines, which would break the signature.": "\u6BCF\u884C\u4E0D\u80FD\u4EE5 > \u6216 ``` \u5F00\u5934\u3002\u804A\u5929\u5E94\u7528\u4F1A\u6539\u52A8\u8FD9\u6837\u7684\u884C\uFF0C\u4ECE\u800C\u7834\u574F\u7B7E\u540D\u3002",
+      "Link to my coin address": "\u5173\u8054\u5230\u6211\u7684\u5E01\u5730\u5740",
+      "Linking your mailbox.": "\u5173\u8054\u4F60\u7684\u4FE1\u7BB1\u3002",
+      "List fingerprint": "\u540D\u5355\u6307\u7EB9",
+      Lock: "\u9501\u5B9A",
+      "Lock ID {0}": "\u9501\u5B9A ID {0}",
+      Locked: "\u5DF2\u9501\u5B9A",
+      "Locked after 10 minutes without use.": "10 \u5206\u949F\u672A\u4F7F\u7528\uFF0C\u5DF2\u81EA\u52A8\u9501\u5B9A\u3002",
+      "Made after": "\u5236\u4F5C\u65F6\u95F4\u4E0D\u65E9\u4E8E",
+      Mailbox: "\u4FE1\u7BB1",
+      "Mailbox link signed on the chain": "\u5DF2\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\u4FE1\u7BB1\u94FE\u63A5",
+      "Mailbox signature:": "\u4FE1\u7BB1\u7B7E\u540D\uFF1A",
+      "Make my receipt": "\u751F\u6210\u6211\u7684\u56DE\u6267",
+      "Make the phrase": "\u751F\u6210\u77ED\u8BED",
+      "Make the postmark phrase": "\u751F\u6210\u90AE\u6233\u77ED\u8BED",
+      "Make the postmark phrase first (step 2).": "\u8BF7\u5148\u751F\u6210\u90AE\u6233\u77ED\u8BED\uFF08\u7B2C 2 \u6B65\uFF09\u3002",
+      "Making your mailbox. This takes a few seconds on purpose: it makes password guessing slow.": "\u6B63\u5728\u521B\u5EFA\u4F60\u7684\u4FE1\u7BB1\u3002\u8FD9\u91CC\u7279\u610F\u8981\u82B1\u51E0\u79D2\u949F\uFF1A\u8FD9\u6837\u522B\u4EBA\u731C\u5BC6\u7801\u5C31\u4F1A\u5F88\u6162\u3002",
+      "Match a file to its receipt": "\u5C06\u6587\u4EF6\u4E0E\u56DE\u6267\u5339\u914D",
+      "My coin address": "\u6211\u7684\u5E01\u5730\u5740",
+      "My mailbox": "\u6211\u7684\u4FE1\u7BB1",
+      "Never asks for a coin key": "\u4ECE\u4E0D\u7D22\u8981\u5E01\u79C1\u94A5",
+      "Never send your wallet file, private key or recovery words to anyone": "\u5207\u52FF\u628A\u4F60\u7684\u94B1\u5305\u6587\u4EF6\u3001\u79C1\u94A5\u6216\u52A9\u8BB0\u8BCD\u53D1\u7ED9\u4EFB\u4F55\u4EBA",
+      "No coin keys, ever.": "\u6C38\u8FDC\u4E0D\u9700\u8981\u5E01\u79C1\u94A5\u3002",
+      "No key needed here.": "\u8FD9\u91CC\u4E0D\u9700\u8981\u79C1\u94A5\u3002",
+      "No mailbox yet": "\u8FD8\u6CA1\u6709\u4FE1\u7BB1",
+      "No time beacon: the postmark proves the file existed by the block it lands in, not when it was made.": "\u6CA1\u6709\u65F6\u95F4\u4FE1\u6807\uFF1A\u90AE\u6233\u53EA\u80FD\u8BC1\u660E\u6587\u4EF6\u5728\u5B83\u88AB\u5199\u5165\u7684\u90A3\u4E2A\u533A\u5757\u65F6\u5DF2\u7ECF\u5B58\u5728\uFF0C\u4E0D\u80FD\u8BC1\u660E\u5B83\u662F\u4EC0\u4E48\u65F6\u5019\u5236\u4F5C\u7684\u3002",
+      "Not a giveaway entry.": "\u4E0D\u662F\u62BD\u5956\u62A5\u540D\u3002",
+      "Not a valid mailbox link": "\u4E0D\u662F\u6709\u6548\u7684\u4FE1\u7BB1\u94FE\u63A5",
+      "Not checked yet: it needs BRC Pulse": "\u5C1A\u672A\u68C0\u67E5\uFF1A\u9700\u8981\u7528 BRC Pulse",
+      "Not recorded": "\u672A\u8BB0\u5F55",
+      "Not signed": "\u672A\u7B7E\u540D",
+      "Not valid": "\u65E0\u6548",
+      Note: "\u4FBF\u6761",
+      "Nothing leaves this page": "\u4EFB\u4F55\u5185\u5BB9\u90FD\u4E0D\u4F1A\u79BB\u5F00\u8FD9\u4E2A\u9875\u9762",
+      "Now writing to the mailbox from the link. Check the picture matches the one they showed you.": "\u73B0\u5728\u6B63\u5199\u7ED9\u94FE\u63A5\u4E2D\u7684\u4FE1\u7BB1\u3002\u8BF7\u786E\u8BA4\u56FE\u6848\u548C\u5BF9\u65B9\u7ED9\u4F60\u770B\u7684\u4E00\u81F4\u3002",
+      "Official notice.": "\u5B98\u65B9\u901A\u77E5\u3002",
+      "On the chain, for your coin address.": "\u5728\u94FE\u4E0A\uFF0C\u7528\u4E8E\u4F60\u7684\u5E01\u5730\u5740\u3002",
+      "On the chain, with the official app": "\u5728\u94FE\u4E0A\uFF0C\u7528\u5B98\u65B9\u5E94\u7528",
+      "One person": "\u4E00\u4E2A\u4EBA",
+      "Only lock a phrase this page just made from words you can read above.": "\u53EA\u9501\u5B9A\u8FD9\u4E2A\u9875\u9762\u521A\u521A\u751F\u6210\u7684\u77ED\u8BED\uFF0C\u5E76\u4E14\u5185\u5BB9\u5FC5\u987B\u662F\u4F60\u5728\u4E0A\u65B9\u80FD\u8BFB\u61C2\u7684\u6587\u5B57\u3002",
+      "Only postmark files you made or checked yourself, and only lock a phrase this page just made.": "\u53EA\u7ED9\u4F60\u81EA\u5DF1\u5236\u4F5C\u6216\u4EB2\u81EA\u68C0\u67E5\u8FC7\u7684\u6587\u4EF6\u52A0\u76D6\u90AE\u6233\uFF0C\u5E76\u4E14\u53EA\u9501\u5B9A\u8FD9\u4E2A\u9875\u9762\u521A\u521A\u751F\u6210\u7684\u77ED\u8BED\u3002",
+      "Only the address you choose can open it. Send it any way you like.": "\u53EA\u6709\u4F60\u9009\u62E9\u7684\u5730\u5740\u624D\u80FD\u6253\u5F00\u5B83\u3002\u7528\u4EFB\u4F55\u65B9\u5F0F\u53D1\u9001\u90FD\u53EF\u4EE5\u3002",
+      "Only the person you choose can open it.": "\u53EA\u6709\u4F60\u9009\u62E9\u7684\u4EBA\u624D\u80FD\u6253\u5F00\u5B83\u3002",
+      "Only the signed text below is vouched for. The words in the red box were added by whoever sealed the letter, and could be from anyone.": "\u53EA\u6709\u4E0B\u9762\u7684\u7B7E\u540D\u6587\u672C\u662F\u6709\u62C5\u4FDD\u7684\u3002\u7EA2\u6846\u4E2D\u7684\u6587\u5B57\u662F\u5BC6\u5C01\u8FD9\u5C01\u4FE1\u7684\u4EBA\u6DFB\u52A0\u7684\uFF0C\u53EF\u80FD\u6765\u81EA\u4EFB\u4F55\u4EBA\u3002",
+      "Only they can check it.": "\u53EA\u6709\u5BF9\u65B9\u80FD\u9A8C\u8BC1\u3002",
+      "Only your mailbox could open this letter.": "\u53EA\u6709\u4F60\u7684\u4FE1\u7BB1\u80FD\u6253\u5F00\u8FD9\u5C01\u4FE1\u3002",
+      Open: "\u6253\u5F00",
+      "Open BRC Vault, offline wallet backups": "\u6253\u5F00 BRC Vault\uFF08\u79BB\u7EBF\u94B1\u5305\u5907\u4EFD\uFF09",
+      "Open a letter": "\u6253\u5F00\u4FE1\u4EF6",
+      "Open all letters": "\u6253\u5F00\u6240\u6709\u4FE1\u4EF6",
+      "Open many letters": "\u6253\u5F00\u591A\u5C01\u4FE1\u4EF6",
+      "Open the letter": "\u6253\u5F00\u8FD9\u5C01\u4FE1",
+      "Open the mailbox first. Opening needs it.": "\u8BF7\u5148\u6253\u5F00\u4FE1\u7BB1\u3002\u6253\u5F00\u4FE1\u4EF6\u9700\u8981\u7528\u5230\u5B83\u3002",
+      "Open your mailbox, or use the test mailboxes, first. Or sign as your coin address, on the chain.": "\u8BF7\u5148\u6253\u5F00\u4F60\u7684\u4FE1\u7BB1\uFF0C\u6216\u4F7F\u7528\u6D4B\u8BD5\u4FE1\u7BB1\u3002\u4E5F\u53EF\u4EE5\u7528\u4F60\u7684\u94B1\u5E01\u5730\u5740\u5728\u94FE\u4E0A\u7B7E\u540D\u3002",
+      "Open {0} \u2192 {1} \u2192 {2}.": "\u6253\u5F00 {0} \u2192 {1} \u2192 {2}\u3002",
+      Opened: "\u5DF2\u6253\u5F00",
+      "Opened, but part of it is not signed": "\u5DF2\u6253\u5F00\uFF0C\u4F46\u5176\u4E2D\u4E00\u90E8\u5206\u6CA1\u6709\u7B7E\u540D",
+      "Opened, but the letter contains invisible or direction-changing characters, so it may not read the way it looks.": "\u5DF2\u6253\u5F00\uFF0C\u4F46\u4FE1\u4E2D\u542B\u6709\u4E0D\u53EF\u89C1\u5B57\u7B26\u6216\u6539\u53D8\u6587\u5B57\u65B9\u5411\u7684\u5B57\u7B26\uFF0C\u5B9E\u9645\u5185\u5BB9\u53EF\u80FD\u548C\u770B\u8D77\u6765\u4E0D\u4E00\u6837\u3002",
+      "Opened, but the sender's signature is wrong": "\u5DF2\u6253\u5F00\uFF0C\u4F46\u53D1\u4EF6\u4EBA\u7684\u7B7E\u540D\u4E0D\u5BF9",
+      "Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse \u2192 Check it, press {0} next to the recent block and paste it below.": "\u4E5F\u53EF\u4EE5\u518D\u52A0\u4E0A\u4E00\u4E2A\u6700\u8FD1\u7684 BrowserCoin \u533A\u5757\uFF08\u7CBE\u5EA6\u8F83\u4F4E\uFF0C\u4E0D\u4F9D\u8D56\u5916\u90E8\u670D\u52A1\uFF09\uFF1A\u5728 BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u4E2D\uFF0C\u70B9\u6700\u8FD1\u533A\u5757\u65C1\u8FB9\u7684{0}\uFF0C\u7136\u540E\u7C98\u8D34\u5230\u4E0B\u9762\u3002",
+      "Paper code (starts with BRCMBOX1)": "\u7EB8\u8D28\u4EE3\u7801\uFF08\u4EE5 BRCMBOX1 \u5F00\u5934\uFF09",
+      Paste: "\u7C98\u8D34",
+      "Paste a sealed letter first.": "\u8BF7\u5148\u7C98\u8D34\u4E00\u5C01\u5BC6\u5C01\u4FE1\u3002",
+      "Paste a signed message first.": "\u8BF7\u5148\u7C98\u8D34\u4E00\u6761\u7B7E\u540D\u6D88\u606F\u3002",
+      "Paste it here and BRC Post will work out what it is.": "\u7C98\u8D34\u5230\u8FD9\u91CC\uFF0CBRC Post \u4F1A\u81EA\u52A8\u8BC6\u522B\u5B83\u662F\u4EC0\u4E48\u3002",
+      "Paste the address of the person who will check it.": "\u7C98\u8D34\u5C06\u8981\u9A8C\u8BC1\u5B83\u7684\u4EBA\u7684\u5730\u5740\u3002",
+      "Paste the whole block, from {0} to {1}. No key needed.": "\u7C98\u8D34\u5B8C\u6574\u5185\u5BB9\uFF0C\u4ECE{0}\u5230{1}\u3002\u65E0\u9700\u5BC6\u94A5\u3002",
+      "Paste the whole block. Opening needs the mailbox it was sealed to.": "\u7C98\u8D34\u5B8C\u6574\u5185\u5BB9\u3002\u6253\u5F00\u5B83\u9700\u8981\u7528\u5230\u6536\u4FE1\u7684\u90A3\u4E2A\u4FE1\u7BB1\u3002",
+      "Post it on BrowserCoin": "\u5728 BrowserCoin \u4E0A\u53D1\u5E03",
+      "Post it publicly": "\u516C\u5F00\u53D1\u5E03",
+      Posted: "\u5DF2\u53D1\u5E03",
+      "Postmark a file": "\u7ED9\u6587\u4EF6\u76D6\u90AE\u6233",
+      "Postmark it.": "\u76D6\u90AE\u6233\u3002",
+      "Pressed {0} in the app? Make your receipt and keep it with the file: you need both to prove the date.": "\u5DF2\u7ECF\u5728\u5E94\u7528\u91CC\u70B9\u4E86{0}\uFF1F\u751F\u6210\u4F60\u7684\u56DE\u6267\uFF0C\u5E76\u548C\u6587\u4EF6\u653E\u5728\u4E00\u8D77\u4FDD\u5B58\uFF1A\u8BC1\u660E\u65E5\u671F\u65F6\u4E24\u8005\u7F3A\u4E00\u4E0D\u53EF\u3002",
+      "Private{0}": "\u79C1\u5BC6{0}",
+      "Prove a file existed by a date.": "\u8BC1\u660E\u67D0\u4E2A\u6587\u4EF6\u5728\u67D0\u4E2A\u65E5\u671F\u524D\u5DF2\u5B58\u5728\u3002",
+      "Prove a message is from your address": "\u8BC1\u660E\u6D88\u606F\u6765\u81EA\u4F60\u7684\u5730\u5740",
+      "Prove a pool payout address": "\u8BC1\u660E\u77FF\u6C60\u652F\u4ED8\u5730\u5740",
+      "Prove an address is yours.": "\u8BC1\u660E\u67D0\u4E2A\u5730\u5740\u5C5E\u4E8E\u4F60\u3002",
+      "Prove it existed on a date. The file stays with you.": "\u8BC1\u660E\u5B83\u5728\u67D0\u4E2A\u65E5\u671F\u5DF2\u5B58\u5728\u3002\u6587\u4EF6\u59CB\u7EC8\u7559\u5728\u4F60\u8FD9\u91CC\u3002",
+      "Prove my Discord name": "\u8BC1\u660E\u6211\u7684 Discord \u7528\u6237\u540D",
+      "Proves:": "\u8BC1\u660E\uFF1A",
+      "Public and permanent.": "\u516C\u5F00\u4E14\u6C38\u4E45\u3002",
+      "Read a letter sealed to your mailbox": "\u9605\u8BFB\u5BC4\u5230\u4F60\u4FE1\u7BB1\u7684\u5BC6\u5C01\u4FE1",
+      "Reading\u2026": "\u6B63\u5728\u8BFB\u53D6\u2026",
+      "Reading\u2026 100%": "\u6B63\u5728\u8BFB\u53D6\u2026 100%",
+      "Ready to post": "\u53EF\u4EE5\u53D1\u5E03\u4E86",
+      "Real-key test.": "\u771F\u5B9E\u5BC6\u94A5\u6D4B\u8BD5\u3002",
+      Receipt: "\u56DE\u6267",
+      "Recent block number": "\u6700\u8FD1\u7684\u533A\u5757\u53F7",
+      "Recipient address:": "\u6536\u4EF6\u4EBA\u5730\u5740\uFF1A",
+      "Redeem a hash-locked payment": "\u8D4E\u56DE\u4E00\u7B14\u54C8\u5E0C\u9501\u5B9A\u7684\u4ED8\u6B3E",
+      "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.": "\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u8BB0\u4F4F\u6211\u7684\u4FE1\u7BB1\uFF0C\u4E0B\u6B21\u53EA\u9700\u8F93\u5165\u5BC6\u7801\u3002\u8BF7\u52FF\u5728\u5171\u7528\u6216\u516C\u5171\u7535\u8111\u4E0A\u4F7F\u7528\u3002",
+      "Remove from this device": "\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664",
+      "Remove this mailbox from this device? You will need its backup file to open it again. Press Remove from this device again to confirm.": "\u8981\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u8FD9\u4E2A\u4FE1\u7BB1\u5417\uFF1F\u4EE5\u540E\u9700\u8981\u5B83\u7684\u5907\u4EFD\u6587\u4EF6\u624D\u80FD\u518D\u6B21\u6253\u5F00\u3002\u518D\u70B9\u4E00\u6B21\u300C\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u300D\u4EE5\u786E\u8BA4\u3002",
+      "Save backup file": "\u4FDD\u5B58\u5907\u4EFD\u6587\u4EF6",
+      "Save the entry list": "\u4FDD\u5B58\u53C2\u4E0E\u540D\u5355",
+      "Save the receipt": "\u4FDD\u5B58\u56DE\u6267",
+      "Seal a letter": "\u5BC6\u5C01\u4FE1\u4EF6",
+      "Seal it.": "\u5BC6\u5C01\u3002",
+      "Seal the letter": "\u5BC6\u5C01\u8FD9\u5C01\u4FE1",
+      "Seal to": "\u5BC4\u7ED9",
+      "Seal to a mailbox, not a coin address.": "\u8BF7\u5BC4\u7ED9\u4FE1\u7BB1\uFF0C\u800C\u4E0D\u662F\u94B1\u5E01\u5730\u5740\u3002",
+      "Sealed so only they can check it": "\u5DF2\u5BC6\u5C01\uFF0C\u53EA\u6709\u5BF9\u65B9\u80FD\u9A8C\u8BC1",
+      "Sealed to Alice, anonymous": "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9 Alice\uFF0C\u533F\u540D",
+      "Sealed to BRC Works test mailbox, anonymous": "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9 BRC Works \u6D4B\u8BD5\u4FE1\u7BB1\uFF0C\u533F\u540D",
+      "Sealed to Bob, anonymous": "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9 Bob\uFF0C\u533F\u540D",
+      "Sealed to Bob, signed by your mailbox": "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9 Bob\uFF0C\u7531\u4F60\u7684\u4FE1\u7BB1\u7B7E\u540D",
+      "Sealed to a different address, not this mailbox.": "\u8FD9\u5C01\u4FE1\u5BC4\u7ED9\u7684\u662F\u53E6\u4E00\u4E2A\u5730\u5740\uFF0C\u4E0D\u662F\u8FD9\u4E2A\u4FE1\u7BB1\u3002",
+      "Sealed to your mailbox, anonymous": "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9\u4F60\u7684\u4FE1\u7BB1\uFF0C\u533F\u540D",
+      "Sealed.": "\u5DF2\u5BC6\u5C01\u3002",
+      "Sealing to the BRC Works test mailbox.": "\u6B63\u5728\u5BC6\u5C01\u5BC4\u7ED9 BRC Works \u6D4B\u8BD5\u4FE1\u7BB1\u3002",
+      "Secret phrase:": "\u79D8\u5BC6\u77ED\u8BED\uFF1A",
+      "See who signed a message, or whose mailbox a link is": "\u67E5\u770B\u6D88\u606F\u662F\u8C01\u7B7E\u540D\u7684\uFF0C\u6216\u8005\u67D0\u4E2A\u94FE\u63A5\u5C5E\u4E8E\u8C01\u7684\u4FE1\u7BB1",
+      "Select and copy": "\u5168\u9009\u5E76\u590D\u5236",
+      "Self-check failed. No mailbox was made.": "\u81EA\u68C0\u5931\u8D25\u3002\u6CA1\u6709\u521B\u5EFA\u4FE1\u7BB1\u3002",
+      "Send this whole block. Only they can open it and check your signature.": "\u53D1\u9001\u8FD9\u6574\u6BB5\u5185\u5BB9\u3002\u53EA\u6709\u5BF9\u65B9\u80FD\u6253\u5F00\u5B83\u5E76\u9A8C\u8BC1\u4F60\u7684\u7B7E\u540D\u3002",
+      "Send this whole block. Only they can open it.": "\u53D1\u9001\u8FD9\u6574\u6BB5\u5185\u5BB9\u3002\u53EA\u6709\u5BF9\u65B9\u80FD\u6253\u5F00\u5B83\u3002",
+      "Send\u2026": "\u53D1\u9001\u2026",
+      "Sent by": "\u53D1\u4EF6\u4EBA",
+      "Set aside": "\u5DF2\u6401\u7F6E",
+      "Set aside:": "\u5DF2\u6401\u7F6E\uFF1A",
+      "Set aside: 1 \xD7 This address already entered; 1 \xD7 This address is not on the eligible list; 1 \xD7 Not a giveaway entry.": "\u5DF2\u6401\u7F6E\uFF1A1 \xD7 \u8BE5\u5730\u5740\u5DF2\u53C2\u4E0E\u8FC7\uFF1B1 \xD7 \u8BE5\u5730\u5740\u4E0D\u5728\u6709\u8D44\u683C\u540D\u5355\u4E0A\uFF1B1 \xD7 \u4E0D\u662F\u62BD\u5956\u53C2\u4E0E\u8BB0\u5F55\u3002",
+      "Share my link": "\u5206\u4EAB\u6211\u7684\u94FE\u63A5",
+      "Share the receipt": "\u5206\u4EAB\u56DE\u6267",
+      "Share this link with anyone who should write to you: BRC Post seals letters to your mailbox from it. Anyone can check it on BRC Pulse \u2192 Check it once the lock is in a block.": "\u628A\u8FD9\u4E2A\u94FE\u63A5\u5206\u4EAB\u7ED9\u9700\u8981\u7ED9\u4F60\u5199\u4FE1\u7684\u4EBA\uFF1ABRC Post \u4F1A\u636E\u6B64\u628A\u4FE1\u4EF6\u5BC6\u5C01\u5BC4\u5230\u4F60\u7684\u4FE1\u7BB1\u3002\u9501\u5B9A\u8FDB\u5165\u533A\u5757\u540E\uFF0C\u4EFB\u4F55\u4EBA\u90FD\u53EF\u4EE5\u5728 BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u4E2D\u9A8C\u8BC1\u5B83\u3002",
+      "Share this whole block. Anyone can check it on BRC Pulse \u2192 Check it once the lock is in a block, usually within a few minutes.": "\u5206\u4EAB\u8FD9\u6574\u6BB5\u5185\u5BB9\u3002\u9501\u5B9A\u8FDB\u5165\u533A\u5757\u540E\uFF08\u901A\u5E38\u51E0\u5206\u949F\u5185\uFF09\uFF0C\u4EFB\u4F55\u4EBA\u90FD\u53EF\u4EE5\u5728 BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u4E2D\u9A8C\u8BC1\u5B83\u3002",
+      "Share this whole block. Anyone can check it.": "\u5206\u4EAB\u8FD9\u6574\u6BB5\u5185\u5BB9\u3002\u4EFB\u4F55\u4EBA\u90FD\u53EF\u4EE5\u9A8C\u8BC1\u5B83\u3002",
+      "Show the receipt text": "\u663E\u793A\u56DE\u6267\u6587\u672C",
+      "Sign and seal for them": "\u7B7E\u540D\u5E76\u5BC6\u5C01\u7ED9\u5BF9\u65B9",
+      "Sign another message": "\u7B7E\u540D\u53E6\u4E00\u6761\u6D88\u606F",
+      "Sign as": "\u7B7E\u540D\u8EAB\u4EFD",
+      "Sign it so they know it's from me. Open your mailbox to use this.": "\u7B7E\u540D\uFF0C\u8BA9\u5BF9\u65B9\u77E5\u9053\u8FD9\u662F\u6211\u53D1\u7684\u3002\u9700\u8981\u5148\u6253\u5F00\u4F60\u7684\u4FE1\u7BB1\u624D\u80FD\u4F7F\u7528\u3002",
+      "Sign it.": "\u7B7E\u540D\u3002",
+      "Sign this list on the chain, before the draw": "\u5728\u5F00\u5956\u524D\uFF0C\u5728\u94FE\u4E0A\u4E3A\u8FD9\u4EFD\u540D\u5355\u7B7E\u540D",
+      "Sign with my mailbox": "\u7528\u6211\u7684\u4FE1\u7BB1\u7B7E\u540D",
+      Signed: "\u5DF2\u7B7E\u540D",
+      "Signed and anonymous letters are the same size, and the length is rounded up in 64-byte steps, so the size gives little away.": "\u7B7E\u540D\u4FE1\u548C\u533F\u540D\u4FE1\u5927\u5C0F\u76F8\u540C\uFF0C\u957F\u5EA6\u6309 64 \u5B57\u8282\u5411\u4E0A\u53D6\u6574\uFF0C\u6240\u4EE5\u4ECE\u5927\u5C0F\u51E0\u4E4E\u770B\u4E0D\u51FA\u4EC0\u4E48\u3002",
+      "Signed and sealed for Bob": "\u5DF2\u7B7E\u540D\u5E76\u5BC6\u5C01\u7ED9 Bob",
+      "Signed by your mailbox": "\u7531\u4F60\u7684\u4FE1\u7BB1\u7B7E\u540D",
+      "Signed by your mailbox.": "\u7531\u4F60\u7684\u4FE1\u7BB1\u7B7E\u540D\u3002",
+      "Signed text": "\u5DF2\u7B7E\u540D\u7684\u6587\u672C",
+      "Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person.": "\u7B7E\u540D\u4F1A\u628A\u8FD9\u4E2A\u5730\u5740\u548C\u4F60\u5199\u7684\u5185\u5BB9\u6C38\u4E45\u5173\u8054\u8D77\u6765\u3002\u4E4B\u540E\u4EFB\u4F55\u4EBA\u90FD\u80FD\u67E5\u5230\u5B83\u7684\u4F59\u989D\u548C\u6536\u4ED8\u6B3E\u8BB0\u5F55\u3002\u8BF7\u4F7F\u7528\u4F59\u989D\u5F88\u5C11\u7684\u5730\u5740\uFF0C\u6216\u9009\u62E9\u300C\u4E00\u4E2A\u4EBA\u300D\u3002",
+      "Someone can copy and repost your signed message. Put a date or a purpose in it, so an old one can't be passed off as new.": "\u522B\u4EBA\u53EF\u4EE5\u590D\u5236\u5E76\u8F6C\u53D1\u4F60\u7684\u7B7E\u540D\u6D88\u606F\u3002\u8BF7\u5728\u91CC\u9762\u5199\u4E0A\u65E5\u671F\u6216\u7528\u9014\uFF0C\u8FD9\u6837\u65E7\u6D88\u606F\u5C31\u65E0\u6CD5\u88AB\u5192\u5145\u6210\u65B0\u6D88\u606F\u3002",
+      "Staying safe with letters": "\u5B89\u5168\u4F7F\u7528\u4FE1\u4EF6",
+      "Stop testing": "\u505C\u6B62\u6D4B\u8BD5",
+      "Test mailbox Alice": "\u6D4B\u8BD5\u4FE1\u7BB1 Alice",
+      "Test mailbox Bob": "\u6D4B\u8BD5\u4FE1\u7BB1 Bob",
+      "That block's ID": "\u8BE5\u533A\u5757\u7684 ID",
+      "That is the mailbox itself. Enter the coin address you want to link it to.": "\u90A3\u662F\u4FE1\u7BB1\u672C\u8EAB\u3002\u8BF7\u8F93\u5165\u4F60\u60F3\u5173\u8054\u7684\u94B1\u5E01\u5730\u5740\u3002",
+      "That password didn't open this mailbox. Try again.": "\u8FD9\u4E2A\u5BC6\u7801\u6253\u4E0D\u5F00\u8FD9\u4E2A\u4FE1\u7BB1\u3002\u8BF7\u518D\u8BD5\u4E00\u6B21\u3002",
+      "That password didn't open your mailbox. Try again.": "\u8FD9\u4E2A\u5BC6\u7801\u6253\u4E0D\u5F00\u4F60\u7684\u4FE1\u7BB1\u3002\u8BF7\u518D\u8BD5\u4E00\u6B21\u3002",
+      "That time is before drand quicknet started.": "\u8FD9\u4E2A\u65F6\u95F4\u65E9\u4E8E drand quicknet \u542F\u52A8\u7684\u65F6\u95F4\u3002",
+      "That's 64 letters and numbers: a mailbox address, which is public. To write to it, use Seal a letter. If it's a private key, don't paste it anywhere: BRC Post never needs one. It was cleared.": "\u8FD9\u662F 64 \u4E2A\u5B57\u6BCD\u548C\u6570\u5B57\uFF1A\u4E00\u4E2A\u4FE1\u7BB1\u5730\u5740\uFF0C\u5B83\u662F\u516C\u5F00\u7684\u3002\u8981\u7ED9\u5B83\u5199\u4FE1\uFF0C\u8BF7\u4F7F\u7528\u300C\u5BC6\u5C01\u4FE1\u4EF6\u300D\u3002\u5982\u679C\u8FD9\u662F\u79C1\u94A5\uFF0C\u5207\u52FF\u7C98\u8D34\u5230\u4EFB\u4F55\u5730\u65B9\uFF1ABRC Post \u4ECE\u4E0D\u9700\u8981\u79C1\u94A5\u3002\u5185\u5BB9\u5DF2\u6E05\u9664\u3002",
+      "That's 64 letters and numbers: an address and a private key both look like that, so BRC Post takes neither. If that's your mailbox address: it's public, and it lets people write to you. To open your mailbox here, choose its backup file, named brc-mailbox-key-\u2026.json. Nothing you pasted was kept.": "\u8FD9\u662F 64 \u4E2A\u5B57\u6BCD\u548C\u6570\u5B57\uFF1A\u5730\u5740\u548C\u79C1\u94A5\u770B\u8D77\u6765\u90FD\u662F\u8FD9\u6837\uFF0C\u6240\u4EE5 BRC Post \u4E24\u8005\u90FD\u4E0D\u63A5\u53D7\u3002\u5982\u679C\u8FD9\u662F\u4F60\u7684\u4FE1\u7BB1\u5730\u5740\uFF1A\u5B83\u662F\u516C\u5F00\u7684\uFF0C\u522B\u4EBA\u53EF\u4EE5\u7528\u5B83\u7ED9\u4F60\u5199\u4FE1\u3002\u8981\u5728\u8FD9\u91CC\u6253\u5F00\u4F60\u7684\u4FE1\u7BB1\uFF0C\u8BF7\u9009\u62E9\u5B83\u7684\u5907\u4EFD\u6587\u4EF6\uFF0C\u6587\u4EF6\u540D\u4E3A brc-mailbox-key-\u2026.json\u3002\u4F60\u7C98\u8D34\u7684\u5185\u5BB9\u90FD\u6CA1\u6709\u4FDD\u7559\u3002",
+      "That's a BRC Vault backup of a coin wallet. BRC Post never opens keys that can hold coins. Use a mailbox instead: press Create my mailbox.": "\u8FD9\u662F\u4E00\u4E2A\u94B1\u5E01\u94B1\u5305\u7684 BRC Vault \u5907\u4EFD\u3002BRC Post \u4ECE\u4E0D\u6253\u5F00\u80FD\u5B58\u653E\u94B1\u5E01\u7684\u5BC6\u94A5\u3002\u8BF7\u6539\u7528\u4FE1\u7BB1\uFF1A\u70B9\u300C\u521B\u5EFA\u6211\u7684\u4FE1\u7BB1\u300D\u3002",
+      "That's a key that can hold coins. BRC Post never takes those: no wallet files, private keys or recovery words, so nobody can talk you into pasting one here. It wasn't kept. To prove a coin address, use Add my signature \u2192 My coin address. To open letters, use your mailbox.": "\u8FD9\u662F\u80FD\u5B58\u653E\u94B1\u5E01\u7684\u5BC6\u94A5\u3002BRC Post \u4ECE\u4E0D\u63A5\u53D7\u8FD9\u7C7B\u5185\u5BB9\uFF1A\u4E0D\u63A5\u53D7\u94B1\u5305\u6587\u4EF6\u3001\u79C1\u94A5\u6216\u52A9\u8BB0\u8BCD\uFF0C\u6240\u4EE5\u6CA1\u6709\u4EBA\u80FD\u9A97\u4F60\u628A\u5B83\u4EEC\u7C98\u8D34\u5230\u8FD9\u91CC\u3002\u5185\u5BB9\u6CA1\u6709\u4FDD\u7559\u3002\u8981\u8BC1\u660E\u94B1\u5E01\u5730\u5740\uFF0C\u8BF7\u4F7F\u7528\u300C\u6DFB\u52A0\u6211\u7684\u7B7E\u540D\u300D\u2192\u300C\u6211\u7684\u94B1\u5E01\u5730\u5740\u300D\u3002\u8981\u6253\u5F00\u4FE1\u4EF6\uFF0C\u8BF7\u4F7F\u7528\u4F60\u7684\u4FE1\u7BB1\u3002",
+      "That's a message signed on the chain, not a mailbox link. Paste their mailbox link, or their mailbox address.": "\u8FD9\u662F\u4E00\u6761\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\u6D88\u606F\uFF0C\u4E0D\u662F\u4FE1\u7BB1\u94FE\u63A5\u3002\u8BF7\u7C98\u8D34\u5BF9\u65B9\u7684\u4FE1\u7BB1\u94FE\u63A5\u6216\u4FE1\u7BB1\u5730\u5740\u3002",
+      "That's the BRC Works release address, a coin address, not a mailbox. Nobody could ever open a letter sealed to it.": "\u8FD9\u662F BRC Works \u7684\u53D1\u5E03\u5730\u5740\uFF0C\u4E00\u4E2A\u94B1\u5E01\u5730\u5740\uFF0C\u4E0D\u662F\u4FE1\u7BB1\u3002\u5BC4\u7ED9\u5B83\u7684\u5BC6\u5C01\u4FE1\u6C38\u8FDC\u6CA1\u6709\u4EBA\u80FD\u6253\u5F00\u3002",
+      "That's your own address. Paste the address of the person who will check it.": "\u8FD9\u662F\u4F60\u81EA\u5DF1\u7684\u5730\u5740\u3002\u8BF7\u7C98\u8D34\u5C06\u8981\u9A8C\u8BC1\u5B83\u7684\u4EBA\u7684\u5730\u5740\u3002",
+      'The "After:" line should be a block number and a block ID.': "\u300CAfter:\u300D\u8FD9\u4E00\u884C\u5E94\u4E3A\u533A\u5757\u53F7\u548C\u533A\u5757 ID\u3002",
+      'The "Block:" line should be a block number.': "\u300CBlock:\u300D\u8FD9\u4E00\u884C\u5E94\u4E3A\u533A\u5757\u53F7\u3002",
+      'The "Drand:" line should be a round number and a 96-character signature.': "\u300CDrand:\u300D\u8FD9\u4E00\u884C\u5E94\u4E3A\u8F6E\u6B21\u53F7\u548C 96 \u4E2A\u5B57\u7B26\u7684\u7B7E\u540D\u3002",
+      'The "To:" line naming the recipient is missing.': "\u7F3A\u5C11\u5199\u660E\u6536\u4EF6\u4EBA\u7684\u300CTo:\u300D\u8FD9\u4E00\u884C\u3002",
+      'The "after" block ID': "\u300Cafter\u300D\u533A\u5757 ID",
+      'The "after" block number should be a whole number, like 92510.': "\u300Cafter\u300D\u533A\u5757\u7F16\u53F7\u5E94\u4E3A\u6574\u6570\uFF0C\u4F8B\u5982 92510\u3002",
+      "The Address line is missing from the signature.": "\u7B7E\u540D\u4E2D\u7F3A\u5C11 Address \u8FD9\u4E00\u884C\u3002",
+      "The Lock ID": "\u9501\u5B9A ID",
+      "The Signature line is missing.": "\u7F3A\u5C11 Signature \u8FD9\u4E00\u884C\u3002",
+      "The address in this entry isn't one a real wallet could have.": "\u8FD9\u6761\u62A5\u540D\u91CC\u7684\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\u3002",
+      "The address that can take the locked coins back later. Normally your own.": "\u4E4B\u540E\u53EF\u4EE5\u53D6\u56DE\u9501\u5B9A\u5E01\u7684\u5730\u5740\u3002\u901A\u5E38\u662F\u4F60\u81EA\u5DF1\u7684\u5730\u5740\u3002",
+      "The drand beacon should be a round number and a 96-character signature.": "drand \u4FE1\u6807\u5E94\u5305\u542B\u4E00\u4E2A\u8F6E\u6B21\u7F16\u53F7\u548C\u4E00\u4E2A 96 \u4E2A\u5B57\u7B26\u7684\u7B7E\u540D\u3002",
+      "The drand beacon's signature doesn't check out. Copy it again from BRC Pulse \u2192 Check it.": "drand \u4FE1\u6807\u7684\u7B7E\u540D\u9A8C\u8BC1\u4E0D\u901A\u8FC7\u3002\u8BF7\u4ECE BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u91CD\u65B0\u590D\u5236\u3002",
+      "The drand round should be a whole number.": "drand \u8F6E\u6B21\u5E94\u4E3A\u6574\u6570\u3002",
+      "The draw round should be a drand round number.": "\u5F00\u5956\u8F6E\u6B21\u5E94\u4E3A drand \u7684\u8F6E\u6B21\u7F16\u53F7\u3002",
+      "The entry count is not a whole number.": "\u62A5\u540D\u6570\u91CF\u4E0D\u662F\u6574\u6570\u3002",
+      "The file name should be plain, like brc-vault.html.": "\u6587\u4EF6\u540D\u5E94\u4E3A\u7B80\u5355\u7684\u540D\u5B57\uFF0C\u4F8B\u5982 brc-vault.html\u3002",
+      "The fingerprint": "\u6307\u7EB9",
+      "The first line, -----BEGIN BRC SIGNED MESSAGE-----, is missing. Copy the whole block.": "\u7F3A\u5C11\u7B2C\u4E00\u884C -----BEGIN BRC SIGNED MESSAGE-----\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\u3002",
+      "The giveaway block height must be a whole number, like 100000.": "\u62BD\u5956\u7684\u533A\u5757\u9AD8\u5EA6\u5FC5\u987B\u662F\u6574\u6570\uFF0C\u4F8B\u5982 100000\u3002",
+      "The giveaway's eligible.json, to set aside addresses that can't enter": "\u62BD\u5956\u7684 eligible.json\uFF0C\u7528\u6765\u6392\u9664\u4E0D\u80FD\u53C2\u4E0E\u7684\u5730\u5740",
+      "The last line, -----END BRC CHAIN SIGNATURE-----, is missing. Copy the whole block.": "\u7F3A\u5C11\u6700\u540E\u4E00\u884C -----END BRC CHAIN SIGNATURE-----\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\u3002",
+      "The last line, -----END BRC SEALED NOTE-----, is missing. Copy the whole block.": "\u7F3A\u5C11\u6700\u540E\u4E00\u884C -----END BRC SEALED NOTE-----\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\u3002",
+      "The last line, -----END BRC SIGNATURE-----, is missing. Copy the whole block.": "\u7F3A\u5C11\u6700\u540E\u4E00\u884C -----END BRC SIGNATURE-----\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\u3002",
+      "The letter is encrypted with XChaCha20-Poly1305, the same kind of encryption modern messengers use. Any change to the sealed text makes it refuse to open.": "\u4FE1\u4EF6\u4F7F\u7528 XChaCha20-Poly1305 \u52A0\u5BC6\uFF0C\u548C\u73B0\u4EE3\u804A\u5929\u8F6F\u4EF6\u7528\u7684\u662F\u540C\u4E00\u7C7B\u52A0\u5BC6\u3002\u5BC6\u5C01\u5185\u5BB9\u53EA\u8981\u6709\u4EFB\u4F55\u6539\u52A8\uFF0C\u5C31\u65E0\u6CD5\u6253\u5F00\u3002",
+      "The limit:": "\u4E0A\u9650\uFF1A",
+      "The lock\u2019s block": "\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757",
+      "The lock\u2019s block{0}": "\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757{0}",
+      "The mailbox's own signature checks out. Whether the coin address really made this link is not checked yet: anyone can write this block for any coin address. Until BRC Pulse finds the coin address's own lock, treat it as a claim.": "\u4FE1\u7BB1\u81EA\u8EAB\u7684\u7B7E\u540D\u9A8C\u8BC1\u901A\u8FC7\u3002\u4F46\u8FD9\u4E2A\u94FE\u63A5\u662F\u5426\u771F\u7684\u7531\u8BE5\u5E01\u5730\u5740\u521B\u5EFA\uFF0C\u8FD8\u6CA1\u6709\u9A8C\u8BC1\uFF1A\u4EFB\u4F55\u4EBA\u90FD\u53EF\u4EE5\u4E3A\u4EFB\u610F\u5E01\u5730\u5740\u5199\u51FA\u8FD9\u6BB5\u5185\u5BB9\u3002\u5728 BRC Pulse \u627E\u5230\u8BE5\u5E01\u5730\u5740\u81EA\u5DF1\u7684\u9501\u5B9A\u4E4B\u524D\uFF0C\u8BF7\u53EA\u628A\u5B83\u5F53\u4F5C\u4E00\u79CD\u58F0\u79F0\u3002",
+      "The message part is empty.": "\u6D88\u606F\u90E8\u5206\u662F\u7A7A\u7684\u3002",
+      "The owner address isn't one a real wallet could have. Check it for a typo.": "\u6240\u6709\u8005\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\u3002\u8BF7\u68C0\u67E5\u662F\u5426\u6709\u9519\u5B57\u3002",
+      "The page makes a one-time key just for this letter and combines it with the recipient's address (X25519).": "\u9875\u9762\u4F1A\u4E13\u95E8\u4E3A\u8FD9\u5C01\u4FE1\u751F\u6210\u4E00\u4E2A\u4E00\u6B21\u6027\u5BC6\u94A5\uFF0C\u5E76\u4E0E\u6536\u4EF6\u4EBA\u7684\u5730\u5740\u7EC4\u5408\uFF08X25519\uFF09\u3002",
+      "The phrase is a fingerprint of {0}, your address and your message, plus a random salt.": "\u8FD9\u6BB5\u77ED\u8BED\u662F{0}\u3001\u4F60\u7684\u5730\u5740\u548C\u4F60\u7684\u6D88\u606F\u7684\u6307\u7EB9\uFF0C\u53E6\u5916\u52A0\u4E0A\u4E00\u4E2A\u968F\u673A\u76D0\u503C\u3002",
+      "The salt": "\u76D0\u503C",
+      "The same picture appears for this address in BRC Vault and BRC Pulse": "\u8FD9\u4E2A\u5730\u5740\u5728 BRC Vault \u548C BRC Pulse \u4E2D\u4F1A\u663E\u793A\u540C\u6837\u7684\u56FE\u6848",
+      "The sealed note is damaged and cannot be opened.": "\u5BC6\u5C01\u4FBF\u6761\u5DF2\u635F\u574F\uFF0C\u65E0\u6CD5\u6253\u5F00\u3002",
+      "The sealed note is damaged and cannot be read.": "\u5BC6\u5C01\u4FBF\u6761\u5DF2\u635F\u574F\uFF0C\u65E0\u6CD5\u8BFB\u53D6\u3002",
+      "The sealed note is damaged inside.": "\u5BC6\u5C01\u4FBF\u6761\u5185\u90E8\u5DF2\u635F\u574F\u3002",
+      "The sealed note is damaged: it contains characters that do not belong.": "\u5BC6\u5C01\u4FBF\u6761\u5DF2\u635F\u574F\uFF1A\u5176\u4E2D\u5305\u542B\u4E0D\u8BE5\u6709\u7684\u5B57\u7B26\u3002",
+      "The sealed note is damaged: part of it is missing or extra text crept in.": "\u5BC6\u5C01\u4FBF\u6761\u5DF2\u635F\u574F\uFF1A\u6709\u90E8\u5206\u5185\u5BB9\u4E22\u5931\uFF0C\u6216\u6DF7\u5165\u4E86\u591A\u4F59\u7684\u6587\u5B57\u3002",
+      "The sealed note is too short. Part of it was lost when it was copied.": "\u5BC6\u5C01\u4FBF\u6761\u592A\u77ED\u3002\u590D\u5236\u65F6\u4E22\u5931\u4E86\u4E00\u90E8\u5206\u3002",
+      "The signature part is missing. Copy the whole block, down to -----END BRC CHAIN SIGNATURE-----.": "\u7F3A\u5C11\u7B7E\u540D\u90E8\u5206\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\uFF0C\u4E00\u76F4\u5230 -----END BRC CHAIN SIGNATURE-----\u3002",
+      "The signature part is missing. Copy the whole block, down to -----END BRC SIGNATURE-----.": "\u7F3A\u5C11\u7B7E\u540D\u90E8\u5206\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\uFF0C\u4E00\u76F4\u5230 -----END BRC SIGNATURE-----\u3002",
+      "Their address": "\u5BF9\u65B9\u7684\u5730\u5740",
+      "There are no entries to draw from.": "\u6CA1\u6709\u53EF\u4EE5\u5F00\u5956\u7684\u62A5\u540D\u3002",
+      "There are no valid entries to draw from.": "\u6CA1\u6709\u53EF\u4EE5\u5F00\u5956\u7684\u6709\u6548\u62A5\u540D\u3002",
+      "These entries do not match the list fingerprint published before the draw.": "\u8FD9\u4E9B\u62A5\u540D\u4E0E\u5F00\u5956\u524D\u516C\u5E03\u7684\u540D\u5355\u6307\u7EB9\u4E0D\u4E00\u81F4\u3002",
+      "They gave me this as their {0}. (A coin address looks exactly the same, but a letter sealed to one can never be opened.)": "\u5BF9\u65B9\u628A\u8FD9\u4E2A\u4F5C\u4E3A\u4ED6\u4EEC\u7684{0}\u7ED9\u4E86\u6211\u3002\uFF08\u5E01\u5730\u5740\u770B\u8D77\u6765\u5B8C\u5168\u4E00\u6837\uFF0C\u4F46\u5BC6\u5C01\u7ED9\u5E01\u5730\u5740\u7684\u4FE1\u4EF6\u6C38\u8FDC\u65E0\u6CD5\u6253\u5F00\u3002\uFF09",
+      "This address already entered.": "\u8FD9\u4E2A\u5730\u5740\u5DF2\u7ECF\u62A5\u540D\u53C2\u4E0E\u8FC7\u4E86\u3002",
+      "This address is not on the eligible list.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u5728\u6709\u8D44\u683C\u7684\u540D\u5355\u4E0A\u3002",
+      "This address isn't a usable BrowserCoin public key.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u662F\u53EF\u7528\u7684 BrowserCoin \u516C\u94A5\u3002",
+      "This address isn't a valid BrowserCoin public key. Check it for a typo.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u662F\u6709\u6548\u7684 BrowserCoin \u516C\u94A5\u3002\u8BF7\u68C0\u67E5\u662F\u5426\u6709\u9519\u5B57\u3002",
+      "This address isn't one a real wallet could have, so it can't vouch for anything.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\uFF0C\u6240\u4EE5\u4E0D\u80FD\u4E3A\u4EFB\u4F55\u5185\u5BB9\u4F5C\u8BC1\u3002",
+      "This address isn't one a real wallet could have. Check it for a typo.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\u3002\u8BF7\u68C0\u67E5\u662F\u5426\u6709\u9519\u5B57\u3002",
+      "This block has unexpected extra data.": "\u8FD9\u4E2A\u533A\u5757\u5305\u542B\u610F\u5916\u7684\u591A\u4F59\u6570\u636E\u3002",
+      "This block holds a lock whose signature is wrong, so it is not a real block.": "\u8FD9\u4E2A\u533A\u5757\u4E2D\u6709\u4E00\u4E2A\u7B7E\u540D\u9519\u8BEF\u7684\u9501\u5B9A\uFF0C\u6240\u4EE5\u5B83\u4E0D\u662F\u771F\u5B9E\u7684\u533A\u5757\u3002",
+      "This block is too short.": "\u8FD9\u4E2A\u533A\u5757\u592A\u77ED\u3002",
+      "This block's contents don't match its header. The server sent a damaged or altered block.": "\u8FD9\u4E2A\u533A\u5757\u7684\u5185\u5BB9\u4E0E\u533A\u5757\u5934\u4E0D\u4E00\u81F4\u3002\u670D\u52A1\u5668\u53D1\u6765\u7684\u533A\u5757\u5DF2\u635F\u574F\u6216\u88AB\u7BE1\u6539\u3002",
+      "This coin address isn't one a real wallet could have. Check it for a typo.": "\u8FD9\u4E2A\u5E01\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\u3002\u8BF7\u68C0\u67E5\u662F\u5426\u6709\u9519\u5B57\u3002",
+      "This contains more than one chain-signed message. Check one at a time.": "\u8FD9\u91CC\u5305\u542B\u4E0D\u6B62\u4E00\u6761\u94FE\u4E0A\u7B7E\u540D\u6D88\u606F\u3002\u8BF7\u4E00\u6B21\u9A8C\u8BC1\u4E00\u6761\u3002",
+      "This contains more than one sealed note. Open one at a time.": "\u8FD9\u91CC\u5305\u542B\u4E0D\u6B62\u4E00\u5F20\u5BC6\u5C01\u4FBF\u6761\u3002\u8BF7\u4E00\u6B21\u6253\u5F00\u4E00\u5F20\u3002",
+      "This contains more than one signed message. Check one at a time.": "\u8FD9\u91CC\u5305\u542B\u4E0D\u6B62\u4E00\u6761\u7B7E\u540D\u6D88\u606F\u3002\u8BF7\u4E00\u6B21\u9A8C\u8BC1\u4E00\u6761\u3002",
+      "This device won't remember your mailbox, so that file is the only way back in.": "\u8FD9\u53F0\u8BBE\u5907\u4E0D\u4F1A\u8BB0\u4F4F\u4F60\u7684\u4FE1\u7BB1\uFF0C\u6240\u4EE5\u90A3\u4E2A\u6587\u4EF6\u662F\u91CD\u65B0\u8FDB\u5165\u7684\u552F\u4E00\u65B9\u5F0F\u3002",
+      "This doesn't look like something from BRC Post. Copy the whole block, from -----BEGIN to -----END, or a whole mailbox link.": "\u8FD9\u770B\u8D77\u6765\u4E0D\u50CF\u662F BRC Post \u7684\u5185\u5BB9\u3002\u8BF7\u590D\u5236\u5B8C\u6574\u7684\u5185\u5BB9\u5757\uFF08\u4ECE -----BEGIN \u5230 -----END\uFF09\uFF0C\u6216\u5B8C\u6574\u7684\u4FE1\u7BB1\u94FE\u63A5\u3002",
+      "This drand beacon's signature doesn't check out, so it isn't drand's real beacon for that round.": "\u8FD9\u4E2A drand \u4FE1\u6807\u7684\u7B7E\u540D\u9A8C\u8BC1\u4E0D\u901A\u8FC7\uFF0C\u6240\u4EE5\u5B83\u4E0D\u662F drand \u8BE5\u8F6E\u6B21\u7684\u771F\u5B9E\u4FE1\u6807\u3002",
+      "This drand beacon's signature doesn't check out. It may have been copied wrongly, or it isn't from drand.": "\u8FD9\u4E2A drand \u4FE1\u6807\u7684\u7B7E\u540D\u9A8C\u8BC1\u4E0D\u901A\u8FC7\u3002\u53EF\u80FD\u662F\u590D\u5236\u9519\u4E86\uFF0C\u6216\u8005\u5B83\u5E76\u975E\u6765\u81EA drand\u3002",
+      "This eligible list doesn't match its own fingerprint. It was changed after it was made.": "\u8FD9\u4EFD\u6709\u8D44\u683C\u540D\u5355\u4E0E\u5B83\u81EA\u5DF1\u7684\u6307\u7EB9\u4E0D\u4E00\u81F4\u3002\u5B83\u5728\u751F\u6210\u540E\u88AB\u4FEE\u6539\u8FC7\u3002",
+      "This exact message was signed by the key that controls this address. It is usually a mailbox: check for a mailbox link to see whose.": "\u8FD9\u6761\u6D88\u606F\u786E\u5B9E\u662F\u7531\u63A7\u5236\u8FD9\u4E2A\u5730\u5740\u7684\u5BC6\u94A5\u7B7E\u540D\u7684\u3002\u5B83\u901A\u5E38\u662F\u4E00\u4E2A\u4FE1\u7BB1\uFF1A\u67E5\u770B\u4FE1\u7BB1\u94FE\u63A5\u5C31\u80FD\u77E5\u9053\u662F\u8C01\u7684\u3002",
+      "This file could not be read. Try again.": "\u65E0\u6CD5\u8BFB\u53D6\u8FD9\u4E2A\u6587\u4EF6\u3002\u8BF7\u91CD\u8BD5\u3002",
+      "This file doesn't match the receipt. It is a different file, or it was changed after it was postmarked.": "\u8FD9\u4E2A\u6587\u4EF6\u4E0E\u56DE\u6267\u4E0D\u4E00\u81F4\u3002\u5B83\u662F\u53E6\u4E00\u4E2A\u6587\u4EF6\uFF0C\u6216\u8005\u5728\u76D6\u90AE\u6233\u540E\u88AB\u4FEE\u6539\u8FC7\u3002",
+      "This file is far too large to be a mailbox backup.": "\u8FD9\u4E2A\u6587\u4EF6\u592A\u5927\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F\u4FE1\u7BB1\u5907\u4EFD\u3002",
+      "This file is far too large.": "\u8FD9\u4E2A\u6587\u4EF6\u592A\u5927\u4E86\u3002",
+      "This file isn't readable JSON. Choose the file as it was downloaded.": "\u8FD9\u4E2A\u6587\u4EF6\u4E0D\u662F\u53EF\u8BFB\u53D6\u7684 JSON\u3002\u8BF7\u9009\u62E9\u4E0B\u8F7D\u65F6\u7684\u539F\u59CB\u6587\u4EF6\u3002",
+      "This file matches the receipt exactly. Check the receipt on BRC Pulse \u2192 Check it to see the date.": "\u8FD9\u4E2A\u6587\u4EF6\u4E0E\u56DE\u6267\u5B8C\u5168\u4E00\u81F4\u3002\u5728 BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u4E2D\u9A8C\u8BC1\u56DE\u6267\u5373\u53EF\u67E5\u770B\u65E5\u671F\u3002",
+      "This is a postmark receipt. Choose the file it belongs to, to check they match.": "\u8FD9\u662F\u4E00\u5F20\u90AE\u6233\u56DE\u6267\u3002\u8BF7\u9009\u62E9\u5B83\u5BF9\u5E94\u7684\u6587\u4EF6\uFF0C\u68C0\u67E5\u4E24\u8005\u662F\u5426\u4E00\u81F4\u3002",
+      "This is a sealed letter. Open your mailbox to read it.": "\u8FD9\u662F\u4E00\u5C01\u5BC6\u5C01\u4FE1\u3002\u6253\u5F00\u4F60\u7684\u4FE1\u7BB1\u5373\u53EF\u9605\u8BFB\u3002",
+      "This is a sealed letter. Unlock your mailbox to open it.": "\u8FD9\u662F\u4E00\u5C01\u5BC6\u5C01\u4FE1\u3002\u89E3\u9501\u4F60\u7684\u4FE1\u7BB1\u5373\u53EF\u6253\u5F00\u3002",
+      "This is far too long to be a chain-signed message.": "\u8FD9\u6BB5\u5185\u5BB9\u592A\u957F\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F\u94FE\u4E0A\u7B7E\u540D\u6D88\u606F\u3002",
+      "This is far too long to be a drand beacon.": "\u8FD9\u6BB5\u5185\u5BB9\u592A\u957F\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F drand \u4FE1\u6807\u3002",
+      "This is far too long to be a signed message or a sealed note.": "\u8FD9\u6BB5\u5185\u5BB9\u592A\u957F\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F\u7B7E\u540D\u6D88\u606F\u6216\u5BC6\u5C01\u4FBF\u6761\u3002",
+      "This is far too long to be a stamp receipt.": "\u8FD9\u6BB5\u5185\u5BB9\u592A\u957F\u4E86\uFF0C\u4E0D\u53EF\u80FD\u662F\u90AE\u6233\u56DE\u6267\u3002",
+      "This is not a BRC chain-signed message. It should start with -----BEGIN BRC CHAIN SIGNED MESSAGE-----.": "\u8FD9\u4E0D\u662F BRC \u94FE\u4E0A\u7B7E\u540D\u6D88\u606F\u3002\u5B83\u5E94\u4EE5 -----BEGIN BRC CHAIN SIGNED MESSAGE----- \u5F00\u5934\u3002",
+      "This is not a BRC sealed note. It should start with -----BEGIN BRC SEALED NOTE-----.": "\u8FD9\u4E0D\u662F BRC \u5BC6\u5C01\u4FBF\u6761\u3002\u5B83\u5E94\u4EE5 -----BEGIN BRC SEALED NOTE----- \u5F00\u5934\u3002",
+      "This is not a BRC signed message. It should start with -----BEGIN BRC SIGNED MESSAGE-----.": "\u8FD9\u4E0D\u662F BRC \u7B7E\u540D\u6D88\u606F\u3002\u5B83\u5E94\u4EE5 -----BEGIN BRC SIGNED MESSAGE----- \u5F00\u5934\u3002",
+      "This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.": "\u8FD9\u4E0D\u662F BRC \u90AE\u6233\u56DE\u6267\u3002\u5B83\u5E94\u4EE5 -----BEGIN BRC STAMP RECEIPT----- \u5F00\u5934\u3002",
+      "This is one of the giveaway's own addresses, which can't enter.": "\u8FD9\u662F\u62BD\u5956\u81EA\u5DF1\u7684\u5730\u5740\u4E4B\u4E00\uFF0C\u4E0D\u80FD\u53C2\u4E0E\u3002",
+      "This isn't a letters file from the BRC Mailbox.": "\u8FD9\u4E0D\u662F BRC Mailbox \u7684\u4FE1\u4EF6\u6587\u4EF6\u3002",
+      "This isn't a mailbox backup. A mailbox backup is the brc-mailbox-key-\u2026.json file saved when the mailbox was made, or its printed paper code starting BRCMBOX1.": "\u8FD9\u4E0D\u662F\u4FE1\u7BB1\u5907\u4EFD\u3002\u4FE1\u7BB1\u5907\u4EFD\u662F\u521B\u5EFA\u4FE1\u7BB1\u65F6\u4FDD\u5B58\u7684 brc-mailbox-key-\u2026.json \u6587\u4EF6\uFF0C\u6216\u8005\u6253\u5370\u51FA\u6765\u7684\u4EE5 BRCMBOX1 \u5F00\u5934\u7684\u7EB8\u8D28\u4EE3\u7801\u3002",
+      "This isn't an address a real wallet could have. Check you copied the whole address.": "\u8FD9\u4E2A\u5730\u5740\u4E0D\u53EF\u80FD\u5C5E\u4E8E\u771F\u5B9E\u7684\u94B1\u5305\u3002\u8BF7\u68C0\u67E5\u662F\u5426\u590D\u5236\u4E86\u5B8C\u6574\u7684\u5730\u5740\u3002",
+      "This isn't an eligible list.": "\u8FD9\u4E0D\u662F\u6709\u8D44\u683C\u540D\u5355\u3002",
+      'This letter contains a block "signed on the chain". It is not checked here: paste that block into BRC Pulse \u2192 Check it before trusting it.': "\u8FD9\u5C01\u4FE1\u5305\u542B\u4E00\u6BB5\u300C\u5728\u94FE\u4E0A\u7B7E\u540D\u300D\u7684\u5185\u5BB9\u3002\u8FD9\u91CC\u4E0D\u4F1A\u9A8C\u8BC1\u5B83\uFF1A\u4FE1\u4EFB\u4E4B\u524D\uFF0C\u8BF7\u628A\u8FD9\u6BB5\u5185\u5BB9\u7C98\u8D34\u5230 BRC Pulse \u2192 \u9A8C\u8BC1\u4E00\u4E0B \u4E2D\u9A8C\u8BC1\u3002",
+      "This letters file doesn't say which drand round the draw uses. Download it again from BRC Pulse \u2192 Giveaway.": "\u8FD9\u4E2A\u4FE1\u4EF6\u6587\u4EF6\u6CA1\u6709\u8BF4\u660E\u5F00\u5956\u4F7F\u7528\u54EA\u4E2A drand \u8F6E\u6B21\u3002\u8BF7\u4ECE BRC Pulse \u2192 \u62BD\u5956 \u91CD\u65B0\u4E0B\u8F7D\u3002",
+      "This link was signed on the chain by a different address than the coin address it names.": "\u8FD9\u4E2A\u94FE\u63A5\u662F\u7531\u53E6\u4E00\u4E2A\u5730\u5740\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\uFF0C\u800C\u4E0D\u662F\u5B83\u6240\u5199\u7684\u90A3\u4E2A\u5E01\u5730\u5740\u3002",
+      "This list does not match the fingerprint published before the draw.": "\u8FD9\u4EFD\u540D\u5355\u4E0E\u5F00\u5956\u524D\u516C\u5E03\u7684\u6307\u7EB9\u4E0D\u4E00\u81F4\u3002",
+      "This looks like drand JSON but it can't be read. Copy it again.": "\u8FD9\u770B\u8D77\u6765\u50CF drand JSON\uFF0C\u4F46\u65E0\u6CD5\u8BFB\u53D6\u3002\u8BF7\u91CD\u65B0\u590D\u5236\u3002",
+      "This mailbox link is damaged.": "\u8FD9\u4E2A\u4FE1\u7BB1\u94FE\u63A5\u5DF2\u635F\u574F\u3002",
+      "This message contains hidden or direction-changing characters. Remove them so the message reads exactly as it looks.": "\u8FD9\u6761\u6D88\u606F\u5305\u542B\u9690\u85CF\u5B57\u7B26\u6216\u4F1A\u6539\u53D8\u6587\u5B57\u65B9\u5411\u7684\u5B57\u7B26\u3002\u8BF7\u5220\u9664\u5B83\u4EEC\uFF0C\u8BA9\u6D88\u606F\u5185\u5BB9\u4E0E\u770B\u4E0A\u53BB\u5B8C\u5168\u4E00\u81F4\u3002",
+      "This message records the entry list's fingerprint and the drand round of the draw. Sign it on the chain with the BRC Works release address, and add the result to the giveaway settings. BRC Pulse shows a winner only if this lock is in a block well before that round.": "\u8FD9\u6761\u6D88\u606F\u8BB0\u5F55\u4E86\u62A5\u540D\u540D\u5355\u7684\u6307\u7EB9\u548C\u5F00\u5956\u6240\u7528\u7684 drand \u8F6E\u6B21\u3002\u8BF7\u7528 BRC Works \u53D1\u5E03\u5730\u5740\u5728\u94FE\u4E0A\u7B7E\u540D\uFF0C\u5E76\u628A\u7ED3\u679C\u6DFB\u52A0\u5230\u62BD\u5956\u8BBE\u7F6E\u4E2D\u3002\u53EA\u6709\u5F53\u8FD9\u4E2A\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757\u8FDC\u65E9\u4E8E\u8BE5\u8F6E\u6B21\u65F6\uFF0CBRC Pulse \u624D\u4F1A\u663E\u793A\u4E2D\u5956\u8005\u3002",
+      "This message says your mailbox": "\u8FD9\u6761\u6D88\u606F\u8868\u660E\u4F60\u7684\u4FE1\u7BB1",
+      "This note could not be opened. It was changed or damaged after it was sealed.": "\u8FD9\u5F20\u4FBF\u6761\u65E0\u6CD5\u6253\u5F00\u3002\u5B83\u5728\u5BC6\u5C01\u540E\u88AB\u4FEE\u6539\u6216\u635F\u574F\u4E86\u3002",
+      "This page sends nothing about you anywhere. Its only connection is fetching the public drand time beacon when you postmark a file; drand's servers see your IP address, like any website.": "\u8FD9\u4E2A\u9875\u9762\u4E0D\u4F1A\u628A\u5173\u4E8E\u4F60\u7684\u4EFB\u4F55\u4FE1\u606F\u53D1\u9001\u5230\u4EFB\u4F55\u5730\u65B9\u3002\u5B83\u552F\u4E00\u7684\u7F51\u7EDC\u8FDE\u63A5\u662F\u5728\u4F60\u7ED9\u6587\u4EF6\u52A0\u90AE\u6233\u65F6\u83B7\u53D6\u516C\u5F00\u7684 drand \u65F6\u95F4\u4FE1\u6807\uFF1B\u548C\u8BBF\u95EE\u4EFB\u4F55\u7F51\u7AD9\u4E00\u6837\uFF0Cdrand \u7684\u670D\u52A1\u5668\u4F1A\u770B\u5230\u4F60\u7684 IP \u5730\u5740\u3002",
+      "This sealed note uses features this version does not understand.": "\u8FD9\u5F20\u5BC6\u5C01\u4FBF\u6761\u4F7F\u7528\u4E86\u5F53\u524D\u7248\u672C\u65E0\u6CD5\u8BC6\u522B\u7684\u529F\u80FD\u3002",
+      "This sealed note was made by a newer version of BRC Post.": "\u8FD9\u5F20\u5BC6\u5C01\u4FBF\u6761\u662F\u7531\u66F4\u65B0\u7248\u672C\u7684 BRC Post \u5236\u4F5C\u7684\u3002",
+      "This signed message could have been copied from anywhere. It proves who wrote those words, not who sealed this letter or who it was meant for.": "\u8FD9\u6761\u7B7E\u540D\u6D88\u606F\u53EF\u80FD\u662F\u4ECE\u4EFB\u4F55\u5730\u65B9\u590D\u5236\u6765\u7684\u3002\u5B83\u53EA\u80FD\u8BC1\u660E\u90A3\u6BB5\u8BDD\u662F\u8C01\u5199\u7684\uFF0C\u4E0D\u80FD\u8BC1\u660E\u8FD9\u5C01\u4FE1\u662F\u8C01\u5BC6\u5C01\u7684\uFF0C\u4E5F\u4E0D\u80FD\u8BC1\u660E\u5B83\u662F\u5199\u7ED9\u8C01\u7684\u3002",
+      "To receive sealed letters": "\u63A5\u6536\u5BC6\u5C01\u4FE1",
+      "Turned off inside another page": "\u5D4C\u5728\u5176\u4ED6\u9875\u9762\u4E2D\u65F6\u5DF2\u5173\u95ED",
+      "Type it again": "\u518D\u8F93\u5165\u4E00\u6B21",
+      "Type your mailbox password.": "\u8F93\u5165\u4F60\u7684\u4FE1\u7BB1\u5BC6\u7801\u3002",
+      "Unknown kind of stamp.": "\u672A\u77E5\u7684\u6233\u8BB0\u7C7B\u578B\u3002",
+      Unlock: "\u89E3\u9501",
+      "Unlocked, your mailbox lives only in this page's memory. It locks when you close or reload the page, or after 10 minutes untouched. If you chose to remember it, this device keeps only the locked copy, which needs your password.": "\u89E3\u9501\u540E\uFF0C\u4F60\u7684\u4FE1\u7BB1\u53EA\u5B58\u5728\u4E8E\u8FD9\u4E2A\u9875\u9762\u7684\u5185\u5B58\u4E2D\u3002\u5173\u95ED\u6216\u5237\u65B0\u9875\u9762\uFF0C\u6216 10 \u5206\u949F\u672A\u64CD\u4F5C\u540E\uFF0C\u5B83\u4F1A\u81EA\u52A8\u9501\u5B9A\u3002\u5982\u679C\u4F60\u9009\u62E9\u4E86\u8BB0\u4F4F\u5B83\uFF0C\u8FD9\u53F0\u8BBE\u5907\u53EA\u4FDD\u5B58\u9501\u5B9A\u7684\u526F\u672C\uFF0C\u6253\u5F00\u5B83\u9700\u8981\u4F60\u7684\u5BC6\u7801\u3002",
+      "Unlocking. This takes a few seconds\u2026": "\u6B63\u5728\u89E3\u9501\uFF0C\u9700\u8981\u51E0\u79D2\u949F\u2026",
+      "Use a different mailbox": "\u4F7F\u7528\u5176\u4ED6\u4FE1\u7BB1",
+      "Uses:": "\u7528\u9014\uFF1A",
+      "Valid entries": "\u6709\u6548\u62A5\u540D",
+      "Valid signature": "\u7B7E\u540D\u6709\u6548",
+      "Valid signature, but the message has hidden characters": "\u7B7E\u540D\u6709\u6548\uFF0C\u4F46\u6D88\u606F\u4E2D\u6709\u9690\u85CF\u5B57\u7B26",
+      "Visible to everyone:": "\u6240\u6709\u4EBA\u53EF\u89C1\uFF1A",
+      "What a postmark proves, what it costs, and getting your coins back": "\u90AE\u6233\u80FD\u8BC1\u660E\u4EC0\u4E48\u3001\u8981\u82B1\u591A\u5C11\uFF0C\u4EE5\u53CA\u5982\u4F55\u62FF\u56DE\u4F60\u7684\u5E01",
+      "What a valid signature does and doesn't prove": "\u6709\u6548\u7B7E\u540D\u80FD\u8BC1\u660E\u4EC0\u4E48\u3001\u4E0D\u80FD\u8BC1\u660E\u4EC0\u4E48",
+      "What you received": "\u4F60\u6536\u5230\u7684\u5185\u5BB9",
+      "Who will see it?": "\u8C01\u4F1A\u770B\u5230\uFF1F",
+      "With the Lock ID, BRC Pulse checks your exact lock straight away. Without it, Pulse searches for it, and anyone who copies your phrase into a lock of their own can slow that down.": "\u6709\u4E86\u9501\u5B9A ID\uFF0CBRC Pulse \u80FD\u7ACB\u5373\u6838\u5BF9\u4F60\u7684\u90A3\u4E2A\u9501\u5B9A\u3002\u6CA1\u6709\u5B83\uFF0CPulse \u9700\u8981\u81EA\u5DF1\u53BB\u641C\u7D22\uFF0C\u800C\u4EFB\u4F55\u4EBA\u53EA\u8981\u628A\u4F60\u7684\u77ED\u8BED\u590D\u5236\u5230\u4ED6\u4EEC\u81EA\u5DF1\u7684\u9501\u5B9A\u4E2D\uFF0C\u5C31\u80FD\u62D6\u6162\u8FD9\u4E2A\u8FC7\u7A0B\u3002",
+      "With your mailbox, instantly.": "\u7528\u4F60\u7684\u4FE1\u7BB1\uFF0C\u7ACB\u523B\u5C31\u80FD\u3002",
+      "Write a message to sign.": "\u5199\u4E00\u6761\u8981\u7B7E\u540D\u7684\u6D88\u606F\u3002",
+      "Write a note to seal.": "\u5199\u4E00\u5F20\u8981\u5BC6\u5C01\u7684\u4FBF\u6761\u3002",
+      "Write me a sealed letter that only I can open:": "\u7ED9\u6211\u5199\u4E00\u5C01\u53EA\u6709\u6211\u80FD\u6253\u5F00\u7684\u5BC6\u5C01\u4FE1\uFF1A",
+      "Write my own message instead": "\u6539\u4E3A\u5199\u6211\u81EA\u5DF1\u7684\u6D88\u606F",
+      "Write to my BRC Post mailbox": "\u5199\u4FE1\u5230\u6211\u7684 BRC Post \u4FE1\u7BB1",
+      "Writing to the mailbox from that link. Check the picture next to the address matches the one they showed you.": "\u6B63\u5728\u5199\u4FE1\u5230\u90A3\u4E2A\u94FE\u63A5\u5BF9\u5E94\u7684\u4FE1\u7BB1\u3002\u8BF7\u786E\u8BA4\u5730\u5740\u65C1\u8FB9\u7684\u56FE\u6848\u4E0E\u5BF9\u65B9\u7ED9\u4F60\u770B\u7684\u4E00\u81F4\u3002",
+      "Writing to the mailbox from your link. Check the picture next to the address matches the one they showed you.": "\u6B63\u5728\u5199\u4FE1\u5230\u4F60\u7684\u94FE\u63A5\u5BF9\u5E94\u7684\u4FE1\u7BB1\u3002\u8BF7\u786E\u8BA4\u5730\u5740\u65C1\u8FB9\u7684\u56FE\u6848\u4E0E\u5BF9\u65B9\u7ED9\u4F60\u770B\u7684\u4E00\u81F4\u3002",
+      "You can skip this. BRC Pulse finds your lock without it and adds it to your receipt.": "\u8FD9\u4E00\u6B65\u53EF\u4EE5\u8DF3\u8FC7\u3002\u6CA1\u6709\u5B83\uFF0CBRC Pulse \u4E5F\u80FD\u627E\u5230\u4F60\u7684\u9501\u5B9A\uFF0C\u5E76\u628A\u5B83\u6DFB\u52A0\u5230\u4F60\u7684\u56DE\u6267\u4E2D\u3002",
+      "You lock a tiny amount in the official app with a phrase made from your message. Your key signs that lock inside the app, and the chain becomes your signature. Check it on BRC Pulse once the lock is in a block.": "\u4F60\u5728\u5B98\u65B9\u5E94\u7528\u4E2D\u7528\u4E00\u4E2A\u7531\u4F60\u7684\u6D88\u606F\u751F\u6210\u7684\u77ED\u8BED\u9501\u5B9A\u6781\u5C11\u91CF\u7684\u5E01\u3002\u4F60\u7684\u79C1\u94A5\u5728\u5E94\u7528\u5185\u4E3A\u8FD9\u4E2A\u9501\u5B9A\u7B7E\u540D\uFF0C\u94FE\u672C\u8EAB\u5C31\u6210\u4E86\u4F60\u7684\u7B7E\u540D\u3002\u9501\u5B9A\u8FDB\u5165\u533A\u5757\u540E\uFF0C\u5230 BRC Pulse \u9A8C\u8BC1\u4E00\u4E0B\u3002",
+      "Your BrowserCoin address is your signature, your envelope and your postmark, and your coin keys never come near this page. Everything happens on your device. Nothing is uploaded.": "\u4F60\u7684 BrowserCoin \u5730\u5740\u5C31\u662F\u4F60\u7684\u7B7E\u540D\u3001\u4F60\u7684\u4FE1\u5C01\u548C\u4F60\u7684\u90AE\u6233\uFF0C\u800C\u4F60\u7684\u5E01\u79C1\u94A5\u6C38\u8FDC\u4E0D\u4F1A\u63A5\u89E6\u8FD9\u4E2A\u9875\u9762\u3002\u4E00\u5207\u90FD\u5728\u4F60\u7684\u8BBE\u5907\u4E0A\u5B8C\u6210\uFF0C\u4E0D\u4F1A\u4E0A\u4F20\u4EFB\u4F55\u5185\u5BB9\u3002",
+      "Your address{0}": "\u4F60\u7684\u5730\u5740{0}",
+      "Your coin address": "\u4F60\u7684\u5E01\u5730\u5740",
+      "Your mailbox is locked": "\u4F60\u7684\u4FE1\u7BB1\u5DF2\u9501\u5B9A",
+      "Your mailbox is open": "\u4F60\u7684\u4FE1\u7BB1\u5DF2\u6253\u5F00",
+      "Your mailbox link": "\u4F60\u7684\u4FE1\u7BB1\u94FE\u63A5",
+      "Your mailbox was closed after 10 minutes without use. Open it again from its backup when you need it.": "\u4F60\u7684\u4FE1\u7BB1\u5728 10 \u5206\u949F\u672A\u4F7F\u7528\u540E\u5DF2\u5173\u95ED\u3002\u9700\u8981\u65F6\u8BF7\u4ECE\u5907\u4EFD\u91CD\u65B0\u6253\u5F00\u3002",
+      "Your mailbox was closed. Open it again to link it.": "\u4F60\u7684\u4FE1\u7BB1\u5DF2\u5173\u95ED\u3002\u8BF7\u91CD\u65B0\u6253\u5F00\u5B83\u6765\u8FDB\u884C\u5173\u8054\u3002",
+      "Your privacy:": "\u4F60\u7684\u9690\u79C1\uFF1A",
+      "Your receipt is ready. The date is set by the block your lock lands in.": "\u4F60\u7684\u56DE\u6267\u5DF2\u51C6\u5907\u597D\u3002\u65E5\u671F\u7531\u4F60\u7684\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757\u51B3\u5B9A\u3002",
+      "Your signature is sealed inside a letter to their address and tied to them, so nobody else sees it or your address. They could still show others that you wrote it to them, so choose someone you trust.": "\u4F60\u7684\u7B7E\u540D\u88AB\u5BC6\u5C01\u5728\u4E00\u5C01\u5199\u7ED9\u5BF9\u65B9\u5730\u5740\u7684\u4FE1\u4E2D\uFF0C\u5E76\u4E0E\u5BF9\u65B9\u7ED1\u5B9A\uFF0C\u6240\u4EE5\u5176\u4ED6\u4EBA\u770B\u4E0D\u5230\u5B83\uFF0C\u4E5F\u770B\u4E0D\u5230\u4F60\u7684\u5730\u5740\u3002\u4F46\u5BF9\u65B9\u4ECD\u7136\u53EF\u4EE5\u5411\u522B\u4EBA\u8BC1\u660E\u8FD9\u662F\u4F60\u5199\u7ED9\u4ED6\u7684\uFF0C\u6240\u4EE5\u8BF7\u9009\u62E9\u4F60\u4FE1\u4EFB\u7684\u4EBA\u3002",
+      "add a drand beacon to record this": "\u6DFB\u52A0 drand \u4FE1\u6807\u6765\u8BB0\u5F55\u65F6\u95F4",
+      "an unnamed mailbox": "\u4E00\u4E2A\u672A\u547D\u540D\u7684\u4FE1\u7BB1",
+      "bad-text lookalike": "\u542B\u4EFF\u5192\u5B57\u7B26",
+      "belongs to the coin address above, and your mailbox has already signed it. Sign it on the chain to finish.": "\u5C5E\u4E8E\u4E0A\u9762\u7684\u5E01\u5730\u5740\uFF0C\u5E76\u4E14\u4F60\u7684\u4FE1\u7BB1\u5DF2\u7ECF\u7B7E\u8FC7\u540D\u3002\u5728\u94FE\u4E0A\u7B7E\u540D\u5373\u53EF\u5B8C\u6210\u3002",
+      "check it on BRC Pulse": "\u5230 BRC Pulse \u9A8C\u8BC1\u4E00\u4E0B",
+      "checked on BRC Pulse": "\u5DF2\u5728 BRC Pulse \u4E0A\u9A8C\u8BC1",
+      "drand beacon": "drand \u4FE1\u6807",
+      "duplicate entry": "\u91CD\u590D\u62A5\u540D",
+      "eligible list fingerprint": "\u6709\u8D44\u683C\u540D\u5355\u6307\u7EB9",
+      "exactly this message": "\u6B63\u662F\u8FD9\u6761\u6D88\u606F",
+      "looks right": "\u770B\u8D77\u6765\u6CA1\u95EE\u9898",
+      "not a Lock ID": "\u4E0D\u662F\u9501\u5B9A ID",
+      "not a valid beacon": "\u4E0D\u662F\u6709\u6548\u7684\u4FE1\u6807",
+      "not eligible at the snapshot": "\u5FEB\u7167\u65F6\u6CA1\u6709\u8D44\u683C",
+      "one per address; no eligible list checked": "\u6BCF\u4E2A\u5730\u5740\u4E00\u6B21\uFF1B\u672A\u68C0\u67E5\u6709\u8D44\u683C\u540D\u5355",
+      "one per eligible address": "\u6BCF\u4E2A\u6709\u8D44\u683C\u7684\u5730\u5740\u4E00\u6B21",
+      optional: "\u53EF\u9009",
+      "or choose": "\u6216\u9009\u62E9",
+      "paste exactly this, with no spaces added": "\u539F\u6837\u7C98\u8D34\u8FD9\u6BB5\u5185\u5BB9\uFF0C\u4E0D\u8981\u6DFB\u52A0\u4EFB\u4F55\u7A7A\u683C",
+      "prize pool": "\u5956\u6C60",
+      "publish this before the draw": "\u5728\u5F00\u5956\u524D\u53D1\u5E03",
+      "shown on BRC Pulse, usually within minutes": "\u4F1A\u663E\u793A\u5728 BRC Pulse \u4E0A\uFF0C\u901A\u5E38\u51E0\u5206\u949F\u5185",
+      "signature checked": "\u7B7E\u540D\u5DF2\u9A8C\u8BC1",
+      "signature does not match": "\u7B7E\u540D\u4E0D\u5339\u914D",
+      "tap and hold in the box, then Paste": "\u5728\u6846\u5185\u957F\u6309\uFF0C\u7136\u540E\u70B9\u300C\u7C98\u8D34\u300D",
+      "test mailbox": "\u6D4B\u8BD5\u4FE1\u7BB1",
+      "test mailbox Alice": "\u6D4B\u8BD5\u4FE1\u7BB1 Alice",
+      "test mailbox Bob": "\u6D4B\u8BD5\u4FE1\u7BB1 Bob",
+      "whoever controls this address": "\u63A7\u5236\u8FD9\u4E2A\u5730\u5740\u7684\u4EBA",
+      "wrong entry text": "\u62A5\u540D\u6587\u672C\u6709\u8BEF",
+      "your address": "\u4F60\u7684\u5730\u5740",
+      "your coin address": "\u4F60\u7684\u5E01\u5730\u5740",
+      "your mailbox": "\u4F60\u7684\u4FE1\u7BB1",
+      "{0} A coin address's key lives in the official app, which can't open letters. Paste the person's mailbox link and BRC Post seals to their mailbox.": "{0} \u5E01\u5730\u5740\u7684\u79C1\u94A5\u4FDD\u5B58\u5728\u5B98\u65B9\u5E94\u7528\u4E2D\uFF0C\u800C\u5B98\u65B9\u5E94\u7528\u65E0\u6CD5\u6253\u5F00\u4FE1\u4EF6\u3002\u7C98\u8D34\u5BF9\u65B9\u7684\u4FE1\u7BB1\u94FE\u63A5\uFF0CBRC Post \u5C31\u4F1A\u5BC6\u5C01\u7ED9\u5BF9\u65B9\u7684\u4FE1\u7BB1\u3002",
+      "{0} A mailbox holds no coins. BRC Post never asks for a coin wallet, private key or recovery words, so nobody can talk you into pasting one here.": "{0} \u4FE1\u7BB1\u91CC\u6CA1\u6709\u5E01\u3002BRC Post \u4ECE\u4E0D\u7D22\u8981\u5E01\u94B1\u5305\u3001\u79C1\u94A5\u6216\u52A9\u8BB0\u8BCD\uFF0C\u6240\u4EE5\u6CA1\u4EBA\u80FD\u9A97\u4F60\u628A\u5B83\u4EEC\u7C98\u8D34\u5230\u8FD9\u91CC\u3002",
+      "{0} A phrase someone sends you could sign something in your name.": "{0} \u522B\u4EBA\u53D1\u7ED9\u4F60\u7684\u77ED\u8BED\u53EF\u80FD\u4F1A\u4EE5\u4F60\u7684\u540D\u4E49\u7B7E\u7F72\u67D0\u4E9B\u5185\u5BB9\u3002",
+      "{0} A phrase someone sends you is a message you can't read, and locking it signs it in your name.": "{0} \u522B\u4EBA\u53D1\u7ED9\u4F60\u7684\u77ED\u8BED\u662F\u4E00\u6761\u4F60\u8BFB\u4E0D\u61C2\u7684\u6D88\u606F\uFF0C\u9501\u5B9A\u5B83\u5C31\u7B49\u4E8E\u4EE5\u4F60\u7684\u540D\u4E49\u4E3A\u5B83\u7B7E\u540D\u3002",
+      "{0} BRC Post never sees your coin key. It turns your message and your address into a phrase. You lock a tiny amount with that phrase in the official app, which signs the lock with your key, the way it signs any payment. Only your key could have made that lock, so the chain itself is the signature.": "{0} BRC Post \u6C38\u8FDC\u770B\u4E0D\u5230\u4F60\u7684\u5E01\u79C1\u94A5\u3002\u5B83\u628A\u4F60\u7684\u6D88\u606F\u548C\u5730\u5740\u8F6C\u6362\u6210\u4E00\u4E2A\u77ED\u8BED\u3002\u4F60\u5728\u5B98\u65B9\u5E94\u7528\u4E2D\u7528\u8FD9\u4E2A\u77ED\u8BED\u9501\u5B9A\u6781\u5C11\u91CF\u7684\u5E01\uFF0C\u5E94\u7528\u4F1A\u7528\u4F60\u7684\u79C1\u94A5\u4E3A\u8FD9\u4E2A\u9501\u5B9A\u7B7E\u540D\uFF0C\u5C31\u50CF\u5B83\u4E3A\u4EFB\u4F55\u4ED8\u6B3E\u7B7E\u540D\u4E00\u6837\u3002\u53EA\u6709\u4F60\u7684\u79C1\u94A5\u80FD\u505A\u51FA\u8FD9\u4E2A\u9501\u5B9A\uFF0C\u6240\u4EE5\u94FE\u672C\u8EAB\u5C31\u662F\u7B7E\u540D\u3002",
+      "{0} BRC. You can take it back later.": "{0} BRC\u3002\u4E4B\u540E\u53EF\u4EE5\u53D6\u56DE\u3002",
+      "{0} BrowserCoin's chain is public. A public signature ties your address to whatever the message says, for good. Or choose {1} when signing with your mailbox: the signed message is sealed so only they can open and check it.": "{0} BrowserCoin \u7684\u94FE\u662F\u516C\u5F00\u7684\u3002\u516C\u5F00\u7B7E\u540D\u4F1A\u628A\u4F60\u7684\u5730\u5740\u4E0E\u6D88\u606F\u5185\u5BB9\u6C38\u4E45\u7ED1\u5B9A\u3002\u4F60\u4E5F\u53EF\u4EE5\u5728\u7528\u4FE1\u7BB1\u7B7E\u540D\u65F6\u9009\u62E9{1}\uFF1A\u7B7E\u540D\u6D88\u606F\u4F1A\u88AB\u5BC6\u5C01\uFF0C\u53EA\u6709\u5BF9\u65B9\u80FD\u6253\u5F00\u5E76\u9A8C\u8BC1\u3002",
+      "{0} Opening a real mailbox is turned off here, because the outer page could watch what you type. Open BRC Post in its own tab to use your key. Test keys still work.": "{0} \u8FD9\u91CC\u5DF2\u5173\u95ED\u6253\u5F00\u771F\u5B9E\u4FE1\u7BB1\u7684\u529F\u80FD\uFF0C\u56E0\u4E3A\u5916\u5C42\u9875\u9762\u53EF\u80FD\u4F1A\u770B\u5230\u4F60\u8F93\u5165\u7684\u5185\u5BB9\u3002\u8BF7\u5728\u5355\u72EC\u7684\u6807\u7B7E\u9875\u4E2D\u6253\u5F00 BRC Post \u6765\u4F7F\u7528\u4F60\u7684\u5BC6\u94A5\u3002\u6D4B\u8BD5\u5BC6\u94A5\u4ECD\u7136\u53EF\u7528\u3002",
+      "{0} Sign a short statement. Anyone can check it, and nobody can fake it or change a word.": "{0} \u7B7E\u7F72\u4E00\u6BB5\u7B80\u77ED\u7684\u58F0\u660E\u3002\u4EFB\u4F55\u4EBA\u90FD\u80FD\u9A8C\u8BC1\uFF0C\u6CA1\u4EBA\u80FD\u4F2A\u9020\u6216\u6539\u52A8\u4E00\u4E2A\u5B57\u3002",
+      "{0} The file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.": "{0} \u6587\u4EF6\u6C38\u8FDC\u4E0D\u4F1A\u79BB\u5F00\u8FD9\u4E2A\u9875\u9762\u3002\u53EA\u6709\u5B83\u7684\u6307\u7EB9\u4F1A\u4E0A BrowserCoin \u94FE\uFF0C\u5B83\u6240\u5728\u7684\u533A\u5757\u5C31\u662F\u5B83\u7684\u65E5\u671F\u8BC1\u660E\u3002",
+      "{0} Without it, the postmark can't be found or proven. Keep it next to the file, or email it to yourself.": "{0} \u6CA1\u6709\u5B83\uFF0C\u5C31\u65E0\u6CD5\u627E\u5230\u6216\u8BC1\u660E\u8FD9\u4E2A\u90AE\u6233\u3002\u628A\u5B83\u548C\u6587\u4EF6\u653E\u5728\u4E00\u8D77\uFF0C\u6216\u8005\u7528\u90AE\u4EF6\u53D1\u7ED9\u81EA\u5DF1\u3002",
+      "{0} You can post a sealed letter anywhere, even a public channel. Only the mailbox you seal it to can open it.": "{0} \u5BC6\u5C01\u4FE1\u53EF\u4EE5\u53D1\u5230\u4EFB\u4F55\u5730\u65B9\uFF0C\u751A\u81F3\u516C\u5F00\u9891\u9053\u3002\u53EA\u6709\u4F60\u5BC6\u5C01\u7ED9\u7684\u90A3\u4E2A\u4FE1\u7BB1\u624D\u80FD\u6253\u5F00\u5B83\u3002",
+      "{0} Your mailbox is a separate key, made right here, for letters and signing. It never holds coins, so loading it here risks nothing you own. Link it to your coin address once, on the chain, and everything it signs shows as your mailbox.": "{0} \u4F60\u7684\u4FE1\u7BB1\u662F\u4E00\u628A\u5355\u72EC\u7684\u5BC6\u94A5\uFF0C\u5C31\u5728\u8FD9\u91CC\u751F\u6210\uFF0C\u7528\u4E8E\u4FE1\u4EF6\u548C\u7B7E\u540D\u3002\u5B83\u4ECE\u4E0D\u5B58\u653E\u5E01\uFF0C\u6240\u4EE5\u5728\u8FD9\u91CC\u52A0\u8F7D\u5B83\u4E0D\u4F1A\u8BA9\u4F60\u7684\u4EFB\u4F55\u8D44\u4EA7\u9762\u4E34\u98CE\u9669\u3002\u53EA\u9700\u5728\u94FE\u4E0A\u628A\u5B83\u548C\u4F60\u7684\u5E01\u5730\u5740\u5173\u8054\u4E00\u6B21\uFF0C\u4E4B\u540E\u5B83\u7B7E\u540D\u7684\u6240\u6709\u5185\u5BB9\u90FD\u4F1A\u663E\u793A\u4E3A\u4F60\u7684\u4FE1\u7BB1\u3002",
+      '{0} claiming a Discord role as a real miner, proving a pool payout address is yours, settling "that\'s my address" arguments.': "{0} \u4EE5\u771F\u5B9E\u77FF\u5DE5\u8EAB\u4EFD\u7533\u8BF7 Discord \u89D2\u8272\u3001\u8BC1\u660E\u67D0\u4E2A\u77FF\u6C60\u652F\u4ED8\u5730\u5740\u662F\u4F60\u7684\u3001\u5E73\u606F\u300C\u90A3\u662F\u6211\u7684\u5730\u5740\u300D\u4E4B\u7C7B\u7684\u4E89\u8BBA\u3002",
+      "{0} in the app, Scripts \u2192 {1}, with the Lock ID and the same postmark phrase. The postmark stays valid after you redeem, because the lock stays in the chain's history. Redeeming reveals only a scrambled form of the phrase, so the fingerprint and salt stay private.": "{0} \u5728\u5E94\u7528\u4E2D\u8FDB\u5165 Scripts \u2192 {1}\uFF0C\u586B\u5165\u9501\u5B9A ID \u548C\u76F8\u540C\u7684\u90AE\u6233\u77ED\u8BED\u3002\u8D4E\u56DE\u540E\u90AE\u6233\u4F9D\u7136\u6709\u6548\uFF0C\u56E0\u4E3A\u9501\u5B9A\u4F1A\u4E00\u76F4\u7559\u5728\u94FE\u7684\u5386\u53F2\u8BB0\u5F55\u4E2D\u3002\u8D4E\u56DE\u53EA\u4F1A\u516C\u5F00\u77ED\u8BED\u6253\u4E71\u540E\u7684\u5F62\u5F0F\uFF0C\u6240\u4EE5\u6307\u7EB9\u548C\u76D0\u503C\u4ECD\u7136\u4FDD\u5BC6\u3002",
+      "{0} only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.": "{0}\u4E0A\u94FE\u7684\u53EA\u6709\u6DF7\u5165\u4E86\u968F\u673A\u76D0\u503C\u7684\u6307\u7EB9\u3002\u6CA1\u6709\u4F60\u7684\u56DE\u6267\uFF0C\u8C01\u90FD\u63A8\u65AD\u4E0D\u51FA\u6587\u4EF6\u5185\u5BB9\uFF0C\u4E5F\u6CA1\u6CD5\u9A8C\u8BC1\u5BF9\u5B83\u7684\u731C\u6D4B\u3002",
+      "{0} the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.": "{0}\u5E94\u7528\u7684\u9ED8\u8BA4\u624B\u7EED\u8D39\uFF080.00001 BRC\uFF09\uFF0C\u52A0\u4E0A\u4F60\u9501\u5B9A\u7684\u4E00\u5C0F\u7B14\u91D1\u989D\u3002\u6307\u7EB9\u5C31\u662F\u901A\u8FC7\u8FD9\u7B14\u9501\u5B9A\u4E0A\u94FE\u7684\uFF0C\u7528\u7684\u662F BrowserCoin \u5185\u7F6E\u7684\u811A\u672C\u3002\u65E0\u9700\u5206\u53C9\uFF0C\u6CA1\u6709\u4EFB\u4F55\u65B0\u4E1C\u897F\u3002",
+      "{0} there are no rotating keys. If the recipient's mailbox is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.": "{0}\u6CA1\u6709\u8F6E\u6362\u5BC6\u94A5\u3002\u4E00\u65E6\u6536\u4EF6\u4EBA\u7684\u4FE1\u7BB1\u88AB\u76D7\uFF0C\u6240\u6709\u66FE\u7ECF\u5BC6\u5C01\u7ED9\u8BE5\u5730\u5740\u7684\u4FE1\u4EF6\u90FD\u80FD\u88AB\u8BFB\u53D6\u3002\u4E00\u6B21\u6027\u7684\u4FE1\u4EF6\u6CA1\u95EE\u9898\uFF0C\u4F46\u4E0D\u9002\u5408\u6301\u7EED\u7684\u79C1\u5BC6\u5BF9\u8BDD\u3002\u8FD9\u6B63\u662F BRC Post \u5C06\u6765\u8981\u8865\u4E0A\u7684\u3002",
+      "{0} this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a drand beacon, it also proves the postmark was made after that moment, to within 3 seconds; drand is run by the League of Entropy, a group of independent organisations. If you added a recent block, it proves the postmark was made after that block. The lock is signed by your wallet, so it shows which address posted it. Miners set block times: usually accurate to a few minutes, guaranteed within about half an hour.": "{0}\u8FD9\u4E2A\u6587\u4EF6\uFF08\u4E00\u5B57\u4E0D\u5DEE\uFF09\u6700\u665A\u5728\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757\u65F6\u5C31\u5DF2\u5B58\u5728\u3002\u6587\u4EF6\u672C\u8EAB\u53EF\u80FD\u66F4\u65E9\u3002\u54EA\u6015\u6539\u52A8\u4E00\u4E2A\u5B57\u8282\uFF0C\u5C31\u4E0D\u518D\u5339\u914D\u3002\u5982\u679C\u4F60\u6DFB\u52A0\u4E86 drand \u4FE1\u6807\uFF0C\u5B83\u8FD8\u80FD\u8BC1\u660E\u90AE\u6233\u662F\u5728\u90A3\u4E00\u523B\u4E4B\u540E\u5236\u4F5C\u7684\uFF0C\u8BEF\u5DEE\u5728 3 \u79D2\u4EE5\u5185\uFF1Bdrand \u7531 League of Entropy\uFF08\u71B5\u8054\u76DF\uFF09\u8FD0\u884C\uFF0C\u8FD9\u662F\u4E00\u4E2A\u7531\u591A\u5BB6\u72EC\u7ACB\u673A\u6784\u7EC4\u6210\u7684\u56E2\u4F53\u3002\u5982\u679C\u4F60\u6DFB\u52A0\u4E86\u4E00\u4E2A\u6700\u8FD1\u7684\u533A\u5757\uFF0C\u5B83\u80FD\u8BC1\u660E\u90AE\u6233\u662F\u5728\u8BE5\u533A\u5757\u4E4B\u540E\u5236\u4F5C\u7684\u3002\u9501\u5B9A\u7531\u4F60\u7684\u94B1\u5305\u7B7E\u540D\uFF0C\u56E0\u6B64\u80FD\u770B\u51FA\u662F\u54EA\u4E2A\u5730\u5740\u53D1\u5E03\u7684\u3002\u533A\u5757\u65F6\u95F4\u7531\u77FF\u5DE5\u8BBE\u5B9A\uFF1A\u901A\u5E38\u8BEF\u5DEE\u5728\u51E0\u5206\u949F\u5185\uFF0C\u4FDD\u8BC1\u5728\u5927\u7EA6\u534A\u5C0F\u65F6\u4EE5\u5185\u3002",
+      '{0} who the letter is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.': "{0}\u4FE1\u4EF6\u662F\u5199\u7ED9\u8C01\u7684\uFF08\u300CTo:\u300D\u90A3\u4E00\u884C\uFF09\uFF0C\u4EE5\u53CA\u5927\u81F4\u6709\u591A\u957F\u3002\u770B\u4E0D\u5230\u7684\uFF1A\u4FE1\u7684\u5185\u5BB9\u3001\u5BC4\u4EF6\u4EBA\uFF0C\u4EE5\u53CA\u662F\u5426\u7B7E\u4E86\u540D\u3002",
+      "{0} who wrote the file, or what it means. It is not a notarization.": "{0}\u6587\u4EF6\u662F\u8C01\u5199\u7684\uFF0C\u6216\u8005\u5B83\u662F\u4EC0\u4E48\u610F\u601D\u3002\u5B83\u4E0D\u662F\u516C\u8BC1\u3002",
+      "{0}, however a letter asks, and never paste them into any page. Nobody legitimate needs them. BRC Post never will.": "{0}\uFF0C\u65E0\u8BBA\u4FE1\u4EF6\u600E\u4E48\u8981\u6C42\u90FD\u4E0D\u884C\uFF0C\u4E5F\u5207\u52FF\u628A\u5B83\u4EEC\u7C98\u8D34\u5230\u4EFB\u4F55\u9875\u9762\u3002\u6B63\u5F53\u7684\u4EBA\u90FD\u4E0D\u9700\u8981\u5B83\u4EEC\u3002BRC Post \u6C38\u8FDC\u4E0D\u4F1A\u5411\u4F60\u8981\u3002",
+      "{0}, to within 3 seconds{1}": "{0}\uFF0C\u8BEF\u5DEE\u5728 3 \u79D2\u4EE5\u5185{1}",
+      "{0}Instant, and no coins involved. It proves your mailbox wrote it; link your mailbox to your coin address once, on the chain, so people know whose mailbox it is.": "{0}\u5373\u65F6\u5B8C\u6210\uFF0C\u4E0D\u6D89\u53CA\u4EFB\u4F55\u5E01\u3002\u5B83\u80FD\u8BC1\u660E\u662F\u4F60\u7684\u4FE1\u7BB1\u5199\u7684\uFF1B\u5728\u94FE\u4E0A\u628A\u4F60\u7684\u4FE1\u7BB1\u548C\u4F60\u7684\u5E01\u5730\u5740\u5173\u8054\u4E00\u6B21\uFF0C\u5927\u5BB6\u5C31\u77E5\u9053\u8FD9\u662F\u8C01\u7684\u4FE1\u7BB1\u3002",
+      "{0}Read here, never uploaded": "{0}\u5728\u8FD9\u91CC\u8BFB\u53D6\uFF0C\u7EDD\u4E0D\u4E0A\u4F20",
+      "{0}Share it anywhere. Whoever opens it can write you a letter that only you can open.": "{0}\u53EF\u4EE5\u5206\u4EAB\u5230\u4EFB\u4F55\u5730\u65B9\u3002\u6253\u5F00\u5B83\u7684\u4EBA\u90FD\u80FD\u7ED9\u4F60\u5199\u4E00\u5C01\u53EA\u6709\u4F60\u80FD\u6253\u5F00\u7684\u4FE1\u3002",
+      "{0}Signing links this address to what you write, for good. Anyone can then look up its balance and payments. Use an address that holds little, or choose One person.": "{0}\u7B7E\u540D\u4F1A\u628A\u8FD9\u4E2A\u5730\u5740\u548C\u4F60\u5199\u7684\u5185\u5BB9\u6C38\u4E45\u5173\u8054\u3002\u4E4B\u540E\u4EFB\u4F55\u4EBA\u90FD\u80FD\u67E5\u5230\u5B83\u7684\u4F59\u989D\u548C\u6536\u4ED8\u6B3E\u8BB0\u5F55\u3002\u8BF7\u4F7F\u7528\u4F59\u989D\u5F88\u5C11\u7684\u5730\u5740\uFF0C\u6216\u8005\u9009\u62E9\u300C\u4E00\u4E2A\u4EBA\u300D\u3002",
+      "{0}The brc-mailbox-key-\u2026.json file saved when you made it": "{0}\u521B\u5EFA\u4FE1\u7BB1\u65F6\u4FDD\u5B58\u7684 brc-mailbox-key-\u2026.json \u6587\u4EF6",
+      "{0}You lock a tiny amount in the official app with a phrase made from your message. Your key signs that lock inside the app, and the chain becomes your signature. Check it on BRC Pulse once the lock is in a block.": "{0}\u4F60\u5728\u5B98\u65B9\u5E94\u7528\u91CC\uFF0C\u7528\u7531\u4F60\u7684\u6D88\u606F\u751F\u6210\u7684\u77ED\u8BED\u9501\u5B9A\u4E00\u5C0F\u7B14\u91D1\u989D\u3002\u4F60\u7684\u79C1\u94A5\u5728\u5E94\u7528\u5185\u4E3A\u8FD9\u7B14\u9501\u5B9A\u7B7E\u540D\uFF0C\u94FE\u672C\u8EAB\u5C31\u6210\u4E86\u4F60\u7684\u7B7E\u540D\u3002\u9501\u5B9A\u8FDB\u5165\u533A\u5757\u540E\uFF0C\u5C31\u80FD\u5728 BRC Pulse \u4E0A\u9A8C\u8BC1\u3002",
+      "{0}Your signature is sealed inside a letter to their address and tied to them, so nobody else sees it or your address. They could still show others that you wrote it to them, so choose someone you trust.": "{0}\u4F60\u7684\u7B7E\u540D\u4F1A\u5BC6\u5C01\u5728\u4E00\u5C01\u5BC4\u5F80\u5BF9\u65B9\u5730\u5740\u7684\u4FE1\u91CC\uFF0C\u5E76\u4E0E\u5BF9\u65B9\u7ED1\u5B9A\uFF0C\u6240\u4EE5\u5176\u4ED6\u4EBA\u770B\u4E0D\u5230\u4F60\u7684\u7B7E\u540D\uFF0C\u4E5F\u770B\u4E0D\u5230\u4F60\u7684\u5730\u5740\u3002\u5BF9\u65B9\u4ECD\u7136\u53EF\u4EE5\u5411\u522B\u4EBA\u8BC1\u660E\u662F\u4F60\u5199\u7ED9\u4ED6\u4EEC\u7684\uFF0C\u6240\u4EE5\u8BF7\u9009\u62E9\u4F60\u4FE1\u4EFB\u7684\u4EBA\u3002",
+      "\u2713 BRC Works release address": "\u2713 BRC Works \u53D1\u5E03\u5730\u5740",
+      "{0} This message records the entry list's fingerprint and the drand round of the draw. Sign it on the chain with the BRC Works release address, and add the result to the giveaway settings. BRC Pulse shows a winner only if this lock is in a block well before that round. {1}": "{0} \u8FD9\u6761\u6D88\u606F\u8BB0\u5F55\u4E86\u62A5\u540D\u540D\u5355\u7684\u6307\u7EB9\u548C\u5F00\u5956\u6240\u7528\u7684 drand \u8F6E\u6B21\u3002\u8BF7\u7528 BRC Works \u53D1\u5E03\u5730\u5740\u5728\u94FE\u4E0A\u7B7E\u540D\uFF0C\u5E76\u628A\u7ED3\u679C\u6DFB\u52A0\u5230\u62BD\u5956\u8BBE\u7F6E\u4E2D\u3002\u53EA\u6709\u5F53\u8FD9\u4E2A\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757\u8FDC\u65E9\u4E8E\u8BE5\u8F6E\u6B21\u65F6\uFF0CBRC Pulse \u624D\u4F1A\u663E\u793A\u4E2D\u5956\u8005\u3002{1}",
+      "{0} This message says your mailbox belongs to the coin address above, and your mailbox has already signed it. Sign it on the chain to finish. {1}": "{0} \u8FD9\u6761\u6D88\u606F\u58F0\u660E\u4F60\u7684\u4FE1\u7BB1\u5C5E\u4E8E\u4E0A\u9762\u7684\u5E01\u5730\u5740\uFF0C\u4F60\u7684\u4FE1\u7BB1\u5DF2\u7ECF\u7B7E\u8FC7\u540D\u4E86\u3002\u5728\u94FE\u4E0A\u7B7E\u540D\u5373\u53EF\u5B8C\u6210\u3002{1}",
+      "A mailbox holds no coins. BRC Post never asks for a coin wallet, private key or recovery words, so nobody can talk you into pasting one here.": "\u4FE1\u7BB1\u4E0D\u5B58\u653E\u4EFB\u4F55\u5E01\u3002BRC Post \u4ECE\u4E0D\u7D22\u8981\u5E01\u94B1\u5305\u3001\u79C1\u94A5\u6216\u52A9\u8BB0\u8BCD\uFF0C\u6240\u4EE5\u6CA1\u4EBA\u80FD\u9A97\u4F60\u628A\u5B83\u4EEC\u7C98\u8D34\u5230\u8FD9\u91CC\u3002",
+      "The brc-mailbox-key-\u2026.json file saved when you made it": "\u521B\u5EFA\u4FE1\u7BB1\u65F6\u4FDD\u5B58\u7684 brc-mailbox-key-\u2026.json \u6587\u4EF6",
+      "Share it anywhere. Whoever opens it can write you a letter that only you can open.": "\u53EF\u4EE5\u5206\u4EAB\u5230\u4EFB\u4F55\u5730\u65B9\u3002\u6253\u5F00\u5B83\u7684\u4EBA\u90FD\u80FD\u7ED9\u4F60\u5199\u4E00\u5C01\u53EA\u6709\u4F60\u80FD\u6253\u5F00\u7684\u4FE1\u3002",
+      "Independent tools by": "\u72EC\u7ACB\u5DE5\u5177\uFF0C\u4F5C\u8005\uFF1A",
+      ". Not part of the official BrowserCoin project.": "\u3002\u4E0D\u5C5E\u4E8E BrowserCoin \u5B98\u65B9\u9879\u76EE\u3002",
+      "only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.": "\u53EA\u6709 BRC Vault \u4F1A\u5411\u4F60\u7D22\u8981\u5B58\u6709\u5E01\u7684\u79C1\u94A5\uFF0C\u800C\u4E14\u53EA\u662F\u4E3A\u4E86\u5728\u4F60\u7684\u8BBE\u5907\u4E0A\u5907\u4EFD\u5B83\u3002\u5982\u679C\u6709\u5176\u4ED6\u4EFB\u4F55\u4E1C\u897F\u5411\u4F60\u7D22\u8981\u79C1\u94A5\uFF0C\u90A3\u4E0D\u662F\u6211\u4EEC\u3002",
+      ". Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).": "\u3002\u53EF\u79BB\u7EBF\u4F7F\u7528\u3002\u7EDD\u4E0D\u4F1A\u53D1\u9001\u4EFB\u4F55\u5173\u4E8E\u4F60\u6216\u4F60\u7684\u6587\u4EF6\u7684\u4FE1\u606F\uFF1B\u552F\u4E00\u4F1A\u83B7\u53D6\u7684\u662F\u516C\u5F00\u7684 drand \u65F6\u95F4\u4FE1\u6807\uFF0C\u4EC5\u5728\u4F60\u7ED9\u6587\u4EF6\u76D6\u90AE\u6233\u65F6\uFF08\u548C\u4EFB\u4F55\u7F51\u7AD9\u4E00\u6837\uFF0Cdrand \u7684\u670D\u52A1\u5668\u4F1A\u770B\u5230\u4F60\u7684 IP \u5730\u5740\uFF09\u3002",
+      "Read here, never uploaded": "\u5728\u6B64\u8BFB\u53D6\uFF0C\u7EDD\u4E0D\u4E0A\u4F20",
+      "Checks that a file is the one a receipt describes, here and offline. To see the date, check the receipt on": "\u5728\u8FD9\u91CC\u79BB\u7EBF\u68C0\u67E5\u6587\u4EF6\u662F\u5426\u5C31\u662F\u56DE\u6267\u6240\u63CF\u8FF0\u7684\u90A3\u4E2A\u3002\u8981\u67E5\u770B\u65E5\u671F\uFF0C\u8BF7\u5728\u4EE5\u4E0B\u9875\u9762\u68C0\u67E5\u56DE\u6267\uFF1A",
+      ", which reads the chain.": "\uFF08\u5B83\u4F1A\u8BFB\u53D6\u533A\u5757\u94FE\uFF09\u3002",
+      ", however a letter asks, and never paste them into any page. Nobody legitimate needs them. BRC Post never will.": "\uFF0C\u65E0\u8BBA\u4FE1\u4EF6\u600E\u4E48\u8981\u6C42\u90FD\u4E0D\u8981\uFF0C\u4E5F\u5207\u52FF\u628A\u5B83\u4EEC\u7C98\u8D34\u5230\u4EFB\u4F55\u9875\u9762\u3002\u6B63\u5F53\u7684\u4EBA\u90FD\u4E0D\u9700\u8981\u5B83\u4EEC\u3002BRC Post \u6C38\u8FDC\u4E0D\u4F1A\u7D22\u8981\u3002",
+      "A message signed on the chain is checked in full on": "\u5728\u94FE\u4E0A\u7B7E\u540D\u7684\u6D88\u606F\u9700\u8981\u5728\u4EE5\u4E0B\u9875\u9762\u5B8C\u6574\u9A8C\u8BC1\uFF1A",
+      ", which reads the chain. Here, offline, BRC Post can only check it is complete and well-formed.": "\uFF08\u5B83\u4F1A\u8BFB\u53D6\u533A\u5757\u94FE\uFF09\u3002\u5728\u8FD9\u91CC\u79BB\u7EBF\u65F6\uFF0CBRC Post \u53EA\u80FD\u68C0\u67E5\u5B83\u662F\u5426\u5B8C\u6574\u3001\u683C\u5F0F\u662F\u5426\u6B63\u786E\u3002",
+      "A valid result proves that": "\u9A8C\u8BC1\u901A\u8FC7\u5373\u8BC1\u660E",
+      signed: "\u7B7E\u7F72\u4E86",
+      "Paste the whole block, from": "\u7C98\u8D34\u6574\u6BB5\u5185\u5BB9\uFF0C\u4ECE",
+      to: "\u5230",
+      ". No key needed.": "\u3002\u4E0D\u9700\u8981\u4EFB\u4F55\u5BC6\u94A5\u3002",
+      "Without it, the postmark can't be found or proven. Keep it next to the file, or email it to yourself.": "\u6CA1\u6709\u5B83\uFF0C\u5C31\u65E0\u6CD5\u627E\u5230\u6216\u8BC1\u660E\u90AE\u6233\u3002\u628A\u5B83\u548C\u6587\u4EF6\u653E\u5728\u4E00\u8D77\uFF0C\u6216\u8005\u53D1\u90AE\u4EF6\u7ED9\u81EA\u5DF1\u3002",
+      "in the app, Scripts \u2192": "\u5728 app \u4E2D\uFF0CScripts \u2192",
+      ", with the Lock ID and the same postmark phrase. The postmark stays valid after you redeem, because the lock stays in the chain's history. Redeeming reveals only a scrambled form of the phrase, so the fingerprint and salt stay private.": "\uFF0C\u586B\u5165\u9501\u5B9A ID \u548C\u76F8\u540C\u7684\u90AE\u6233\u77ED\u8BED\u3002\u8D4E\u56DE\u540E\u90AE\u6233\u4ECD\u7136\u6709\u6548\uFF0C\u56E0\u4E3A\u9501\u5B9A\u4F1A\u4E00\u76F4\u7559\u5728\u94FE\u7684\u5386\u53F2\u8BB0\u5F55\u4E2D\u3002\u8D4E\u56DE\u53EA\u4F1A\u516C\u5F00\u77ED\u8BED\u7684\u6253\u4E71\u5F62\u5F0F\uFF0C\u6240\u4EE5\u6307\u7EB9\u548C\u76D0\u503C\u4ECD\u7136\u4FDD\u5BC6\u3002",
+      "the app's default fee (0.00001 BRC), plus the small amount you lock. The lock is how the fingerprint gets on-chain, using BrowserCoin's built-in scripts. No fork, nothing new.": "app \u7684\u9ED8\u8BA4\u624B\u7EED\u8D39\uFF080.00001 BRC\uFF09\uFF0C\u52A0\u4E0A\u4F60\u9501\u5B9A\u7684\u5C11\u91CF\u91D1\u989D\u3002\u6307\u7EB9\u6B63\u662F\u901A\u8FC7\u9501\u5B9A\u4E0A\u94FE\u7684\uFF0C\u7528\u7684\u662F BrowserCoin \u5185\u7F6E\u7684\u811A\u672C\u3002\u65E0\u9700\u5206\u53C9\uFF0C\u6CA1\u6709\u4EFB\u4F55\u65B0\u4E1C\u897F\u3002",
+      "only a fingerprint mixed with a random salt goes on-chain. Nobody can work out the file, or test guesses about it, without your receipt.": "\u53EA\u6709\u6DF7\u5165\u968F\u673A\u76D0\u503C\u7684\u6307\u7EB9\u4F1A\u4E0A\u94FE\u3002\u6CA1\u6709\u4F60\u7684\u56DE\u6267\uFF0C\u6CA1\u4EBA\u80FD\u63A8\u7B97\u51FA\u6587\u4EF6\u5185\u5BB9\uFF0C\u4E5F\u65E0\u6CD5\u9A8C\u8BC1\u5BF9\u5B83\u7684\u731C\u6D4B\u3002",
+      "who wrote the file, or what it means. It is not a notarization.": "\u8C01\u5199\u4E86\u8FD9\u4E2A\u6587\u4EF6\uFF0C\u6216\u5B83\u662F\u4EC0\u4E48\u610F\u601D\u3002\u5B83\u4E0D\u662F\u516C\u8BC1\u3002",
+      "this exact file existed no later than the block the lock landed in. The file may be older. Change one byte and it no longer matches. If you added a drand beacon, it also proves the postmark was made after that moment, to within 3 seconds; drand is run by the League of Entropy, a group of independent organisations. If you added a recent block, it proves the postmark was made after that block. The lock is signed by your wallet, so it shows which address posted it. Miners set block times: usually accurate to a few minutes, guaranteed within about half an hour.": "\u8FD9\u4E2A\u6587\u4EF6\uFF08\u4E00\u5B57\u4E0D\u5DEE\uFF09\u6700\u665A\u5728\u9501\u5B9A\u6240\u5728\u7684\u533A\u5757\u65F6\u5C31\u5DF2\u5B58\u5728\u3002\u6587\u4EF6\u53EF\u80FD\u66F4\u65E9\u5C31\u6709\u4E86\u3002\u6539\u52A8\u4E00\u4E2A\u5B57\u8282\u5C31\u4E0D\u518D\u5339\u914D\u3002\u5982\u679C\u4F60\u52A0\u4E86 drand \u4FE1\u6807\uFF0C\u5B83\u8FD8\u80FD\u8BC1\u660E\u90AE\u6233\u662F\u5728\u90A3\u4E00\u523B\u4E4B\u540E\u5236\u4F5C\u7684\uFF0C\u8BEF\u5DEE\u5728 3 \u79D2\u4EE5\u5185\uFF1Bdrand \u7531 League of Entropy\uFF08\u71B5\u8054\u76DF\uFF09\u8FD0\u8425\uFF0C\u8FD9\u662F\u4E00\u4E2A\u7531\u591A\u5BB6\u72EC\u7ACB\u673A\u6784\u7EC4\u6210\u7684\u56E2\u4F53\u3002\u5982\u679C\u4F60\u52A0\u4E86\u4E00\u4E2A\u6700\u8FD1\u7684\u533A\u5757\uFF0C\u5B83\u80FD\u8BC1\u660E\u90AE\u6233\u662F\u5728\u90A3\u4E2A\u533A\u5757\u4E4B\u540E\u5236\u4F5C\u7684\u3002\u9501\u5B9A\u7531\u4F60\u7684\u94B1\u5305\u7B7E\u540D\uFF0C\u6240\u4EE5\u80FD\u770B\u51FA\u662F\u54EA\u4E2A\u5730\u5740\u53D1\u5E03\u7684\u3002\u533A\u5757\u65F6\u95F4\u7531\u77FF\u5DE5\u8BBE\u5B9A\uFF1A\u901A\u5E38\u8BEF\u5DEE\u5728\u51E0\u5206\u949F\u5185\uFF0C\u4FDD\u8BC1\u4E0D\u8D85\u8FC7\u7EA6\u534A\u5C0F\u65F6\u3002",
+      Pressed: "\u5DF2\u7ECF\u6309\u4E0B",
+      "in the app? Make your receipt and keep it with the file: you need both to prove the date.": "\uFF08\u5728 app \u4E2D\uFF09\u4E86\uFF1F\u73B0\u5728\u5236\u4F5C\u56DE\u6267\uFF0C\u5E76\u548C\u6587\u4EF6\u653E\u5728\u4E00\u8D77\uFF1A\u4E24\u8005\u90FD\u8981\u6709\u624D\u80FD\u8BC1\u660E\u65E5\u671F\u3002",
+      "A phrase someone sends you could sign something in your name.": "\u522B\u4EBA\u53D1\u7ED9\u4F60\u7684\u77ED\u8BED\u53EF\u80FD\u4F1A\u4EE5\u4F60\u7684\u540D\u4E49\u7B7E\u7F72\u67D0\u4E9B\u5185\u5BB9\u3002",
+      "Leave the fee as it is, press": "\u624B\u7EED\u8D39\u4FDD\u6301\u4E0D\u53D8\uFF0C\u6309\u4E0B",
+      ", and copy the": "\uFF0C\u7136\u540E\u590D\u5236",
+      "it shows.": "\uFF08\u754C\u9762\u4E0A\u4F1A\u663E\u793A\uFF09\u3002",
+      "BRC. You can take it back later.": "BRC\u3002\u4E4B\u540E\u53EF\u4EE5\u53D6\u56DE\u3002",
+      "Or as well, a recent BrowserCoin block (less precise, no outside service): on BRC Pulse \u2192 Check it, press": "\u6216\u8005\u518D\u52A0\u4E0A\u4E00\u4E2A\u6700\u8FD1\u7684 BrowserCoin \u533A\u5757\uFF08\u7CBE\u5EA6\u8F83\u4F4E\uFF0C\u4E0D\u4F9D\u8D56\u5916\u90E8\u670D\u52A1\uFF09\uFF1A\u5728 BRC Pulse \u2192 \u9A8C\u8BC1 \u9875\u9762\uFF0C\u6309\u4E0B\u6700\u8FD1\u533A\u5757\u65C1\u8FB9\u7684",
+      "next to the recent block and paste it below.": "\uFF0C\u7136\u540E\u7C98\u8D34\u5230\u4E0B\u9762\u3002",
+      "The file never leaves this page. Only its fingerprint goes on the BrowserCoin chain, and the block it lands in dates it.": "\u6587\u4EF6\u6C38\u8FDC\u4E0D\u4F1A\u79BB\u5F00\u8FD9\u4E2A\u9875\u9762\u3002\u53EA\u6709\u5B83\u7684\u6307\u7EB9\u4F1A\u8FDB\u5165 BrowserCoin \u94FE\uFF0C\u5B83\u6240\u5728\u7684\u533A\u5757\u5C31\u662F\u5B83\u7684\u65E5\u671F\u8BC1\u660E\u3002",
+      'who the letter is for (the "To:" line) and roughly how long it is. Not visible: what it says, who sent it, or whether it was signed.': "\u4FE1\u4EF6\u662F\u5199\u7ED9\u8C01\u7684\uFF08\u300CTo:\u300D\u90A3\u4E00\u884C\uFF09\uFF0C\u4EE5\u53CA\u5927\u6982\u6709\u591A\u957F\u3002\u770B\u4E0D\u5230\u7684\uFF1A\u4FE1\u7684\u5185\u5BB9\u3001\u5BC4\u4FE1\u4EBA\uFF0C\u4EE5\u53CA\u662F\u5426\u7B7E\u4E86\u540D\u3002",
+      "A coin address's key lives in the official app, which can't open letters. Paste the person's mailbox link and BRC Post seals to their mailbox.": "\u5E01\u5730\u5740\u7684\u79C1\u94A5\u5728\u5B98\u65B9 app \u91CC\uFF0C\u800C\u5B98\u65B9 app \u65E0\u6CD5\u6253\u5F00\u4FE1\u4EF6\u3002\u7C98\u8D34\u5BF9\u65B9\u7684\u4FE1\u7BB1\u94FE\u63A5\uFF0CBRC Post \u4F1A\u628A\u4FE1\u5BC6\u5C01\u5230\u4ED6\u4EEC\u7684\u4FE1\u7BB1\u3002",
+      "there are no rotating keys. If the recipient's mailbox is ever stolen, every letter ever sealed to that address can be read. That's fine for one-off letters, not for an ongoing private conversation. That's what BRC Post would add.": "\u6CA1\u6709\u8F6E\u6362\u5BC6\u94A5\u3002\u5982\u679C\u6536\u4EF6\u4EBA\u7684\u4FE1\u7BB1\u88AB\u76D7\uFF0C\u6240\u6709\u66FE\u5BC6\u5C01\u7ED9\u8BE5\u5730\u5740\u7684\u4FE1\u4EF6\u90FD\u80FD\u88AB\u8BFB\u53D6\u3002\u5076\u5C14\u5BC4\u4E00\u5C01\u4FE1\u6CA1\u95EE\u9898\uFF0C\u4F46\u4E0D\u9002\u5408\u957F\u671F\u7684\u79C1\u5BC6\u5BF9\u8BDD\u3002\u90A3\u6B63\u662F BRC Post \u5C06\u6765\u8981\u52A0\u5165\u7684\u529F\u80FD\u3002",
+      'If you tick "sign it", your mailbox\'s signature goes': "\u5982\u679C\u4F60\u52FE\u9009\u300C\u7B7E\u540D\u300D\uFF0C\u4F60\u4FE1\u7BB1\u7684\u7B7E\u540D\u4F1A\u653E\u5728\u52A0\u5BC6\u5185\u5BB9",
+      "the encryption, so outsiders can't see it was you. The recipient can, and could later show others that you wrote it. Otherwise the letter is anonymous.": "\uFF0C\u6240\u4EE5\u5916\u4EBA\u770B\u4E0D\u51FA\u662F\u4F60\u3002\u6536\u4EF6\u4EBA\u80FD\u770B\u51FA\u6765\uFF0C\u800C\u4E14\u4EE5\u540E\u53EF\u4EE5\u5411\u522B\u4EBA\u8BC1\u660E\u662F\u4F60\u5199\u7684\u3002\u5426\u5219\u8FD9\u5C01\u4FE1\u662F\u533F\u540D\u7684\u3002",
+      "I checked this link on": "\u6211\u5DF2\u5728",
+      ", and it says the coin address made it. (An unchecked link could send this letter to someone pretending to be them.)": "\u4E0A\u68C0\u67E5\u8FC7\u8FD9\u4E2A\u94FE\u63A5\uFF0C\u5B83\u663E\u793A\u662F\u8BE5\u5E01\u5730\u5740\u751F\u6210\u7684\u3002\uFF08\u672A\u7ECF\u68C0\u67E5\u7684\u94FE\u63A5\u53EF\u80FD\u4F1A\u628A\u8FD9\u5C01\u4FE1\u9001\u5230\u5192\u5145\u5BF9\u65B9\u7684\u4EBA\u624B\u91CC\u3002\uFF09",
+      "They gave me this as their": "\u8FD9\u662F\u5BF9\u65B9\u7ED9\u6211\u7684",
+      ". (A coin address looks exactly the same, but a letter sealed to one can never be opened.)": "\u3002\uFF08\u5E01\u5730\u5740\u770B\u8D77\u6765\u4E00\u6A21\u4E00\u6837\uFF0C\u4F46\u5BC6\u5C01\u7ED9\u5E01\u5730\u5740\u7684\u4FE1\u6C38\u8FDC\u65E0\u6CD5\u6253\u5F00\u3002\uFF09",
+      "You can post a sealed letter anywhere, even a public channel. Only the mailbox you seal it to can open it.": "\u5BC6\u5C01\u4FE1\u53EF\u4EE5\u53D1\u5230\u4EFB\u4F55\u5730\u65B9\uFF0C\u54EA\u6015\u662F\u516C\u5F00\u9891\u9053\u3002\u53EA\u6709\u4F60\u5BC6\u5C01\u7ED9\u7684\u90A3\u4E2A\u4FE1\u7BB1\u624D\u80FD\u6253\u5F00\u5B83\u3002",
+      'claiming a Discord role as a real miner, proving a pool payout address is yours, settling "that\'s my address" arguments.': "\u4EE5\u771F\u5B9E\u77FF\u5DE5\u8EAB\u4EFD\u7533\u9886 Discord \u8EAB\u4EFD\u7EC4\u3001\u8BC1\u660E\u67D0\u4E2A\u77FF\u6C60\u652F\u4ED8\u5730\u5740\u662F\u4F60\u7684\u3001\u89E3\u51B3\u300C\u90A3\u662F\u6211\u7684\u5730\u5740\u300D\u4E4B\u4E89\u3002",
+      "BrowserCoin's chain is public. A public signature ties your address to whatever the message says, for good. Or choose": "BrowserCoin \u7684\u94FE\u662F\u516C\u5F00\u7684\u3002\u516C\u5F00\u7B7E\u540D\u4F1A\u628A\u4F60\u7684\u5730\u5740\u548C\u6D88\u606F\u5185\u5BB9\u6C38\u4E45\u7ED1\u5B9A\u5728\u4E00\u8D77\u3002\u4E5F\u53EF\u4EE5\u9009\u62E9",
+      "when signing with your mailbox: the signed message is sealed so only they can open and check it.": "\uFF08\u7528\u4FE1\u7BB1\u7B7E\u540D\u65F6\u53EF\u7528\uFF09\uFF1A\u7B7E\u540D\u6D88\u606F\u4F1A\u88AB\u5BC6\u5C01\uFF0C\u53EA\u6709\u5BF9\u65B9\u80FD\u6253\u5F00\u5E76\u9A8C\u8BC1\u3002",
+      "Your mailbox is a separate key, made right here, for letters and signing. It never holds coins, so loading it here risks nothing you own. Link it to your coin address once, on the chain, and everything it signs shows as your mailbox.": "\u4F60\u7684\u4FE1\u7BB1\u662F\u4E00\u4E2A\u5355\u72EC\u7684\u5BC6\u94A5\uFF0C\u5C31\u5728\u8FD9\u91CC\u751F\u6210\uFF0C\u7528\u4E8E\u4FE1\u4EF6\u548C\u7B7E\u540D\u3002\u5B83\u4ECE\u4E0D\u5B58\u653E\u5E01\uFF0C\u6240\u4EE5\u5728\u8FD9\u91CC\u52A0\u8F7D\u5B83\u4E0D\u4F1A\u8BA9\u4F60\u7684\u4EFB\u4F55\u8D44\u4EA7\u9762\u4E34\u98CE\u9669\u3002\u5728\u94FE\u4E0A\u628A\u5B83\u548C\u4F60\u7684\u5E01\u5730\u5740\u5173\u8054\u4E00\u6B21\uFF0C\u4E4B\u540E\u5B83\u7B7E\u7684\u6240\u6709\u5185\u5BB9\u90FD\u4F1A\u663E\u793A\u4E3A\u4F60\u7684\u4FE1\u7BB1\u3002",
+      "Anyone with the signed message can rebuild the phrase and find the lock on": "\u4EFB\u4F55\u62FF\u5230\u7B7E\u540D\u6D88\u606F\u7684\u4EBA\u90FD\u53EF\u4EE5\u91CD\u5EFA\u77ED\u8BED\uFF0C\u5E76\u5728",
+      ", which checks it was made by your address. Change one letter and it no longer matches.": "\u4E0A\u627E\u5230\u8FD9\u4E2A\u9501\u5B9A\uFF0C\u5B83\u4F1A\u9A8C\u8BC1\u9501\u5B9A\u662F\u7531\u4F60\u7684\u5730\u5740\u521B\u5EFA\u7684\u3002\u6539\u52A8\u4E00\u4E2A\u5B57\u6BCD\u5C31\u4E0D\u518D\u5339\u914D\u3002",
+      "The phrase is a fingerprint of": "\u8FD9\u4E2A\u77ED\u8BED\u662F\u4EE5\u4E0B\u5185\u5BB9\u7684\u6307\u7EB9\uFF1A",
+      ", your address and your message, plus a random salt.": "\u3001\u4F60\u7684\u5730\u5740\u548C\u4F60\u7684\u6D88\u606F\uFF0C\u518D\u52A0\u4E0A\u4E00\u4E2A\u968F\u673A\u76D0\u503C\u3002",
+      "BRC Post never sees your coin key. It turns your message and your address into a phrase. You lock a tiny amount with that phrase in the official app, which signs the lock with your key, the way it signs any payment. Only your key could have made that lock, so the chain itself is the signature.": "BRC Post \u6C38\u8FDC\u770B\u4E0D\u5230\u4F60\u7684\u5E01\u79C1\u94A5\u3002\u5B83\u628A\u4F60\u7684\u6D88\u606F\u548C\u5730\u5740\u53D8\u6210\u4E00\u4E2A\u77ED\u8BED\u3002\u4F60\u5728\u5B98\u65B9 app \u91CC\u7528\u8FD9\u4E2A\u77ED\u8BED\u9501\u5B9A\u4E00\u7B14\u5F88\u5C0F\u7684\u91D1\u989D\uFF0Capp \u4F1A\u7528\u4F60\u7684\u79C1\u94A5\u4E3A\u8FD9\u6B21\u9501\u5B9A\u7B7E\u540D\uFF0C\u5C31\u50CF\u5B83\u4E3A\u4EFB\u4F55\u4ED8\u6B3E\u7B7E\u540D\u4E00\u6837\u3002\u53EA\u6709\u4F60\u7684\u79C1\u94A5\u80FD\u505A\u51FA\u8FD9\u4E2A\u9501\u5B9A\uFF0C\u6240\u4EE5\u94FE\u672C\u8EAB\u5C31\u662F\u7B7E\u540D\u3002",
+      "A phrase someone sends you is a message you can't read, and locking it signs it in your name.": "\u522B\u4EBA\u53D1\u7ED9\u4F60\u7684\u77ED\u8BED\u662F\u4E00\u6761\u4F60\u8BFB\u4E0D\u61C2\u7684\u6D88\u606F\uFF0C\u9501\u5B9A\u5B83\u5C31\u7B49\u4E8E\u4EE5\u4F60\u7684\u540D\u4E49\u7B7E\u7F72\u4E86\u5B83\u3002",
+      "Leave the fee as it is and press": "\u624B\u7EED\u8D39\u4FDD\u6301\u4E0D\u53D8\uFF0C\u6309\u4E0B",
+      ". Your key signs the lock inside the official app, where it already lives.": "\u3002\u4F60\u7684\u79C1\u94A5\u4F1A\u5728\u5B98\u65B9 app \u5185\u4E3A\u9501\u5B9A\u7B7E\u540D\uFF0C\u79C1\u94A5\u672C\u6765\u5C31\u4FDD\u5B58\u5728\u90A3\u91CC\u3002",
+      "Sign a short statement. Anyone can check it, and nobody can fake it or change a word.": "\u7B7E\u7F72\u4E00\u6BB5\u7B80\u77ED\u58F0\u660E\u3002\u4EFB\u4F55\u4EBA\u90FD\u80FD\u9A8C\u8BC1\uFF0C\u6CA1\u4EBA\u80FD\u4F2A\u9020\u6216\u6539\u52A8\u4E00\u4E2A\u5B57\u3002",
+      "Opening a real mailbox is turned off here, because the outer page could watch what you type. Open BRC Post in its own tab to use your key. Test keys still work.": "\u8FD9\u91CC\u5173\u95ED\u4E86\u6253\u5F00\u771F\u5B9E\u4FE1\u7BB1\u7684\u529F\u80FD\uFF0C\u56E0\u4E3A\u5916\u5C42\u9875\u9762\u53EF\u80FD\u4F1A\u76D1\u89C6\u4F60\u8F93\u5165\u7684\u5185\u5BB9\u3002\u8BF7\u5728\u5355\u72EC\u7684\u6807\u7B7E\u9875\u4E2D\u6253\u5F00 BRC Post \u6765\u4F7F\u7528\u4F60\u7684\u5BC6\u94A5\u3002\u6D4B\u8BD5\u5BC6\u94A5\u4ECD\u7136\u53EF\u7528\u3002",
+      Private: "\u79C1\u5BC6",
+      "Switch to English": "\u5207\u6362\u5230\u82F1\u6587",
+      "64 characters": "64 \u4E2A\u5B57\u7B26",
+      "64-character BrowserCoin address": "64 \u4E2A\u5B57\u7B26\u7684 BrowserCoin \u5730\u5740",
+      "A letter, a signature, a postmark receipt or a mailbox link": "\u4FE1\u4EF6\u3001\u7B7E\u540D\u3001\u90AE\u6233\u56DE\u6267\u6216\u4FE1\u7BB1\u94FE\u63A5",
+      "Open a letter \xB7 BRC Post": "\u6253\u5F00\u4FE1\u4EF6 \xB7 BRC Post",
+      "Paste it from the app, or leave empty": "\u4ECE\u5E94\u7528\u4E2D\u7C98\u8D34\uFF0C\u6216\u7559\u7A7A",
+      "Paste their mailbox link": "\u7C98\u8D34\u5BF9\u65B9\u7684\u4FE1\u7BB1\u94FE\u63A5",
+      "Round number and signature": "\u8F6E\u6B21\u7F16\u53F7\u548C\u7B7E\u540D",
+      "The address of the person checking it": "\u9A8C\u8BC1\u8005\u7684\u5730\u5740",
+      "The address the official app shows for your wallet": "\u5B98\u65B9\u5E94\u7528\u4E3A\u4F60\u7684\u94B1\u5305\u663E\u793A\u7684\u5730\u5740",
+      ", anonymous": "\uFF0C\u533F\u540D"
+    },
+    p: [
+      [
+        "A link to the mailbox of coin address %1\u2026%2. Only the mailbox's side can be checked here. Check the link on BRC Pulse \u2192 Check it first: anyone can write a link that names someone else's coin address.",
+        "\u8FD9\u662F\u6307\u5411\u5E01\u5730\u5740 %1\u2026%2 \u7684\u4FE1\u7BB1\u7684\u94FE\u63A5\u3002\u8FD9\u91CC\u53EA\u80FD\u68C0\u67E5\u4FE1\u7BB1\u8FD9\u4E00\u4FA7\u3002\u8BF7\u5148\u5728 BRC Pulse \u2192\u300C\u9A8C\u8BC1\u4E00\u4E0B\u300D\u4E0A\u68C0\u67E5\u8FD9\u4E2A\u94FE\u63A5\uFF1A\u4EFB\u4F55\u4EBA\u90FD\u80FD\u5199\u51FA\u4E00\u4E2A\u5192\u7528\u522B\u4EBA\u5E01\u5730\u5740\u7684\u94FE\u63A5\u3002"
+      ],
+      [
+        "It was sealed to %1\u2026%2, not to your mailbox (%3\u2026%4). Only that mailbox can open it. If that's a coin address, nobody can: ask the sender to seal it to your mailbox link instead.",
+        "\u8FD9\u5C01\u4FE1\u662F\u5BC6\u5C01\u7ED9 %1\u2026%2 \u7684\uFF0C\u4E0D\u662F\u7ED9\u4F60\u7684\u4FE1\u7BB1\uFF08%3\u2026%4\uFF09\u3002\u53EA\u6709\u90A3\u4E2A\u4FE1\u7BB1\u80FD\u6253\u5F00\u5B83\u3002\u5982\u679C\u90A3\u662F\u4E00\u4E2A\u5E01\u5730\u5740\uFF0C\u5C31\u6CA1\u6709\u4EBA\u80FD\u6253\u5F00\uFF1A\u8BF7\u8BA9\u53D1\u4EF6\u4EBA\u6539\u4E3A\u5BC6\u5C01\u7ED9\u4F60\u7684\u4FE1\u7BB1\u94FE\u63A5\u3002"
+      ],
+      [
+        "That link is for mailbox %1\u2026%2, but you're already writing to someone else. To write to the link's mailbox, clear the Seal to box and paste the link again.",
+        "\u8FD9\u4E2A\u94FE\u63A5\u5BF9\u5E94\u4FE1\u7BB1 %1\u2026%2\uFF0C\u4F46\u4F60\u6B63\u5728\u7ED9\u522B\u4EBA\u5199\u4FE1\u3002\u8981\u5199\u7ED9\u8FD9\u4E2A\u94FE\u63A5\u7684\u4FE1\u7BB1\uFF0C\u8BF7\u6E05\u7A7A\u300C\u5BC4\u7ED9\u300D\u4E00\u680F\uFF0C\u518D\u7C98\u8D34\u4E00\u6B21\u94FE\u63A5\u3002"
+      ],
+      [
+        "Line %1 of the code has a typo: it doesn't match its check [%2]. Compare that line with the paper, watching for 0/D and 8/B.",
+        "\u4EE3\u7801\u7B2C %1 \u884C\u6709\u8F93\u5165\u9519\u8BEF\uFF1A\u4E0E\u5B83\u7684\u6821\u9A8C [%2] \u4E0D\u7B26\u3002\u8BF7\u628A\u8FD9\u4E00\u884C\u548C\u7EB8\u4E0A\u7684\u5185\u5BB9\u5BF9\u7167\uFF0C\u7559\u610F 0/D \u548C 8/B\u3002"
+      ],
+      [
+        "%1 characters: too long for one Discord message (limit 2,000). Shorten the letter, or send the block as a .txt file.",
+        "%1 \u4E2A\u5B57\u7B26\uFF1A\u4E00\u6761 Discord \u6D88\u606F\u653E\u4E0D\u4E0B\uFF08\u4E0A\u9650 2,000\uFF09\u3002\u8BF7\u7F29\u77ED\u4FE1\u4EF6\uFF0C\u6216\u8005\u628A\u8FD9\u6BB5\u5185\u5BB9\u5B58\u6210 .txt \u6587\u4EF6\u53D1\u9001\u3002"
+      ],
+      [
+        "Your mailbox is ready. Its backup file, %1, should be in your downloads. Don't see it? Press Save backup file now. %2",
+        "\u4F60\u7684\u4FE1\u7BB1\u5DF2\u51C6\u5907\u597D\u3002\u5B83\u7684\u5907\u4EFD\u6587\u4EF6 %1 \u5E94\u8BE5\u5728\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\u91CC\u3002\u6CA1\u770B\u5230\uFF1F\u73B0\u5728\u70B9\u300C\u4FDD\u5B58\u5907\u4EFD\u6587\u4EF6\u300D\u3002%2"
+      ],
+      [
+        "Careful: this address looks like the %1 (%2\u2026%3), but it isn't. Someone may be imitating it. Compare every character.",
+        "\u5F53\u5FC3\uFF1A\u8FD9\u4E2A\u5730\u5740\u770B\u8D77\u6765\u50CF%1\uFF08%2\u2026%3\uFF09\uFF0C\u4F46\u5176\u5B9E\u4E0D\u662F\u3002\u53EF\u80FD\u6709\u4EBA\u5728\u5192\u5145\u3002\u8BF7\u9010\u4E2A\u5B57\u7B26\u6838\u5BF9\u3002"
+      ],
+      [
+        "The lock holding this message was made by a different address (%1\u2026), so it doesn't show that %2\u2026 signed it.",
+        "\u4FDD\u5B58\u8FD9\u6761\u6D88\u606F\u7684\u9501\u5B9A\u662F\u7531\u53E6\u4E00\u4E2A\u5730\u5740\uFF08%1\u2026\uFF09\u521B\u5EFA\u7684\uFF0C\u6240\u4EE5\u4E0D\u80FD\u8BC1\u660E\u662F %2\u2026 \u7B7E\u540D\u7684\u3002"
+      ],
+      [
+        "The signature should be 128 characters long. This one has %1, so part of it was lost when it was copied.",
+        "\u7B7E\u540D\u5E94\u4E3A 128 \u4E2A\u5B57\u7B26\u3002\u8FD9\u4E2A\u7B7E\u540D\u53EA\u6709 %1 \u4E2A\u5B57\u7B26\uFF0C\u590D\u5236\u65F6\u4E22\u5931\u4E86\u4E00\u90E8\u5206\u3002"
+      ],
+      [
+        "This device remembers mailbox %1. Tick to remember this one instead (that one is then forgotten here).",
+        "\u8FD9\u53F0\u8BBE\u5907\u8BB0\u4F4F\u7684\u662F\u4FE1\u7BB1 %1\u3002\u52FE\u9009\u540E\u6539\u4E3A\u8BB0\u4F4F\u8FD9\u4E2A\u4FE1\u7BB1\uFF08\u4E4B\u524D\u90A3\u4E2A\u4F1A\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u88AB\u5FD8\u8BB0\uFF09\u3002"
+      ],
+      [
+        "A mailbox link for %1\u2026%2 was opened, but you're already writing to someone else. Nothing was changed.",
+        "\u6253\u5F00\u4E86 %1\u2026%2 \u7684\u4FE1\u7BB1\u94FE\u63A5\uFF0C\u4F46\u4F60\u6B63\u5728\u7ED9\u522B\u4EBA\u5199\u4FE1\u3002\u6CA1\u6709\u505A\u4EFB\u4F55\u66F4\u6539\u3002"
+      ],
+      [
+        "That's the %1, a coin address, not a mailbox. Nobody could ever open a letter sealed to it.",
+        "\u8FD9\u662F%1\uFF0C\u4E00\u4E2A\u94B1\u5E01\u5730\u5740\uFF0C\u4E0D\u662F\u4FE1\u7BB1\u3002\u5BC4\u7ED9\u5B83\u7684\u5BC6\u5C01\u4FE1\u6C38\u8FDC\u6CA1\u6709\u4EBA\u80FD\u6253\u5F00\u3002"
+      ],
+      [
+        "Saved %1 to your downloads. It is locked with your password; keep a copy somewhere safe.",
+        "\u5DF2\u5C06 %1 \u4FDD\u5B58\u5230\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\u3002\u5B83\u5DF2\u7528\u4F60\u7684\u5BC6\u7801\u52A0\u5BC6\uFF1B\u8BF7\u5728\u5B89\u5168\u7684\u5730\u65B9\u53E6\u5B58\u4E00\u4EFD\u3002"
+      ],
+      [
+        "This BRC Wallet file has a version (%1) BRC Vault doesn't know; it reads version 2.",
+        "\u8FD9\u4E2A BRC Wallet \u6587\u4EF6\u7684\u7248\u672C\uFF08%1\uFF09BRC Vault \u65E0\u6CD5\u8BC6\u522B\uFF1B\u5B83\u53EA\u80FD\u8BFB\u53D6\u7248\u672C 2\u3002"
+      ],
+      [
+        "These letters are for mailbox %1\u2026, not the key you opened. Open that mailbox's key.",
+        "\u8FD9\u4E9B\u4FE1\u4EF6\u662F\u53D1\u7ED9\u4FE1\u7BB1 %1\u2026 \u7684\uFF0C\u4E0D\u662F\u4F60\u6253\u5F00\u7684\u8FD9\u4E2A\u5BC6\u94A5\u3002\u8BF7\u6253\u5F00\u90A3\u4E2A\u4FE1\u7BB1\u7684\u5BC6\u94A5\u3002"
+      ],
+      [
+        "Word %1 isn't on the recovery word list. Check its spelling against the paper.",
+        "\u7B2C %1 \u4E2A\u8BCD\u4E0D\u5728\u52A9\u8BB0\u8BCD\u5217\u8868\u4E2D\u3002\u8BF7\u5BF9\u7167\u7EB8\u4E0A\u7684\u5185\u5BB9\u68C0\u67E5\u62FC\u5199\u3002"
+      ],
+      [
+        "This note is sealed to a different address (%1\u2026%2). Load that wallet to open it.",
+        "\u8FD9\u5F20\u4FBF\u6761\u662F\u5BC6\u5C01\u7ED9\u53E6\u4E00\u4E2A\u5730\u5740\u7684\uFF08%1\u2026%2\uFF09\u3002\u8BF7\u52A0\u8F7D\u90A3\u4E2A\u94B1\u5305\u6765\u6253\u5F00\u5B83\u3002"
+      ],
+      [
+        "The drand signature should be 96 characters, 0\u20139 and a\u2013f. This one has %1.",
+        "drand \u7B7E\u540D\u5E94\u4E3A 96 \u4E2A\u5B57\u7B26\uFF0C\u53EA\u542B 0\u20139 \u548C a\u2013f\u3002\u8FD9\u4E2A\u7B7E\u540D\u6709 %1 \u4E2A\u5B57\u7B26\u3002"
+      ],
+      [
+        "At least %1 characters. A short sentence you'll remember works well.",
+        "\u81F3\u5C11 %1 \u4E2A\u5B57\u7B26\u3002\u7528\u4E00\u53E5\u4F60\u8BB0\u5F97\u4F4F\u7684\u77ED\u53E5\u5C31\u5F88\u597D\u3002"
+      ],
+      [
+        "This backup is version %1; this copy of BRC Vault reads version %2.",
+        "\u8FD9\u4E2A\u5907\u4EFD\u662F\u7248\u672C %1\uFF1B\u5F53\u524D\u8FD9\u4EFD BRC Vault \u8BFB\u53D6\u7684\u662F\u7248\u672C %2\u3002"
+      ],
+      [
+        "That is %1 words. BrowserCoin recovery words are a list of 24.",
+        "\u8FD9\u662F %1 \u4E2A\u8BCD\u3002BrowserCoin \u52A9\u8BB0\u8BCD\u4E00\u5171\u662F 24 \u4E2A\u3002"
+      ],
+      [
+        "A BrowserCoin address is 64 characters long. This one has %1.",
+        "BrowserCoin \u5730\u5740\u957F 64 \u4E2A\u5B57\u7B26\uFF0C\u8FD9\u4E2A\u6709 %1 \u4E2A\u3002"
+      ],
+      [
+        "The %1 in this backup is damaged (expected %2 hex characters).",
+        "\u6B64\u5907\u4EFD\u4E2D\u7684%1\u5DF2\u635F\u574F\uFF08\u5E94\u4E3A %2 \u4E2A\u5341\u516D\u8FDB\u5236\u5B57\u7B26\uFF09\u3002"
+      ],
+      [
+        "A sealed note holds up to %1 bytes of text. This one has %2.",
+        "\u5BC6\u5C01\u4FBF\u6761\u6700\u591A\u53EF\u5BB9\u7EB3 %1 \u5B57\u8282\u7684\u6587\u5B57\uFF0C\u8FD9\u6761\u6709 %2 \u5B57\u8282\u3002"
+      ],
+      [
+        "Keep a signed message under %1 characters. This one has %2.",
+        "\u7B7E\u540D\u6D88\u606F\u8BF7\u63A7\u5236\u5728 %1 \u4E2A\u5B57\u7B26\u4EE5\u5185\u3002\u8FD9\u6761\u6709 %2 \u4E2A\u5B57\u7B26\u3002"
+      ],
+      [
+        "Sign it with my mailbox so they know it's from me (%1\u2026%2).",
+        "\u7528\u6211\u7684\u4FE1\u7BB1\u7B7E\u540D\uFF0C\u8BA9\u5BF9\u65B9\u77E5\u9053\u8FD9\u662F\u6211\u53D1\u7684\uFF08%1\u2026%2\uFF09\u3002"
+      ],
+      [
+        "Mailbox %1 found. Type its password, then press Unlock.",
+        "\u5DF2\u627E\u5230\u4FE1\u7BB1 %1\u3002\u8F93\u5165\u5B83\u7684\u5BC6\u7801\uFF0C\u7136\u540E\u6309\u300C\u89E3\u9501\u300D\u3002"
+      ],
+      [
+        ": %1 minutes old, copy a fresh one for a tighter proof",
+        "\uFF1A\u5DF2\u8FC7\u53BB %1 \u5206\u949F\uFF0C\u590D\u5236\u4E00\u4E2A\u65B0\u7684\uFF0C\u8BC1\u660E\u4F1A\u66F4\u7CBE\u786E"
+      ],
+      [
+        "It's for %1: switch to %2 in your mailbox (top right).",
+        "\u8FD9\u662F\u7ED9 %1 \u7684\uFF1A\u5728\u4F60\u7684\u4FE1\u7BB1\u4E2D\uFF08\u53F3\u4E0A\u89D2\uFF09\u5207\u6362\u5230 %2\u3002"
+      ],
+      [
+        "Time added: made after %1 (drand round %2, checked).",
+        "\u5DF2\u6DFB\u52A0\u65F6\u95F4\uFF1A\u5236\u4F5C\u4E8E %1 \u4E4B\u540E\uFF08drand \u8F6E\u6B21 %2\uFF0C\u5DF2\u9A8C\u8BC1\uFF09\u3002"
+      ],
+      [
+        "No lock by %1\u2026 holding this message is in block %2.",
+        "\u533A\u5757 %2 \u4E2D\u6CA1\u6709\u7531 %1\u2026 \u521B\u5EFA\u3001\u5305\u542B\u8FD9\u6761\u6D88\u606F\u7684\u9501\u5B9A\u3002"
+      ],
+      [
+        'The "%1:" line is missing from the signature.',
+        "\u7B7E\u540D\u4E2D\u7F3A\u5C11\u300C%1:\u300D\u8FD9\u4E00\u884C\u3002"
+      ],
+      [
+        "The %1 should be 64 characters, 0\u20139 and a\u2013f.",
+        "%1\u5E94\u4E3A 64 \u4E2A\u5B57\u7B26\uFF0C\u53EA\u542B 0\u20139 \u548C a\u2013f\u3002"
+      ],
+      [
+        "%1 characters. Fits in one Discord message.",
+        "%1 \u4E2A\u5B57\u7B26\uFF0C\u4E00\u6761 Discord \u6D88\u606F\u5C31\u80FD\u53D1\u5B8C\u3002"
+      ],
+      [
+        "Expected %1 bytes (%2 hex characters), got %3.",
+        "\u5E94\u4E3A %1 \u5B57\u8282\uFF08%2 \u4E2A\u5341\u516D\u8FDB\u5236\u5B57\u7B26\uFF09\uFF0C\u5B9E\u9645\u4E3A %3\u3002"
+      ],
+      [
+        "No lock holding this stamp is in block %1.",
+        "\u533A\u5757 %1 \u4E2D\u6CA1\u6709\u5305\u542B\u8FD9\u4E2A\u6233\u8BB0\u7684\u9501\u5B9A\u3002"
+      ],
+      [
+        "The %1 in this backup code are damaged.",
+        "\u6B64\u5907\u4EFD\u7801\u4E2D\u7684%1\u5DF2\u635F\u574F\u3002"
+      ],
+      [
+        "%1 should be %2 characters, 0\u20139 and a\u2013f.",
+        "%1 \u5E94\u4E3A %2 \u4E2A\u5B57\u7B26\uFF0C\u53EA\u80FD\u7528 0\u20139 \u548C a\u2013f\u3002"
+      ],
+      [
+        `The receipt's "%1:" line is missing.`,
+        '\u56DE\u6267\u4E2D\u7F3A\u5C11 "%1:" \u8FD9\u4E00\u884C\u3002'
+      ],
+      [
+        "%1 of 64 characters, part is missing",
+        "\u53EA\u6709 %1/64 \u4E2A\u5B57\u7B26\uFF0C\u7F3A\u4E86\u4E00\u90E8\u5206"
+      ],
+      [
+        "That mailbox link isn't valid. %1",
+        "\u8FD9\u4E2A\u4FE1\u7BB1\u94FE\u63A5\u65E0\u6548\u3002%1"
+      ],
+      [
+        "%1 addresses \xB7 fingerprint %2\u2026",
+        "%1 \u4E2A\u5730\u5740 \xB7 \u6307\u7EB9 %2\u2026"
+      ],
+      [
+        "Use at least %1 characters.",
+        "\u8BF7\u81F3\u5C11\u4F7F\u7528 %1 \u4E2A\u5B57\u7B26\u3002"
+      ],
+      [
+        "%1 \xB7 stayed on your device",
+        "%1 \xB7 \u4E00\u76F4\u7559\u5728\u4F60\u7684\u8BBE\u5907\u4E0A"
+      ],
+      [
+        "Lock %1\u2026 is not in block %2.",
+        "\u9501\u5B9A %1\u2026 \u4E0D\u5728\u533A\u5757 %2 \u4E2D\u3002"
+      ],
+      [
+        "Tool should be one of: %1.",
+        "\u5DE5\u5177\u5E94\u4E3A\u4EE5\u4E0B\u4E4B\u4E00\uFF1A%1\u3002"
+      ],
+      [
+        "%1, to the second (drand)",
+        "%1\uFF0C\u7CBE\u786E\u5230\u79D2\uFF08drand\uFF09"
+      ],
+      [
+        "Acting as test mailbox %1",
+        "\u5F53\u524D\u8EAB\u4EFD\uFF1A\u6D4B\u8BD5\u4FE1\u7BB1 %1"
+      ],
+      [
+        "Signed and sealed for %1",
+        "\u5DF2\u7B7E\u540D\u5E76\u5BC6\u5C01\u7ED9 %1"
+      ],
+      [
+        ", to within %N1 seconds",
+        "\uFF0C\u8BEF\u5DEE\u5728 %N1 \u79D2\u4EE5\u5185"
+      ],
+      [
+        "Write to %1\u2026%2 instead",
+        "\u6539\u4E3A\u5199\u4FE1\u7ED9 %1\u2026%2"
+      ],
+      [
+        "checked: round %1, %2",
+        "\u5DF2\u9A8C\u8BC1\uFF1A\u8F6E\u6B21 %1\uFF0C%2"
+      ],
+      [
+        "Sealing to the %1.",
+        "\u6B63\u5728\u5BC6\u5C01\u5BC4\u7ED9%1\u3002"
+      ],
+      [
+        "Send them this: %1",
+        "\u628A\u8FD9\u4E2A\u53D1\u7ED9\u5BF9\u65B9\uFF1A%1"
+      ],
+      [
+        "%1 letters for %2",
+        "%1 \u5C01\u7ED9 %2 \u7684\u4FE1"
+      ],
+      [
+        "Test mailbox %1",
+        "\u6D4B\u8BD5\u4FE1\u7BB1 %1"
+      ],
+      [
+        "Not valid. %1",
+        "\u65E0\u6548\u3002%1"
+      ],
+      [
+        "Sealed to %1%2",
+        "\u5DF2\u5BC6\u5C01\u5BC4\u7ED9 %1%2"
+      ],
+      [
+        "%R1: reading\u2026",
+        "%R1\uFF1A\u8BFB\u53D6\u4E2D\u2026"
+      ],
+      [
+        "%N1 / %N2 bytes",
+        "%N1 / %N2 \u5B57\u8282"
+      ]
+    ]
+  };
+
   // src/app.js
   var $ = (sel) => document.querySelector(sel);
   var $$ = (sel) => [...document.querySelectorAll(sel)];
+  function showName(node, name) {
+    const span = document.createElement("span");
+    span.textContent = name;
+    span.translate = false;
+    node.replaceChildren(span);
+  }
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -12447,11 +13717,11 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     }
     if (file.size > 2 * 1024 ** 3) {
       dropState(drop2, "");
-      $("#st-file-title").textContent = file.name;
+      showName($("#st-file-title"), file.name);
       $("#st-file-sub").textContent = "Files over 2 GB are too large to postmark here.";
       return;
     }
-    $("#st-file-title").textContent = file.name;
+    showName($("#st-file-title"), file.name);
     $("#st-file-sub").textContent = "Reading\u2026";
     dropState(drop2, "reading", 0);
     try {
@@ -12634,7 +13904,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   });
   function renderPostmark(st, file) {
     $("#pm-ext").textContent = extOf(file.name);
-    $("#pm-name").textContent = file.name;
+    showName($("#pm-name"), file.name);
     $("#pm-size").textContent = `${fmtBytes(file.size)} \xB7 stayed on your device`;
     const t = stampDrandTime(st);
     const pm = $("#pm");
@@ -12759,7 +14029,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       });
       if (gen !== cmpGen) return;
       cmpFp = fp;
-      $("#st-cmp-file-title").textContent = file.name;
+      showName($("#st-cmp-file-title"), file.name);
       dropState(drop2, "done", 1);
     } catch {
       if (gen !== cmpGen) return;
@@ -12790,7 +14060,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       const d = await readJsonFile(f);
       if (!d || !Array.isArray(d.letters) || !d.letters.every((l) => l && typeof l.letter === "string")) throw new Error("This isn't a letters file from the BRC Mailbox.");
       ibExport = { mailbox: String(d.mailbox || ""), pool: /^[0-9a-f]{64}$/.test(String(d.pool)) ? d.pool : null, round: Number.isSafeInteger(d.round) && d.round > 0 ? d.round : null, letters: d.letters.map((l, i) => ({ seq: Number(l.seq) || i + 1, letter: l.letter })) };
-      $("#ib-file-title").textContent = f.name;
+      showName($("#ib-file-title"), f.name);
       $("#ib-file-sub").textContent = `${ibExport.letters.length.toLocaleString("en-US")} letters for ${ibExport.mailbox ? `${ibExport.mailbox.slice(0, 6)}\u2026${ibExport.mailbox.slice(-4)}` : "an unnamed mailbox"}`;
       dropState($("#ib-drop"), "done", 1);
     } catch (err2) {
@@ -12810,7 +14080,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       const fp = eligibleFingerprint(d.addresses);
       if (d.fingerprint && d.fingerprint !== fp) throw new Error("This eligible list doesn't match its own fingerprint. It was changed after it was made.");
       ibEligible = { set: new Set(d.addresses), fingerprint: fp, count: new Set(d.addresses).size };
-      $("#ib-elig-title").textContent = f.name;
+      showName($("#ib-elig-title"), f.name);
       $("#ib-elig-sub").textContent = `${ibEligible.count.toLocaleString("en-US")} addresses \xB7 fingerprint ${fp.slice(0, 16)}\u2026`;
       dropState($("#ib-elig-drop"), "done", 1);
     } catch (err2) {
@@ -12967,6 +14237,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   }
   renderWallet();
   readHash();
+  var i18n = createI18n({ dict: zh_default });
+  i18n.start();
 })();
 </script>
 </body>
