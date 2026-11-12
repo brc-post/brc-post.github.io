@@ -146,13 +146,15 @@ function loadStored() {
 let stored = loadStored();
 // Another tab may have changed the remembered mailbox. Before replacing or forgetting what's
 // stored, save any mailbox there that this tab doesn't know about, so none is lost unsaved.
+const savedAddrs = new Set(); // mailboxes whose locked backup the person already has from this page
 function keepUnknownStored() {
   const disk = loadStored();
-  if (disk && (!stored || disk.address !== stored.address)) saveBackupFile(disk);
+  if (disk && !savedAddrs.has(disk.address)) saveBackupFile(disk);
 }
 function remember(backup) {
   if (EMBEDDED || !backup || backup.type !== vault.MAILBOX_TYPE) return false;
   keepUnknownStored();
+  savedAddrs.add(backup.address); // made here (file saved) or opened from its file
   try { localStorage.setItem(STORE, JSON.stringify(backup)); stored = backup; return true; } catch { return false; }
 }
 function forgetStored() {
@@ -167,6 +169,7 @@ window.addEventListener('storage', (e) => {
 });
 const backupName = (b) => `brc-mailbox-key-${b.address.slice(0, 8)}.json`;
 function saveBackupFile(backup) {
+  savedAddrs.add(backup.address);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2) + '\n'], { type: 'application/json' }));
   a.download = backupName(backup);
@@ -476,9 +479,12 @@ $('#unlock-password').addEventListener('keydown', (e) => { if (e.key === 'Enter'
 
 // --- Remove the remembered mailbox from this device (a second press confirms).
 let removeAsked = false;
+let removeAddr = null;
 $('#btn-remove').addEventListener('click', () => {
+  if (removeAsked && (!stored || stored.address !== removeAddr)) removeAsked = false; // changed meanwhile: ask again
   if (!removeAsked) {
     removeAsked = true;
+    removeAddr = stored ? stored.address : null;
     if (stored) saveBackupFile(stored);
     say('#unlock-msg', `Remove this mailbox from this device? First, check your downloads for ${stored ? backupName(stored) : 'its backup file'}: it's the locked backup, and you'll need it with the password to open this mailbox again. Then press Remove from this device again.`, 'warn');
     return;
