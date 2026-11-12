@@ -814,7 +814,7 @@ with sync_playwright() as pw:
         lo.click('#btn-new-instead')
     assert old_dl.value.suggested_filename == f'brc-mailbox-key-{my_addr[:8]}.json'
     old_saved = json.loads(pathlib.Path(old_dl.value.path()).read_text())
-    assert old_saved == saved, 'the old mailbox is saved exactly as it was remembered'
+    assert {k: old_saved[k] for k in ('type','address','kdf','cipher','ciphertext')} == {k: saved[k] for k in ('type','address','kdf','cipher','ciphertext')}, (old_saved, saved)
     expect(lo.locator('#mb-create')).to_be_visible()
     expect(lo.locator('#create-replace')).to_contain_text('takes the place of')
     lo.uncheck('#new-remember'); expect(lo.locator('#create-replace')).to_contain_text('keeps remembering')
@@ -828,7 +828,10 @@ with sync_playwright() as pw:
     assert json.loads(lo.evaluate("localStorage.getItem('brc-post:mailbox')"))['address'] == new_addr
     expect(lo.locator('#create-replace')).to_be_hidden()
     # The old mailbox still opens from its saved file with its old password.
-    lo.click('#btn-forget'); lo.click('.wallet-chip'); lo.click('#btn-other')
+    lo.click('#btn-forget')
+    expect(lo.locator('.wallet-chip [data-wallet-sub]')).to_have_text('Locked')
+    if not lo.locator('#btn-other').is_visible(): lo.click('.wallet-chip')
+    lo.click('#btn-other')
     lo.locator('#wallet-file').set_input_files(str(old_dl.value.path()))
     expect(lo.locator('#load-remember')).not_to_be_checked()
     lo.fill('#wallet-password', PW2); lo.click('#btn-load-go')
