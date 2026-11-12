@@ -4,6 +4,19 @@ Version numbers: last number for fixes and wording, middle number for new
 features, first number for changes to file formats or the security model.
 Test builds carry "-test.N" and are never published.
 
+0.8.0 (Nov 12, 2026)
+  - Make a new mailbox, right from the locked screen. Found by Patrick: with
+    the password forgotten, a locked mailbox left no way forward except
+    "Remove from this device". Now one button makes a fresh mailbox.
+  - Nothing is thrown away. Whenever this device stops remembering a
+    mailbox (a new one takes its place, another one is opened and
+    remembered instead, or Remove from this device), its locked backup file
+    is saved to your downloads first, so it can still be opened later with
+    its password.
+  - 中文: the giveaway is called 赠币活动 ("coin giveaway") instead of 抽奖,
+    which Chrome's translator turned into "lottery" (same change as the
+    unpublished 0.7.1).
+
 0.7.0 (Nov 7, 2026)
   - 中文: an English / 中文 button in the top bar shows BRC Post in
     Simplified Chinese. A browser set to Chinese opens in Chinese; the choice

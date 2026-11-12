@@ -104,6 +104,7 @@ let wallet = null;          // { privateKey, address }: the open mailbox
 let testWallets = null;     // { alice, bob } while trying the page out
 let pendingBackup = null;   // a locked mailbox backup waiting for its password
 let loadGen = 0;            // bumps on cancel/lock so a slow unlock can't load afterwards
+let replacing = null;       // the remembered mailbox a new mailbox would take the place of
 let openBackup = null;      // the locked backup of the open mailbox (for Save backup file)
 let afterUnlock = null;     // what to do once the mailbox opens (a pasted letter)
 let pane = 'auto';          // which part of the mailbox panel shows: auto | create | load
@@ -359,6 +360,13 @@ function updateCreate() {
   else if (problems.length) say('#new-hint', problems[0], pw.length >= vault.MIN_PASSWORD_LENGTH ? 'warn' : 'info');
   else say('#new-hint', 'Passwords match.', 'good');
   $('#btn-create-go').disabled = creating || problems.length > 0 || !$('#new-understand').checked;
+  const old = replacing && stored && stored.address === replacing.address ? replacing : null;
+  $('#create-replace').hidden = !old;
+  if (old) {
+    say('#create-replace', $('#new-remember').checked
+      ? `Your new mailbox takes the place of ${shortAddr(old.address)} on this device. That one isn't deleted: its locked backup, ${backupName(old)}, is in your downloads. If you remember its password later, open it with I already have a mailbox.`
+      : `This device keeps remembering ${shortAddr(old.address)}. Its locked backup, ${backupName(old)}, is also in your downloads.`, 'info');
+  }
 }
 let creating = false;
 ['#new-password', '#new-confirm'].forEach((sel) => $(sel).addEventListener('input', updateCreate));
@@ -371,8 +379,21 @@ function clearCreate() {
   say('#create-msg', '');
   updateCreate();
 }
-$('#btn-create').addEventListener('click', () => { if (!realKeysOff()) { clearCreate(); setPane('create'); } });
-$('#btn-create-cancel').addEventListener('click', () => { loadGen++; clearCreate(); setPane('auto'); });
+$('#btn-create').addEventListener('click', () => { if (!realKeysOff()) { replacing = null; clearCreate(); setPane('create'); } });
+// Locked out (or just want a fresh one)? Make a new mailbox from the locked screen. Nothing is
+// thrown away: the old mailbox's locked backup is saved to downloads first (it is the same file
+// made when it was created), so it can still be opened later if its password comes back.
+$('#btn-new-instead').addEventListener('click', () => {
+  if (realKeysOff() || !stored) return;
+  removeAsked = false;
+  replacing = stored;
+  saveBackupFile(stored);
+  say('#unlock-msg', '');
+  clearCreate();
+  setPane('create');
+});
+$('#new-remember').addEventListener('change', updateCreate);
+$('#btn-create-cancel').addEventListener('click', () => { loadGen++; replacing = null; clearCreate(); setPane('auto'); });
 
 $('#btn-create-go').addEventListener('click', async () => {
   if (creating || realKeysOff()) return;
@@ -395,6 +416,7 @@ $('#btn-create-go').addEventListener('click', async () => {
     if (gen !== loadGen) return; // cancelled meanwhile
     saveBackupFile(backup);
     const remembered = keep && remember(backup);
+    replacing = null;
     useWallet(w, { backup, keepOpen: true });
     w = null; // now the open mailbox
     clearCreate();
@@ -443,10 +465,11 @@ let removeAsked = false;
 $('#btn-remove').addEventListener('click', () => {
   if (!removeAsked) {
     removeAsked = true;
-    say('#unlock-msg', 'Remove this mailbox from this device? You will need its backup file to open it again. Press Remove from this device again to confirm.', 'warn');
+    say('#unlock-msg', "Remove this mailbox from this device? Its locked backup file is saved to your downloads first, so you can still open it later with its password. Press Remove from this device again to confirm.", 'warn');
     return;
   }
   removeAsked = false;
+  if (stored) saveBackupFile(stored);
   lockMailbox();
   forgetStored();
   say('#unlock-msg', '');
@@ -507,7 +530,7 @@ async function readWalletText(text) {
     const other = stored && stored.address !== id.backup.address;
     $('#load-remember').checked = !other;
     $('#load-remember-text').textContent = other
-      ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one is then forgotten here).`
+      ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one's locked backup file is saved to your downloads first).`
       : 'Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.';
     $('#wallet-password').focus();
     say('#load-msg', `Mailbox ${shortAddr(id.backup.address)} found. Type its password, then press Unlock.`, 'info');
@@ -548,7 +571,10 @@ $('#btn-load-go').addEventListener('click', async () => {
       if (gen !== loadGen) { vault.wipeWallet(w); return; } // cancelled while unlocking
       if (w.purpose !== 'mailbox') { vault.wipeWallet(w); throw new Error(COIN_BACKUP); }
       const backup = pendingBackup;
-      if ($('#load-remember').checked) remember(backup);
+      if ($('#load-remember').checked) {
+        if (stored && stored.address !== backup.address) saveBackupFile(stored); // keep the one it replaces
+        remember(backup);
+      }
       useWallet(w, { backup });
       return;
     }

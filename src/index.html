@@ -921,6 +921,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
 
         <!-- Create a mailbox -->
         <div class="mb-pane" id="mb-create" hidden>
+          <p class="msg" id="create-replace" role="status" aria-live="polite" hidden></p>
           <label class="field"><span>Choose a password</span><input id="new-password" type="password" autocomplete="new-password" spellcheck="false"></label>
           <label class="field"><span>Type it again</span><input id="new-confirm" type="password" autocomplete="new-password" spellcheck="false"></label>
           <p class="msg" id="new-hint" role="status" aria-live="polite"></p>
@@ -935,6 +936,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
           <label class="field"><span>Password</span><input id="unlock-password" type="password" autocomplete="current-password" spellcheck="false"></label>
           <div class="actions"><button class="btn btn-primary btn-block" id="btn-unlock" type="button">Unlock</button></div>
           <p class="msg" id="unlock-msg" role="status" aria-live="polite"></p>
+          <button class="btn btn-secondary btn-block" id="btn-new-instead" type="button">Make a new mailbox</button>
           <div class="mb-links"><button class="text-btn" id="btn-other" type="button">Use a different mailbox</button><button class="text-btn" id="btn-remove" type="button">Remove from this device</button></div>
         </div>
 

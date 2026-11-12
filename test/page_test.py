@@ -793,11 +793,48 @@ with sync_playwright() as pw:
     nd.click('#btn-remove')
     expect(nd.locator('#unlock-msg')).to_contain_text('again to confirm')
     expect(nd.locator('#mb-locked')).to_be_visible()
-    nd.click('#btn-remove')
+    with nd.expect_download() as rm_dl:
+        nd.click('#btn-remove')
+    assert rm_dl.value.suggested_filename == f'brc-mailbox-key-{my_addr[:8]}.json', 'Remove saves the locked backup first'
     expect(nd.locator('#wallet-title')).to_have_text('No mailbox yet')
     assert nd.evaluate("localStorage.getItem('brc-post:mailbox')") is None
     nd.close(); mctx.close()
     ok('on a new device, the backup file opens it and it is remembered; Remove from this device needs a second press')
+
+    # --- Locked out: Make a new mailbox from the locked screen, keeping the old one's locked backup ---
+    lctx = browser.new_context(viewport={'width': 430, 'height': 900}, accept_downloads=True)
+    lo = lctx.new_page(); lo.on('pageerror', lambda e: errors.append(str(e)))
+    lo.goto(page_url)
+    lo.evaluate("(t) => localStorage.setItem('brc-post:mailbox', t)", json.dumps(saved))
+    lo.reload()
+    expect(lo.locator('.wallet-chip [data-wallet-sub]')).to_have_text('Locked')
+    lo.click('.wallet-chip')
+    expect(lo.locator('#btn-new-instead')).to_be_visible()
+    with lo.expect_download() as old_dl:
+        lo.click('#btn-new-instead')
+    assert old_dl.value.suggested_filename == f'brc-mailbox-key-{my_addr[:8]}.json'
+    old_saved = json.loads(pathlib.Path(old_dl.value.path()).read_text())
+    assert old_saved == saved, 'the old mailbox is saved exactly as it was remembered'
+    expect(lo.locator('#mb-create')).to_be_visible()
+    expect(lo.locator('#create-replace')).to_contain_text('takes the place of')
+    lo.uncheck('#new-remember'); expect(lo.locator('#create-replace')).to_contain_text('keeps remembering')
+    lo.check('#new-remember')
+    lo.fill('#new-password', 'a brand new mailbox password'); lo.fill('#new-confirm', 'a brand new mailbox password'); lo.check('#new-understand')
+    with lo.expect_download() as new_dl:
+        lo.click('#btn-create-go')
+    expect(lo.locator('#wallet-title')).to_have_text('Your mailbox is open', timeout=30000)
+    new_addr = lo.locator('#wallet-sub .mono').inner_text()
+    assert new_addr != my_addr and new_dl.value.suggested_filename == f'brc-mailbox-key-{new_addr[:8]}.json'
+    assert json.loads(lo.evaluate("localStorage.getItem('brc-post:mailbox')"))['address'] == new_addr
+    expect(lo.locator('#create-replace')).to_be_hidden()
+    # The old mailbox still opens from its saved file with its old password.
+    lo.click('#btn-forget'); lo.click('.wallet-chip'); lo.click('#btn-other')
+    lo.locator('#wallet-file').set_input_files(str(old_dl.value.path()))
+    expect(lo.locator('#load-remember')).not_to_be_checked()
+    lo.fill('#wallet-password', PW2); lo.click('#btn-load-go')
+    expect(lo.locator('#wallet-sub .mono')).to_have_text(my_addr, timeout=30000)
+    lctx.close()
+    ok('locked out: Make a new mailbox saves the old locked backup first, the new one is remembered, and the old one still opens with its password')
 
     # --- A real wallet is forgotten after 10 minutes idle ---
     idle = browser.new_context(viewport={'width': 1000, 'height': 800}).new_page()
