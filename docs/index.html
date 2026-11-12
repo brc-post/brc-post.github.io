@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- No network access at all: this page cannot load or send anything. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KzMutmsdN9n3Krg4I3d4t5ookq9MeomguRc7l7P9Fy0='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-OGLT60K7ZKLgKEvZhM5rGkrYBlUn5rqJoem35G9xKA0='; style-src 'unsafe-inline'; font-src data:; img-src data: blob:; connect-src https://api.drand.sh https://api2.drand.sh https://api3.drand.sh https://drand.cloudflare.com; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="color-scheme" content="light">
@@ -886,7 +886,7 @@ footer b { font-weight: 600; color: var(--ink-2); }
     </section>
 
     <footer>
-      <p>BRC Post <span id="app-version">0.8.0</span>, build <span class="mono">2b332eb6</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
+      <p>BRC Post <span id="app-version">0.8.0</span>, build <span class="mono">3862d3eb</span>. Works offline. Nothing about you or your files is ever sent; the only thing it fetches is the public drand time beacon, when you postmark a file (drand's servers see your IP address, like any website).</p>
       <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener noreferrer">Vault keeps it</a> · <span aria-current="page">Post seals it</span> · <a href="https://pb-hash.github.io/brc-pulse/" target="_blank" rel="noopener noreferrer">Pulse checks it</a></p>
       <p><b>The BRC Works rule:</b> only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.</p>
       <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener noreferrer">pb-hash</a>. Not part of the official BrowserCoin project.</p>
@@ -11605,7 +11605,6 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       "Redeem a hash-locked payment": "\u8D4E\u56DE\u4E00\u7B14\u54C8\u5E0C\u9501\u5B9A\u7684\u4ED8\u6B3E",
       "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.": "\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u8BB0\u4F4F\u6211\u7684\u4FE1\u7BB1\uFF0C\u4E0B\u6B21\u53EA\u9700\u8F93\u5165\u5BC6\u7801\u3002\u8BF7\u52FF\u5728\u5171\u7528\u6216\u516C\u5171\u7535\u8111\u4E0A\u4F7F\u7528\u3002",
       "Remove from this device": "\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664",
-      "Remove this mailbox from this device? Its locked backup file is saved to your downloads first, so you can still open it later with its password. Press Remove from this device again to confirm.": "\u8981\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u8FD9\u4E2A\u4FE1\u7BB1\u5417\uFF1F\u5B83\u7684\u52A0\u5BC6\u5907\u4EFD\u6587\u4EF6\u4F1A\u5148\u4FDD\u5B58\u5230\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\uFF0C\u4EE5\u540E\u4ECD\u53EF\u7528\u5B83\u7684\u5BC6\u7801\u6253\u5F00\u3002\u518D\u70B9\u4E00\u6B21\u300C\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u300D\u4EE5\u786E\u8BA4\u3002",
       "Save backup file": "\u4FDD\u5B58\u5907\u4EFD\u6587\u4EF6",
       "Save the entry list": "\u4FDD\u5B58\u53C2\u4E0E\u540D\u5355",
       "Save the receipt": "\u4FDD\u5B58\u56DE\u6267",
@@ -11955,12 +11954,16 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     },
     p: [
       [
-        "Your new mailbox takes the place of %1 on this device. That one isn't deleted: its locked backup, %2, is in your downloads. If you remember its password later, open it with I already have a mailbox.",
-        "\u65B0\u4FE1\u7BB1\u4F1A\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u53D6\u4EE3 %1\u3002\u539F\u6765\u90A3\u4E2A\u5E76\u6CA1\u6709\u88AB\u5220\u9664\uFF1A\u5B83\u7684\u52A0\u5BC6\u5907\u4EFD %2 \u5728\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\u91CC\u3002\u4EE5\u540E\u60F3\u8D77\u5BC6\u7801\u65F6\uFF0C\u7528\u300C\u6211\u5DF2\u7ECF\u6709\u4FE1\u7BB1\u4E86\u300D\u6253\u5F00\u5B83\u3002"
+        "Remove this mailbox from this device? First, check your downloads for %R1: it's the locked backup, and you'll need it with the password to open this mailbox again. Then press Remove from this device again.",
+        "\u8981\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u8FD9\u4E2A\u4FE1\u7BB1\u5417\uFF1F\u8BF7\u5148\u5728\u4E0B\u8F7D\u6587\u4EF6\u5939\u91CC\u627E\u5230 %R1\uFF1A\u8FD9\u662F\u52A0\u5BC6\u5907\u4EFD\uFF0C\u4EE5\u540E\u8981\u7528\u5B83\u548C\u5BC6\u7801\u624D\u80FD\u518D\u6B21\u6253\u5F00\u8FD9\u4E2A\u4FE1\u7BB1\u3002\u7136\u540E\u518D\u70B9\u4E00\u6B21\u300C\u4ECE\u8FD9\u53F0\u8BBE\u5907\u4E0A\u79FB\u9664\u300D\u3002"
       ],
       [
-        "This device keeps remembering %1. Its locked backup, %2, is also in your downloads.",
-        "\u8FD9\u53F0\u8BBE\u5907\u4F1A\u7EE7\u7EED\u8BB0\u4F4F %1\u3002\u5B83\u7684\u52A0\u5BC6\u5907\u4EFD %2 \u4E5F\u5728\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\u91CC\u3002"
+        "Your new mailbox takes the place of %1 on this device. That one isn't deleted: its locked backup, %R2, was just downloaded (check your downloads). If you remember its password later, open it with I already have a mailbox.",
+        "\u65B0\u4FE1\u7BB1\u4F1A\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u53D6\u4EE3 %1\u3002\u539F\u6765\u90A3\u4E2A\u5E76\u6CA1\u6709\u88AB\u5220\u9664\uFF1A\u5B83\u7684\u52A0\u5BC6\u5907\u4EFD %R2 \u521A\u521A\u5DF2\u4E0B\u8F7D\uFF08\u8BF7\u67E5\u770B\u4E0B\u8F7D\u6587\u4EF6\u5939\uFF09\u3002\u4EE5\u540E\u60F3\u8D77\u5BC6\u7801\u65F6\uFF0C\u7528\u300C\u6211\u5DF2\u7ECF\u6709\u4FE1\u7BB1\u4E86\u300D\u6253\u5F00\u5B83\u3002"
+      ],
+      [
+        "This device keeps remembering %1. Its locked backup, %R2, was also downloaded.",
+        "\u8FD9\u53F0\u8BBE\u5907\u4F1A\u7EE7\u7EED\u8BB0\u4F4F %1\u3002\u5B83\u7684\u52A0\u5BC6\u5907\u4EFD %R2 \u4E5F\u5DF2\u4E0B\u8F7D\u3002"
       ],
       [
         "A link to the mailbox of coin address %1\u2026%2. Only the mailbox's side can be checked here. Check the link on BRC Pulse \u2192 Check it first: anyone can write a link that names someone else's coin address.",
@@ -11999,8 +12002,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         "\u7B7E\u540D\u5E94\u4E3A 128 \u4E2A\u5B57\u7B26\u3002\u8FD9\u4E2A\u7B7E\u540D\u53EA\u6709 %1 \u4E2A\u5B57\u7B26\uFF0C\u590D\u5236\u65F6\u4E22\u5931\u4E86\u4E00\u90E8\u5206\u3002"
       ],
       [
-        "This device remembers mailbox %1. Tick to remember this one instead (that one's locked backup file is saved to your downloads first).",
-        "\u8FD9\u53F0\u8BBE\u5907\u8BB0\u4F4F\u7684\u662F\u4FE1\u7BB1 %1\u3002\u52FE\u9009\u540E\u6539\u4E3A\u8BB0\u4F4F\u8FD9\u4E2A\u4FE1\u7BB1\uFF08\u539F\u6765\u90A3\u4E2A\u7684\u52A0\u5BC6\u5907\u4EFD\u6587\u4EF6\u4F1A\u5148\u4FDD\u5B58\u5230\u4F60\u7684\u4E0B\u8F7D\u6587\u4EF6\u5939\uFF09\u3002"
+        "This device remembers mailbox %1. Tick to remember this one instead (that one's locked backup file downloads first: keep it).",
+        "\u8FD9\u53F0\u8BBE\u5907\u8BB0\u4F4F\u7684\u662F\u4FE1\u7BB1 %1\u3002\u52FE\u9009\u540E\u6539\u4E3A\u8BB0\u4F4F\u8FD9\u4E2A\u4FE1\u7BB1\uFF08\u539F\u6765\u90A3\u4E2A\u7684\u52A0\u5BC6\u5907\u4EFD\u6587\u4EF6\u4F1A\u5148\u4E0B\u8F7D\uFF0C\u8BF7\u4FDD\u7559\uFF09\u3002"
       ],
       [
         "A mailbox link for %1\u2026%2 was opened, but you're already writing to someone else. Nothing was changed.",
@@ -12320,8 +12323,13 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     return null;
   }
   var stored = loadStored();
+  function keepUnknownStored() {
+    const disk = loadStored();
+    if (disk && (!stored || disk.address !== stored.address)) saveBackupFile(disk);
+  }
   function remember(backup) {
     if (EMBEDDED || !backup || backup.type !== MAILBOX_TYPE) return false;
+    keepUnknownStored();
     try {
       localStorage.setItem(STORE, JSON.stringify(backup));
       stored = backup;
@@ -12331,12 +12339,18 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     }
   }
   function forgetStored() {
+    keepUnknownStored();
     try {
       localStorage.removeItem(STORE);
     } catch {
     }
     stored = null;
   }
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STORE && e.key !== null) return;
+    stored = loadStored();
+    if (typeof renderWallet === "function") renderWallet();
+  });
   var backupName = (b) => `brc-mailbox-key-${b.address.slice(0, 8)}.json`;
   function saveBackupFile(backup) {
     const a = document.createElement("a");
@@ -12458,6 +12472,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   sheet.addEventListener("close", () => {
     afterUnlock = null;
     removeAsked = false;
+    replacing = null;
     if (!wallet) say("#unlock-msg", "");
   });
   $("#btn-sheet-done").addEventListener("click", closeSheet);
@@ -12552,7 +12567,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     const old = replacing && stored && stored.address === replacing.address ? replacing : null;
     $("#create-replace").hidden = !old;
     if (old) {
-      say("#create-replace", $("#new-remember").checked ? `Your new mailbox takes the place of ${shortAddr(old.address)} on this device. That one isn't deleted: its locked backup, ${backupName(old)}, is in your downloads. If you remember its password later, open it with I already have a mailbox.` : `This device keeps remembering ${shortAddr(old.address)}. Its locked backup, ${backupName(old)}, is also in your downloads.`, "info");
+      say("#create-replace", $("#new-remember").checked ? `Your new mailbox takes the place of ${shortAddr(old.address)} on this device. That one isn't deleted: its locked backup, ${backupName(old)}, was just downloaded (check your downloads). If you remember its password later, open it with I already have a mailbox.` : `This device keeps remembering ${shortAddr(old.address)}. Its locked backup, ${backupName(old)}, was also downloaded.`, "info");
     }
   }
   var creating = false;
@@ -12576,7 +12591,8 @@ Mailbox signature: ${bytesToHex3(sig)}`;
     }
   });
   $("#btn-new-instead").addEventListener("click", () => {
-    if (realKeysOff() || !stored) return;
+    if (realKeysOff() || !stored || unlocking) return;
+    loadGen++;
     removeAsked = false;
     replacing = stored;
     saveBackupFile(stored);
@@ -12671,11 +12687,11 @@ Mailbox signature: ${bytesToHex3(sig)}`;
   $("#btn-remove").addEventListener("click", () => {
     if (!removeAsked) {
       removeAsked = true;
-      say("#unlock-msg", "Remove this mailbox from this device? Its locked backup file is saved to your downloads first, so you can still open it later with its password. Press Remove from this device again to confirm.", "warn");
+      if (stored) saveBackupFile(stored);
+      say("#unlock-msg", `Remove this mailbox from this device? First, check your downloads for ${stored ? backupName(stored) : "its backup file"}: it's the locked backup, and you'll need it with the password to open this mailbox again. Then press Remove from this device again.`, "warn");
       return;
     }
     removeAsked = false;
-    if (stored) saveBackupFile(stored);
     lockMailbox();
     forgetStored();
     say("#unlock-msg", "");
@@ -12736,7 +12752,7 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       $("#load-remember-wrap").hidden = false;
       const other = stored && stored.address !== id.backup.address;
       $("#load-remember").checked = !other;
-      $("#load-remember-text").textContent = other ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one's locked backup file is saved to your downloads first).` : "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.";
+      $("#load-remember-text").textContent = other ? `This device remembers mailbox ${shortAddr(stored.address)}. Tick to remember this one instead (that one's locked backup file downloads first: keep it).` : "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.";
       $("#wallet-password").focus();
       say("#load-msg", `Mailbox ${shortAddr(id.backup.address)} found. Type its password, then press Unlock.`, "info");
       return null;
@@ -12764,6 +12780,9 @@ Mailbox signature: ${bytesToHex3(sig)}`;
       next();
     }
   }
+  $("#load-remember").addEventListener("change", () => {
+    if ($("#load-remember").checked && stored && pendingBackup && stored.address !== pendingBackup.address) saveBackupFile(stored);
+  });
   $("#btn-load-go").addEventListener("click", async () => {
     const btn = $("#btn-load-go");
     btn.disabled = true;
@@ -12792,7 +12811,6 @@ Mailbox signature: ${bytesToHex3(sig)}`;
         }
         const backup = pendingBackup;
         if ($("#load-remember").checked) {
-          if (stored && stored.address !== backup.address) saveBackupFile(stored);
           remember(backup);
         }
         useWallet(w, { backup });

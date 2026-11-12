@@ -322,7 +322,6 @@
 "Redeem a hash-locked payment": "赎回一笔哈希锁定的付款",
 "Remember my mailbox on this device, so next time I only type my password. Not on a shared or public computer.": "在这台设备上记住我的信箱，下次只需输入密码。请勿在共用或公共电脑上使用。",
 "Remove from this device": "从这台设备上移除",
-"Remove this mailbox from this device? Its locked backup file is saved to your downloads first, so you can still open it later with its password. Press Remove from this device again to confirm.": "要从这台设备上移除这个信箱吗？它的加密备份文件会先保存到你的下载文件夹，以后仍可用它的密码打开。再点一次「从这台设备上移除」以确认。",
 "Save backup file": "保存备份文件",
 "Save the entry list": "保存参与名单",
 "Save the receipt": "保存回执",
@@ -672,12 +671,16 @@
 },
 "p": [
 [
-"Your new mailbox takes the place of %1 on this device. That one isn't deleted: its locked backup, %2, is in your downloads. If you remember its password later, open it with I already have a mailbox.",
-"新信箱会在这台设备上取代 %1。原来那个并没有被删除：它的加密备份 %2 在你的下载文件夹里。以后想起密码时，用「我已经有信箱了」打开它。"
+"Remove this mailbox from this device? First, check your downloads for %R1: it's the locked backup, and you'll need it with the password to open this mailbox again. Then press Remove from this device again.",
+"要从这台设备上移除这个信箱吗？请先在下载文件夹里找到 %R1：这是加密备份，以后要用它和密码才能再次打开这个信箱。然后再点一次「从这台设备上移除」。"
 ],
 [
-"This device keeps remembering %1. Its locked backup, %2, is also in your downloads.",
-"这台设备会继续记住 %1。它的加密备份 %2 也在你的下载文件夹里。"
+"Your new mailbox takes the place of %1 on this device. That one isn't deleted: its locked backup, %R2, was just downloaded (check your downloads). If you remember its password later, open it with I already have a mailbox.",
+"新信箱会在这台设备上取代 %1。原来那个并没有被删除：它的加密备份 %R2 刚刚已下载（请查看下载文件夹）。以后想起密码时，用「我已经有信箱了」打开它。"
+],
+[
+"This device keeps remembering %1. Its locked backup, %R2, was also downloaded.",
+"这台设备会继续记住 %1。它的加密备份 %R2 也已下载。"
 ],
 [
 "A link to the mailbox of coin address %1…%2. Only the mailbox's side can be checked here. Check the link on BRC Pulse → Check it first: anyone can write a link that names someone else's coin address.",
@@ -716,8 +719,8 @@
 "签名应为 128 个字符。这个签名只有 %1 个字符，复制时丢失了一部分。"
 ],
 [
-"This device remembers mailbox %1. Tick to remember this one instead (that one's locked backup file is saved to your downloads first).",
-"这台设备记住的是信箱 %1。勾选后改为记住这个信箱（原来那个的加密备份文件会先保存到你的下载文件夹）。"
+"This device remembers mailbox %1. Tick to remember this one instead (that one's locked backup file downloads first: keep it).",
+"这台设备记住的是信箱 %1。勾选后改为记住这个信箱（原来那个的加密备份文件会先下载，请保留）。"
 ],
 [
 "A mailbox link for %1…%2 was opened, but you're already writing to someone else. Nothing was changed.",

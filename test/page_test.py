@@ -790,12 +790,12 @@ with sync_playwright() as pw:
     expect(nd.locator('#load-remember')).not_to_be_checked()
     expect(nd.locator('#load-remember-text')).to_contain_text('remembers mailbox')
     nd.click('#btn-load-cancel')
-    nd.click('#btn-remove')
-    expect(nd.locator('#unlock-msg')).to_contain_text('again to confirm')
-    expect(nd.locator('#mb-locked')).to_be_visible()
     with nd.expect_download() as rm_dl:
         nd.click('#btn-remove')
-    assert rm_dl.value.suggested_filename == f'brc-mailbox-key-{my_addr[:8]}.json', 'Remove saves the locked backup first'
+    assert rm_dl.value.suggested_filename == f'brc-mailbox-key-{my_addr[:8]}.json', 'Remove saves the locked backup on the first press'
+    expect(nd.locator('#unlock-msg')).to_contain_text('Remove from this device again')
+    expect(nd.locator('#mb-locked')).to_be_visible()
+    nd.click('#btn-remove')
     expect(nd.locator('#wallet-title')).to_have_text('No mailbox yet')
     assert nd.evaluate("localStorage.getItem('brc-post:mailbox')") is None
     nd.close(); mctx.close()
